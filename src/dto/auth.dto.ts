@@ -56,8 +56,63 @@ export class BasicRegRes {
 }
 
 export class CreateParentReq {
+  @IsOptional()
+  @IsString()
+  @IsEmail()
   email: string;
+
+  @IsOptional()
+  @ValidateIf((o) => !o.email || o.phoneNumber)
   phoneNumber: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(12)
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'password too weak',
+  })
   password: string;
+
+  @IsNotEmpty()
+  @IsString()
   countryId: string;
+}
+
+export class CreateStudentReq {
+  @IsNotEmpty()
+  @IsString()
+  parentId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  gender: string;
+
+  @IsNotEmpty()
+  @IsString()
+  dateOfBirth: string;
+
+  @IsNotEmpty()
+  @IsString()
+  address: string;
+}
+
+export class LoginReq {
+  @IsOptional()
+  email: string;
+
+  @IsOptional()
+  phoneNumber: string;
+
+  @IsNotEmpty()
+  password: string;
+
+  @IsString()
+  deviceId: string;
+}
+
+export class LoginRes {
+  user: User;
+  success: boolean;
+  token: string;
 }
