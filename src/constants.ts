@@ -67,6 +67,11 @@ export const authMessages = {
   pwordReset: 'Password reset successfully',
 };
 
+export const profileMessages = {
+  updatedSuccess: 'Profile updated successfully',
+  updatedFail: 'Invalid user',
+};
+
 export const authErrors = {
   noMockDevice: 'could not find mock device for seeder ',
   createSession: 'could not create a new session for user ',

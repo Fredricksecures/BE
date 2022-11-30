@@ -235,9 +235,90 @@ export class AuthService {
     return createdParent;
   }
 
-  async updateParentProfile(updateParentReq) {}
+  async updateParentProfile(updateParentReq) {
+    try {
+      let response = await this.parentRepo.find({
+        where: {
+          id: updateParentReq.id,
+        },
+      });
+      if (response.length == 0) {
+        return {
+          success: false,
+        };
+      }
+      await this.parentRepo.update(
+        { id: updateParentReq.id },
+        {
+          ...(updateParentReq.email ? { email: updateParentReq.email } : {}),
+          ...(updateParentReq.phoneNumber
+            ? { phoneNumber: updateParentReq.phoneNumber }
+            : {}),
+          ...(updateParentReq.address
+            ? { address: updateParentReq.address }
+            : {}),
+        },
+      );
+      response = await this.parentRepo.find({
+        where: {
+          id: updateParentReq.id,
+        },
+      });
 
-  async updateStudentProfile(updateStudentReq) {}
+      return {
+        user: response[0],
+        success: true,
+      };
+    } catch (e) {
+      return {
+        success: false,
+      };
+    }
+  }
+
+  async updateStudentProfile(updateStudentReq) {
+    try {
+      let response = await this.studentRepo.find({
+        where: {
+          id: updateStudentReq.id,
+        },
+      });
+
+      if (response.length == 0) {
+        return {
+          success: false,
+        };
+      }
+      await this.studentRepo.update(
+        { id: updateStudentReq.id },
+        {
+          ...(updateStudentReq.firstName
+            ? { firstName: updateStudentReq.firstName }
+            : {}),
+          ...(updateStudentReq.lastName
+            ? { lastName: updateStudentReq.lastName }
+            : {}),
+          ...(updateStudentReq.dateOfBirth
+            ? { dateOfBirth: updateStudentReq.dateOfBirth }
+            : {}),
+        },
+      );
+      response = await this.studentRepo.find({
+        where: {
+          id: updateStudentReq.id,
+        },
+      });
+
+      return {
+        user: response[0],
+        success: true,
+      };
+    } catch (e) {
+      return {
+        success: false,
+      };
+    }
+  }
 
   async onboardingStage1() {}
 

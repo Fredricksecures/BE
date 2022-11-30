@@ -7,6 +7,10 @@ import {
   MinLength,
   ValidateIf,
   IsNotEmpty,
+  IsMobilePhone,
+  IsEmpty,
+  IsNumber,
+  isString,
 } from 'class-validator';
 import { Country } from 'src/entities/country.entity';
 import { Device } from 'src/entities/device.entity';
@@ -55,9 +59,56 @@ export class BasicRegRes {
   success?: boolean;
 }
 
+export class BasicUpdateRes {
+  user?: User | undefined;
+  success?: boolean;
+}
+
 export class CreateParentReq {
   email: string;
   phoneNumber: string;
   password: string;
   countryId: string;
+}
+
+export class UpdateParentReq {
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail({ message: () => 'hello' })
+  email: string;
+
+  @IsOptional()
+  @IsMobilePhone()
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+}
+export class UpdateStudentReq {
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  dateOfBirth: string;
 }

@@ -1,5 +1,6 @@
 import {
   Body,
+  Param,
   Controller,
   HttpStatus,
   Post,
@@ -14,8 +15,14 @@ import { AuthService } from '../services/auth.service';
 import { Device } from 'src/entities/device.entity';
 import { Country } from 'src/entities/country.entity';
 import { AuthSeeder } from 'src/seeders/auth.seeder';
-import { RegisterUserReq, BasicRegRes } from 'src/dto/auth.dto';
-import { authMessages } from 'src/constants';
+import {
+  RegisterUserReq,
+  BasicRegRes,
+  UpdateParentReq,
+  BasicUpdateRes,
+  UpdateStudentReq,
+} from 'src/dto/auth.dto';
+import { authMessages, profileMessages } from 'src/constants';
 
 @Controller('auth')
 export class AuthController {
@@ -55,6 +62,56 @@ export class AuthController {
         message: authMessages.userCreated,
         status: HttpStatus.CREATED,
         createdUser,
+      });
+    }
+  }
+
+  @Post('update-parent')
+  async updateParent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: UpdateParentReq,
+  ) {
+    const { user, success }: BasicUpdateRes =
+      await this.authService.updateParentProfile(body);
+    if (success) {
+      resp.json({
+        success,
+        message: profileMessages.updatedSuccess,
+        status: HttpStatus.OK,
+        user,
+      });
+    } else {
+      resp.json({
+        success,
+        message: profileMessages.updatedFail,
+        status: HttpStatus.BAD_REQUEST,
+        user,
+      });
+    }
+  }
+
+  @Post('update-student')
+  async updateStudent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: UpdateStudentReq,
+  ) {
+    const { user, success }: BasicUpdateRes =
+      await this.authService.updateStudentProfile(body);
+    if (success) {
+      resp.json({
+        success,
+        message: profileMessages.updatedSuccess,
+        status: HttpStatus.OK,
+        user,
+      });
+    } else {
+      resp.json({
+        success,
+        message: profileMessages.updatedFail,
+        status: HttpStatus.BAD_REQUEST,
+        user,
       });
     }
   }
