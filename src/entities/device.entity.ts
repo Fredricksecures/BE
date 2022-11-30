@@ -25,7 +25,7 @@ export class Device {
   // @ManyToOne(() => User, (User) => User.sessions)
   // user?: User;
 
-  @Column({ type: 'varchar', unique: true })
+  @Column({ type: 'varchar' })
   type?: string;
 
   @Column({ type: 'varchar' })

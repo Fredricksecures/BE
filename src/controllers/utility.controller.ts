@@ -25,6 +25,20 @@ export class UtilityController {
     @InjectRepository(Device) private deviceRepo: Repository<Device>,
   ) {}
 
+  @Get('all-endpoints')
+  async serverStatus(@Res() resp: Response) {
+    const endpoints = (global as any).app
+      .getHttpServer()
+      ._events.request._router.stack.map((item: any) => item.route?.path)
+      .filter((item: string) => item);
+
+    resp.json({
+      status: HttpStatus.FOUND,
+      // message: authMessages.endpoints,
+      endpoints,
+    });
+  }
+
   @Get('countries')
   async getCountries(@Req() req: Request, @Res() resp: Response) {
     const { supported } = req.query;
