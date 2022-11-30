@@ -100,12 +100,13 @@ export class AuthController {
         user,
       });
     } else {
-      resp.json({
-        success,
-        message: profileMessages.updatedFail,
-        status: HttpStatus.BAD_REQUEST,
-        user,
-      });
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.updateFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 
@@ -125,12 +126,13 @@ export class AuthController {
         user,
       });
     } else {
-      resp.json({
-        success,
-        message: profileMessages.updatedFail,
-        status: HttpStatus.BAD_REQUEST,
-        user,
-      });
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.updateFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 }

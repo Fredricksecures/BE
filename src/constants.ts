@@ -101,6 +101,7 @@ export const authErrors = {
   emailNotFound: 'user with specified email not found --------- ',
   invalidPassword: 'password invalid for email provided --------- ',
   loginFailed: 'login failed --------- ',
+  updateFailed: 'login failed --------- ',
   invalidNotificationInformation:
     'no email or phone number recieved --------- ',
   invalidToken: 'Invalid Token --------- ',
