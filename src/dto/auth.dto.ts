@@ -8,6 +8,7 @@ import {
   ValidateIf,
   IsNotEmpty,
   IsMobilePhone,
+  IsNumber,
 } from 'class-validator';
 import { Country } from 'src/entities/country.entity';
 import { Device } from 'src/entities/device.entity';
@@ -124,9 +125,9 @@ export class LoginRes {
 }
 
 export class UpdateParentReq {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  id: string;
+  id: number;
 
   @IsOptional()
   @IsString()
@@ -145,7 +146,7 @@ export class UpdateParentReq {
   address: string;
 }
 export class UpdateStudentReq {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   id: string;
 

@@ -436,87 +436,106 @@ export class AuthService {
   }
 
   async updateParentProfile(updateParentReq) {
+    const { id, email, phoneNumber, address } = updateParentReq;
+    let foundUser: Parent;
     try {
-      let response = await this.parentRepo.find({
+      foundUser = await this.parentRepo.findOne({
         where: {
-          id: updateParentReq.id,
+          id,
         },
       });
-      if (response.length == 0) {
-        return {
-          success: false,
-        };
-      }
-      await this.parentRepo.update(
-        { id: updateParentReq.id },
+    } catch (exp) {
+      throw new HttpException(
         {
-          ...(updateParentReq.email ? { email: updateParentReq.email } : {}),
-          ...(updateParentReq.phoneNumber
-            ? { phoneNumber: updateParentReq.phoneNumber }
-            : {}),
-          ...(updateParentReq.address
-            ? { address: updateParentReq.address }
-            : {}),
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.checkingParent + exp,
         },
+        HttpStatus.NOT_IMPLEMENTED,
       );
-      response = await this.parentRepo.find({
-        where: {
-          id: updateParentReq.id,
-        },
-      });
+    }
 
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.userNotFoundById,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      const user = await this.parentRepo.save({
+        id,
+        email: email || foundUser.email,
+        phoneNumber: phoneNumber || foundUser.phoneNumber,
+        address: address || foundUser.address,
+        password: foundUser.password,
+        passwordResetPin: foundUser.passwordResetPin,
+      });
       return {
-        user: response[0],
         success: true,
+        user,
       };
     } catch (e) {
-      return {
-        success: false,
-      };
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.updatingParent,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
     }
   }
 
   async updateStudentProfile(updateStudentReq) {
+    const { id, firstName, lastName, dateOfBirth } = updateStudentReq;
+    let foundUser: Student;
     try {
-      let response = await this.studentRepo.find({
+      foundUser = await this.studentRepo.findOne({
         where: {
-          id: updateStudentReq.id,
+          id,
         },
       });
-
-      if (response.length == 0) {
-        return {
-          success: false,
-        };
-      }
-      await this.studentRepo.update(
-        { id: updateStudentReq.id },
+    } catch (exp) {
+      throw new HttpException(
         {
-          ...(updateStudentReq.firstName
-            ? { firstName: updateStudentReq.firstName }
-            : {}),
-          ...(updateStudentReq.lastName
-            ? { lastName: updateStudentReq.lastName }
-            : {}),
-          ...(updateStudentReq.dateOfBirth
-            ? { dateOfBirth: updateStudentReq.dateOfBirth }
-            : {}),
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.checkingStudent + exp,
         },
+        HttpStatus.NOT_IMPLEMENTED,
       );
-      response = await this.studentRepo.find({
-        where: {
-          id: updateStudentReq.id,
+    }
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.userNotFoundById,
         },
-      });
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
 
+    try {
+      const user = await this.studentRepo.save({
+        id,
+        firstName: firstName || foundUser.firstName,
+        lastName: lastName || foundUser.lastName,
+        dateOfBirth: dateOfBirth || foundUser.dateOfBirth,
+        parent: foundUser.parent,
+      });
       return {
-        user: response[0],
         success: true,
+        user,
       };
     } catch (e) {
-      return {
-        success: false,
-      };
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.updatingStudent,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
     }
   }
 }

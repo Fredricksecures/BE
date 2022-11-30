@@ -69,7 +69,8 @@ export const authMessages = {
 
 export const profileMessages = {
   updatedSuccess: 'Profile updated successfully',
-  updatedFail: 'Invalid user',
+  updatedFail: 'Profile updated successfully',
+  userNotFound: 'No user found',
 };
 
 export const authErrors = {
@@ -113,6 +114,10 @@ export const authErrors = {
   sameNewAndPrevPassword: 'New Password is the same as old password --------- ',
   savingNewPword: 'Error updating user password --------- ',
   findingUserWithId: 'Could not find user with given id --------- ',
+  checkingParent: 'Error querying for finding parent --------- ',
+  updatingParent: 'Error querying for updating parent --------- ',
+  checkingStudent: 'Error querying for finding student --------- ',
+  updatingStudent: 'Error querying for updating student --------- ',
 };
 
 //* SEEDS____________________________________________
