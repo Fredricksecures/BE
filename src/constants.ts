@@ -119,6 +119,7 @@ export const authErrors = {
   updatingParent: 'Error querying for updating parent --------- ',
   checkingStudent: 'Error querying for finding student --------- ',
   updatingStudent: 'Error querying for updating student --------- ',
+  parentNotFound: 'could not find parent with id provided ---------',
 };
 
 //* SEEDS____________________________________________

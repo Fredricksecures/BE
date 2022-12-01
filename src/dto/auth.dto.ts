@@ -25,7 +25,7 @@ export class MockAuthSeedDTO {
 export class RegisterUserReq {
   @IsOptional()
   @IsString()
-  @IsEmail({ message: () => 'hello' })
+  @IsEmail()
   email: string;
 
   @IsOptional()
@@ -125,14 +125,15 @@ export class LoginRes {
 }
 
 export class UpdateParentReq {
-  @IsNumber()
+  //! RUSS: removed non-string validators
+  @IsString()
   @IsNotEmpty()
-  id: number;
+  id: string;
 
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @IsEmail({ message: () => 'hello' })
+  @IsEmail()
   email: string;
 
   @IsOptional()
@@ -146,7 +147,8 @@ export class UpdateParentReq {
   address: string;
 }
 export class UpdateStudentReq {
-  @IsNumber()
+  //! RUSS: removed non-string validators
+  @IsString()
   @IsNotEmpty()
   id: string;
 

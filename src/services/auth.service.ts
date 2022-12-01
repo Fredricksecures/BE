@@ -9,6 +9,7 @@ import {
   CreateParentReq,
   CreateStudentReq,
   LoginReq,
+  UpdateParentReq,
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
@@ -435,14 +436,15 @@ export class AuthService {
     };
   }
 
-  async updateParentProfile(updateParentReq) {
+  async updateParentProfile(updateParentReq: UpdateParentReq) {
     const { id, email, phoneNumber, address } = updateParentReq;
-    let foundUser: Parent;
+
+    //! RUSS: changed variable name for readability
+    let foundParent: Parent;
+
     try {
-      foundUser = await this.parentRepo.findOne({
-        where: {
-          id,
-        },
+      foundParent = await this.parentRepo.findOne({
+        where: { id },
       });
     } catch (exp) {
       throw new HttpException(
@@ -454,24 +456,24 @@ export class AuthService {
       );
     }
 
-    if (!foundUser) {
+    if (!foundParent) {
+      //! RUSS: created a new error for parent
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.userNotFoundById,
+          error: authErrors.parentNotFound,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
 
     try {
+      //! RUSS: removed unchanged fields (password, password reset pin)
       const user = await this.parentRepo.save({
-        id,
-        email: email || foundUser.email,
-        phoneNumber: phoneNumber || foundUser.phoneNumber,
-        address: address || foundUser.address,
-        password: foundUser.password,
-        passwordResetPin: foundUser.passwordResetPin,
+        ...foundParent,
+        email: email ?? foundParent.email,
+        phoneNumber: phoneNumber ?? foundParent.phoneNumber,
+        address: address ?? foundParent.address,
       });
       return {
         success: true,
