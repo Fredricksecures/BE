@@ -1,5 +1,6 @@
 import {
   Body,
+  Param,
   Controller,
   HttpStatus,
   Post,
@@ -20,8 +21,11 @@ import {
   BasicRegRes,
   LoginReq,
   LoginRes,
+  UpdateStudentReq,
+  BasicUpdateRes,
+  UpdateParentReq,
 } from 'src/dto/auth.dto';
-import { authErrors, authMessages } from 'src/constants';
+import { authErrors, authMessages, profileMessages } from 'src/constants';
 
 @Controller('auth')
 export class AuthController {
@@ -73,6 +77,58 @@ export class AuthController {
         {
           status: HttpStatus.NOT_FOUND,
           error: authErrors.loginFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('update-parent')
+  async updateParent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: UpdateParentReq,
+  ) {
+    const { user, success }: BasicUpdateRes =
+      await this.authService.updateParentProfile(body);
+    if (success) {
+      resp.json({
+        success,
+        message: profileMessages.updatedSuccess,
+        status: HttpStatus.OK,
+        user,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.updateFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('update-student')
+  async updateStudent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: UpdateStudentReq,
+  ) {
+    const { user, success }: BasicUpdateRes =
+      await this.authService.updateStudentProfile(body);
+    if (success) {
+      resp.json({
+        success,
+        message: profileMessages.updatedSuccess,
+        status: HttpStatus.OK,
+        user,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.updateFailed,
         },
         HttpStatus.NOT_FOUND,
       );

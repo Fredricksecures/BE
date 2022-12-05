@@ -67,6 +67,12 @@ export const authMessages = {
   pwordReset: 'Password reset successfully --------- ',
 };
 
+export const profileMessages = {
+  updatedSuccess: 'Profile updated successfully',
+  updatedFail: 'Profile updated successfully',
+  userNotFound: 'No user found',
+};
+
 export const authErrors = {
   noMockDevice: 'could not find mock device for seeder --------- ',
   createSession: 'could not create a new session for user --------- ',
@@ -95,6 +101,7 @@ export const authErrors = {
   emailNotFound: 'user with specified email not found --------- ',
   invalidPassword: 'password invalid for email provided --------- ',
   loginFailed: 'login failed --------- ',
+  updateFailed: 'login failed --------- ',
   invalidNotificationInformation:
     'no email or phone number recieved --------- ',
   invalidToken: 'Invalid Token --------- ',
@@ -108,6 +115,11 @@ export const authErrors = {
   sameNewAndPrevPassword: 'New Password is the same as old password --------- ',
   savingNewPword: 'Error updating user password --------- ',
   findingUserWithId: 'Could not find user with given id --------- ',
+  checkingParent: 'Error querying for finding parent --------- ',
+  updatingParent: 'Error querying for updating parent --------- ',
+  checkingStudent: 'Error querying for finding student --------- ',
+  updatingStudent: 'Error querying for updating student --------- ',
+  parentNotFound: 'could not find parent with id provided ---------',
 };
 
 //* SEEDS____________________________________________

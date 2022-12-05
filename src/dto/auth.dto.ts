@@ -7,6 +7,8 @@ import {
   MinLength,
   ValidateIf,
   IsNotEmpty,
+  IsMobilePhone,
+  IsNumber,
 } from 'class-validator';
 import { Country } from 'src/entities/country.entity';
 import { Device } from 'src/entities/device.entity';
@@ -23,7 +25,7 @@ export class MockAuthSeedDTO {
 export class RegisterUserReq {
   @IsOptional()
   @IsString()
-  @IsEmail({ message: () => 'hello' })
+  @IsEmail()
   email: string;
 
   @IsOptional()
@@ -52,6 +54,11 @@ export class RegisterUserReq {
 
 export class BasicRegRes {
   createdUser?: User | undefined;
+  success?: boolean;
+}
+
+export class BasicUpdateRes {
+  user?: User | undefined;
   success?: boolean;
 }
 
@@ -114,4 +121,48 @@ export class LoginReq {
 export class LoginRes {
   user: User;
   success: boolean;
+}
+
+export class UpdateParentReq {
+  //! RUSS: removed non-string validators
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
+  @IsMobilePhone()
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+}
+export class UpdateStudentReq {
+  //! RUSS: removed non-string validators
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  dateOfBirth: string;
 }
