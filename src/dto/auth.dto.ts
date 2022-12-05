@@ -114,5 +114,4 @@ export class LoginReq {
 export class LoginRes {
   user: User;
   success: boolean;
-  token: string;
 }

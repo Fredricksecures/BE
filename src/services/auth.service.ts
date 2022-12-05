@@ -435,7 +435,6 @@ export class AuthService {
     return {
       success: true,
       user: foundUser,
-      token: '',
     };
   }
 }
