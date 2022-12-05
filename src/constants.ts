@@ -29,6 +29,9 @@ export const ModuleConfigs = {
   auth: {
     entities: [User, Student, Parent, Device, Country, Session],
   },
+  admin: {
+    entities: [User, Session],
+  },
 };
 
 export const GET_ALL_ENTITIES = () => [
@@ -71,6 +74,16 @@ export const profileMessages = {
   updatedSuccess: 'Profile updated successfully',
   updatedFail: 'Profile updated successfully',
   userNotFound: 'No user found',
+};
+
+export const adminMessages = {
+  fetchSessionFailed: 'Failed to fetch user sessions -------',
+  fetchSessionSuccess: 'User sessions fetched successfully -------',
+  userNotFoundWithId: 'No user found with this id. --------- ',
+  checkingUser: 'error while fetching user. --------- ',
+  checkingSession: 'error while fetching session. --------- ',
+  sessionNotFoundWithId: 'no session found for this parent. --------- ',
+  noParentFound: 'parent not found with this user id. --------- ',
 };
 
 export const authErrors = {
