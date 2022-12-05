@@ -77,8 +77,12 @@ export const profileMessages = {
 };
 
 export const adminMessages = {
-  fetchSessionFailed: 'Failed to fetch user sessions -------',
   fetchSessionSuccess: 'User sessions fetched successfully -------',
+};
+
+//! RUSS added admin errors for error cases
+export const adminErrors = {
+  fetchSessionFailed: 'Failed to fetch user sessions -------',
   userNotFoundWithId: 'No user found with this id. --------- ',
   checkingUser: 'error while fetching user. --------- ',
   checkingSession: 'error while fetching session. --------- ',
