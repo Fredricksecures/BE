@@ -11,6 +11,13 @@ export const DeviceTypes = {
   UNKNOWN: 'UNKNOWN',
 };
 
+export const BrowserTypes = {
+  CHROME: 'CHROME',
+  EDGE: 'EDGE',
+  SAFARI: 'SAFARI',
+  UNKNOWN: 'UNKNOWN',
+};
+
 export const Genders = {
   MALE: 'MALE',
   FEMALE: 'FEMALE',

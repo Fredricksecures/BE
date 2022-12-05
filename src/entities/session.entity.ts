@@ -31,7 +31,7 @@ export class Session {
   @PrimaryGeneratedColumn('uuid')
   id?: string;
 
-  @Column({ type: 'bool',default:false })
+  @Column({ type: 'bool', default: false })
   expired?: boolean;
 
   @Column({ type: 'varchar' })

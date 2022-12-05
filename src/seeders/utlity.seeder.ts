@@ -72,7 +72,6 @@ export class UtilitySeeder {
       Object.keys(DeviceTypes).map((k) => {
         createdDevice = this.deviceRepo.create({
           type: k,
-          token: '',
           createdAt: new Date(),
           updatedAt: new Date(),
         });

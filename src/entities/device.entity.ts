@@ -1,3 +1,4 @@
+import { BrowserTypes } from 'src/enums';
 import {
   Column,
   Entity,
@@ -5,7 +6,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  JoinColumn,
 } from 'typeorm';
 import { Session } from './session.entity';
 
@@ -22,14 +22,11 @@ export class Device {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  // @ManyToOne(() => User, (User) => User.sessions)
-  // user?: User;
-
   @Column({ type: 'varchar' })
   type?: string;
 
-  @Column({ type: 'varchar' })
-  token?: string;
+  @Column({ type: 'varchar', default: BrowserTypes.CHROME })
+  browser?: string;
 
   @OneToOne(() => Session)
   session?: Session;
