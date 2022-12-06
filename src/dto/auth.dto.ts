@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { Country } from 'src/entities/country.entity';
 import { Device } from 'src/entities/device.entity';
+import { Parent } from 'src/entities/parent.entity';
 import { Session } from 'src/entities/session.entity';
 import { User } from 'src/entities/user.entity';
 import { Match } from 'src/utils/decorators';
@@ -58,7 +59,7 @@ export class BasicRegRes {
 }
 
 export class BasicUpdateRes {
-  user?: User | undefined;
+  updatedParent?: Parent;
   success?: boolean;
 }
 
@@ -119,30 +120,25 @@ export class LoginReq {
 }
 
 export class LoginRes {
-  user: User;
+  user: any;
   success: boolean;
+  session: Session;
 }
 
 export class UpdateParentReq {
-  //! RUSS: removed non-string validators
-  @IsString()
-  @IsNotEmpty()
-  id: string;
+  user: User;
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @IsEmail()
   email: string;
 
   @IsOptional()
   @IsMobilePhone()
-  @IsNotEmpty()
   phoneNumber: string;
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   address: string;
 }
 export class UpdateStudentReq {

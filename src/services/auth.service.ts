@@ -11,6 +11,7 @@ import {
   LoginReq,
   UpdateParentReq,
   UpdateStudentReq,
+  LoginRes,
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
@@ -47,7 +48,7 @@ export class AuthService {
         date: new Date().getTime(),
       });
     } catch (exp) {
-      Logger.error(exp);
+      Logger.error(exp).console();
 
       throw new HttpException(
         {
@@ -182,13 +183,31 @@ export class AuthService {
     }
 
     delete createdSession.parent;
-
     return createdSession;
   }
 
   async recoverSession() {}
 
   async endSession(sessionId: string) {}
+
+  async formatPayload(user: any, type: string) {
+    switch (type) {
+      case UserTypes.PARENT:
+        delete user.createdAt;
+        delete user.updatedAt;
+        delete user.parent.id;
+        delete user.parent.createdAt;
+        delete user.parent.updatedAt;
+        delete user.parent.password;
+        delete user.parent.passwordResetPin;
+        break;
+
+      default:
+        break;
+    }
+
+    return user;
+  }
 
   async registerUser(regUserReq: RegisterUserReq) {
     //* Register Basic User Details_______________________________________________________________
@@ -266,7 +285,7 @@ export class AuthService {
     try {
       password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
 
-      const createdParent = await this.createParent({
+      const createdParent = await this.createParentProfile({
         email,
         phoneNumber,
         password,
@@ -304,7 +323,7 @@ export class AuthService {
     };
   }
 
-  async login(loginReq: LoginReq) {
+  async login(loginReq: LoginReq): Promise<LoginRes> {
     let { phoneNumber, email, password, deviceId } = loginReq;
 
     //* check current onboarding stage
@@ -321,16 +340,17 @@ export class AuthService {
     //* create user session upon creating account
     // await this.createSession(createdUser, device);
 
-    let foundUser: User, token: any;
+    let foundUser: User;
 
     //* find user with matching email / phone-number
     try {
       foundUser = await this.userRepo.findOneOrFail({
         where: { parent: email ? { email } : { phoneNumber } },
-        relations: ['parent', 'parent.sessions'],
+        relations: ['parent'],
       });
     } catch (exp) {
-      Logger.error(exp);
+      Logger.error(exp).console();
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -364,7 +384,7 @@ export class AuthService {
         );
       }
     } catch (exp) {
-      Logger.error(exp);
+      Logger.error(exp).console();
 
       throw new HttpException(
         {
@@ -378,31 +398,20 @@ export class AuthService {
     //* create user session
     const newSession = await this.createSession(foundUser, device);
 
-    //* add new session to user response payload
-    foundUser = {
-      ...foundUser,
-      parent: {
-        ...foundUser.parent,
-        sessions: [newSession, ...foundUser.parent.sessions],
-      },
-    };
-
     //* send notification to user
     // await this.notificationsBridge.notifyNewLogin({
     //   recipientEmail: foundUser.email,
     //   recipientPhoneNumber: foundUser.phoneNumber,
     // });
 
-    //* remove confidential fields
-    // foundUser = this.revisePayload(foundUser);
-
     return {
       success: true,
       user: foundUser,
+      session: newSession,
     };
   }
 
-  async createParent(createParentReq: CreateParentReq): Promise<Parent> {
+  async createParentProfile(createParentReq: CreateParentReq): Promise<Parent> {
     let { phoneNumber, email, password, countryId } = createParentReq;
     let createdParent: Parent;
 
@@ -433,17 +442,17 @@ export class AuthService {
     return createdParent;
   }
 
-  async createStudent(createStudentReq: CreateStudentReq) {}
+  async createStudentProfile(createStudentReq: CreateStudentReq) {}
 
   async updateParentProfile(updateParentReq: UpdateParentReq) {
-    const { id, email, phoneNumber, address } = updateParentReq;
+    const { user, email, phoneNumber, address } = updateParentReq;
 
-    //! RUSS: changed variable name for readability
-    let foundParent: Parent;
+    let foundUser: User, updatedParent: Parent;
 
     try {
-      foundParent = await this.parentRepo.findOne({
-        where: { id },
+      foundUser = await this.userRepo.findOne({
+        where: { id: user.id },
+        relations: ['parent'],
       });
     } catch (exp) {
       throw new HttpException(
@@ -455,8 +464,7 @@ export class AuthService {
       );
     }
 
-    if (!foundParent) {
-      //! RUSS: created a new error for parent
+    if (!foundUser) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -467,16 +475,17 @@ export class AuthService {
     }
 
     try {
-      //! RUSS: removed unchanged fields (password, password reset pin)
-      const user = await this.parentRepo.save({
-        ...foundParent,
-        email: email ?? foundParent.email,
-        phoneNumber: phoneNumber ?? foundParent.phoneNumber,
-        address: address ?? foundParent.address,
+      updatedParent = await this.parentRepo.save({
+        ...foundUser.parent,
+        id: foundUser.parent.id,
+        email: email ?? foundUser.parent.email,
+        phoneNumber: phoneNumber ?? foundUser.parent.phoneNumber,
+        address: address ?? foundUser.parent.address,
       });
+
       return {
         success: true,
-        user,
+        updatedParent,
       };
     } catch (e) {
       throw new HttpException(

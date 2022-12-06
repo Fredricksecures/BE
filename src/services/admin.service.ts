@@ -12,10 +12,7 @@ import { Device } from 'src/entities/device.entity';
 import { isEmpty } from 'src/utils/helpers';
 import { adminMessages, adminErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
-import * as bcrypt from 'bcrypt';
 import { Session } from 'src/entities/session.entity';
-import { UserTypes } from 'src/enums';
-import { UtilityService } from './utility.service';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -36,9 +33,11 @@ export class AdminService {
       foundUser = await this.userRepo.findOne({
         where: { id },
         //! RUSS: added the session here so we dont have to fetch twice
-        relations: ['parent', 'parent.session'],
+        relations: ['parent', 'parent.sessions'],
       });
     } catch (exp) {
+      Logger.error(adminErrors.checkingUser + exp);
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -49,6 +48,8 @@ export class AdminService {
     }
 
     if (!foundUser) {
+      Logger.error(adminErrors.userNotFoundWithId);
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -59,6 +60,8 @@ export class AdminService {
     }
 
     if (!foundUser.parent) {
+      Logger.error(adminErrors.noParentFound);
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -69,6 +72,8 @@ export class AdminService {
     }
 
     if (!foundUser.parent.sessions) {
+      Logger.error(adminErrors.sessionNotFoundWithId);
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
