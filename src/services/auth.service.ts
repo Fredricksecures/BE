@@ -9,6 +9,7 @@ import {
   CreateParentReq,
   CreateStudentReq,
   LoginReq,
+  UpdateParentReq,
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
@@ -190,10 +191,6 @@ export class AuthService {
   async endSession() {}
 
   async createStudent(createStudentReq: CreateStudentReq) {}
-
-  async updateParentProfile(updateParentReq) {}
-
-  async updateStudentProfile(updateStudentReq) {}
 
   async createParent(createParentReq: CreateParentReq): Promise<Parent> {
     let { phoneNumber, email, password, countryId } = createParentReq;
@@ -437,5 +434,110 @@ export class AuthService {
       user: foundUser,
       token: '',
     };
+  }
+
+  async updateParentProfile(updateParentReq: UpdateParentReq) {
+    const { id, email, phoneNumber, address } = updateParentReq;
+
+    //! RUSS: changed variable name for readability
+    let foundParent: Parent;
+
+    try {
+      foundParent = await this.parentRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.checkingParent + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundParent) {
+      //! RUSS: created a new error for parent
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.parentNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      //! RUSS: removed unchanged fields (password, password reset pin)
+      const user = await this.parentRepo.save({
+        ...foundParent,
+        email: email ?? foundParent.email,
+        phoneNumber: phoneNumber ?? foundParent.phoneNumber,
+        address: address ?? foundParent.address,
+      });
+      return {
+        success: true,
+        user,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.updatingParent,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async updateStudentProfile(updateStudentReq) {
+    const { id, firstName, lastName, dateOfBirth } = updateStudentReq;
+    let foundUser: Student;
+    try {
+      foundUser = await this.studentRepo.findOne({
+        where: {
+          id,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.checkingStudent + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.userNotFoundById,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      const user = await this.studentRepo.save({
+        id,
+        firstName: firstName || foundUser.firstName,
+        lastName: lastName || foundUser.lastName,
+        dateOfBirth: dateOfBirth || foundUser.dateOfBirth,
+        parent: foundUser.parent,
+      });
+      return {
+        success: true,
+        user,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.updatingStudent,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
   }
 }
