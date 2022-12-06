@@ -60,17 +60,16 @@ export class AuthController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: LoginReq,
   ) {
-    const { success, user, token }: LoginRes = await this.authService.login(
-      body,
-    );
+    const { success, user }: LoginRes = await this.authService.login(body);
+
+    console.log(user);
 
     if (success) {
-      resp.cookie('jwt', token, { httpOnly: true });
+      // resp.cookie('jwt', token, { httpOnly: true });
 
       resp.json({
         status: HttpStatus.CREATED,
         message: authMessages.login,
-        token,
         user,
       });
     } else {

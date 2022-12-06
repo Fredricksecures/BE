@@ -10,6 +10,7 @@ import {
   CreateStudentReq,
   LoginReq,
   UpdateParentReq,
+  UpdateStudentReq,
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
@@ -164,8 +165,7 @@ export class AuthService {
 
     try {
       createdSession = await this.sessionRepo.save({
-        device,
-        browser: 'chrome',
+        // device,
         parent: user.parent,
         token: await this.generateToken(user),
       });
@@ -188,40 +188,7 @@ export class AuthService {
 
   async recoverSession() {}
 
-  async endSession() {}
-
-  async createStudent(createStudentReq: CreateStudentReq) {}
-
-  async createParent(createParentReq: CreateParentReq): Promise<Parent> {
-    let { phoneNumber, email, password, countryId } = createParentReq;
-    let createdParent: Parent;
-
-    const country: Country = await this.utilityService.getCountry(countryId);
-
-    try {
-      createdParent = await this.parentRepo.save({
-        phoneNumber,
-        email,
-        password,
-        passwordResetPin: '',
-        address: '',
-        country,
-        students: [],
-      });
-    } catch (e) {
-      Logger.error(authErrors.createdParent + e);
-
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.createdParent + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    return createdParent;
-  }
+  async endSession(sessionId: string) {}
 
   async registerUser(regUserReq: RegisterUserReq) {
     //* Register Basic User Details_______________________________________________________________
@@ -432,9 +399,41 @@ export class AuthService {
     return {
       success: true,
       user: foundUser,
-      token: '',
     };
   }
+
+  async createParent(createParentReq: CreateParentReq): Promise<Parent> {
+    let { phoneNumber, email, password, countryId } = createParentReq;
+    let createdParent: Parent;
+
+    const country: Country = await this.utilityService.getCountry(countryId);
+
+    try {
+      createdParent = await this.parentRepo.save({
+        phoneNumber,
+        email,
+        password,
+        passwordResetPin: '',
+        address: '',
+        country,
+        students: [],
+      });
+    } catch (e) {
+      Logger.error(authErrors.createdParent + e);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.createdParent + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return createdParent;
+  }
+
+  async createStudent(createStudentReq: CreateStudentReq) {}
 
   async updateParentProfile(updateParentReq: UpdateParentReq) {
     const { id, email, phoneNumber, address } = updateParentReq;
@@ -490,7 +489,7 @@ export class AuthService {
     }
   }
 
-  async updateStudentProfile(updateStudentReq) {
+  async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
     const { id, firstName, lastName, dateOfBirth } = updateStudentReq;
     let foundUser: Student;
     try {

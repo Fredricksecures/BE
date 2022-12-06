@@ -15,7 +15,7 @@ import {
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { Request, Response } from 'express';
-import { adminMessages } from 'src/constants';
+import { adminErrors, adminMessages } from 'src/constants';
 
 @Controller('admin')
 export class AdminController {
@@ -29,6 +29,7 @@ export class AdminController {
   ) {
     const { success, sessions }: GetAllUsersSessionsRes =
       await this.authService.getUserSessions(query);
+
     if (success) {
       resp.json({
         status: HttpStatus.OK,
@@ -39,7 +40,7 @@ export class AdminController {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: adminMessages.fetchSessionFailed,
+          error: adminErrors.fetchSessionFailed,
         },
         HttpStatus.NOT_FOUND,
       );

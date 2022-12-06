@@ -10,7 +10,7 @@ import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Device } from 'src/entities/device.entity';
 import { isEmpty } from 'src/utils/helpers';
-import { adminMessages } from 'src/constants';
+import { adminMessages, adminErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
 import * as bcrypt from 'bcrypt';
 import { Session } from 'src/entities/session.entity';
@@ -29,142 +29,88 @@ export class AdminService {
   ) {}
 
   async getUserSessions(user: GetAllUsersSessionsReq) {
-    const { userId } = user;
+    const { id } = user;
     let foundUser: User;
+
     try {
       foundUser = await this.userRepo.findOne({
-        where: { id: userId },
-        relations: ['parent'],
+        where: { id },
+        //! RUSS: added the session here so we dont have to fetch twice
+        relations: ['parent', 'parent.session'],
       });
     } catch (exp) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: adminMessages.checkingUser + exp,
+          error: adminErrors.checkingUser + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
+
     if (!foundUser) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: adminMessages.userNotFoundWithId,
+          error: adminErrors.userNotFoundWithId,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
 
-    if (foundUser.parent) {
-      let foundSession: Array<Session>;
-      try {
-        foundSession = await this.sessionRepo.find({
-          where: {
-            parent: {
-              id: foundUser.parent.id,
-            },
-          },
-        });
-      } catch (exp) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: adminMessages.checkingSession + exp,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
-      if (!foundSession) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: adminMessages.sessionNotFoundWithId,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
-      return {
-        success: true,
-        sessions: foundSession,
-      };
-    } else {
+    if (!foundUser.parent) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: adminMessages.noParentFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
-
-  async endUserSessions(user: GetAllUsersSessionsReq) {
-    const { userId } = user;
-    let foundUser: User;
-    try {
-      foundUser = await this.userRepo.findOne({
-        where: { id: userId },
-        relations: ['parent'],
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: adminMessages.checkingUser + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundUser) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: adminMessages.userNotFoundWithId,
+          error: adminErrors.noParentFound,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
 
-    if (foundUser.parent) {
-      let foundSession: Array<Session>;
-      try {
-        foundSession = await this.sessionRepo.find({
-          where: {
-            parent: {
-              id: foundUser.parent.id,
-            },
-          },
-        });
-      } catch (exp) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: adminMessages.checkingSession + exp,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
-      if (!foundSession) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: adminMessages.sessionNotFoundWithId,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
-      return {
-        success: true,
-        sessions: foundSession,
-      };
-    } else {
+    if (!foundUser.parent.sessions) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: adminMessages.noParentFound,
+          error: adminErrors.sessionNotFoundWithId,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
+
+    // let foundSession: Array<Session>;
+
+    // try {
+    //   foundSession = await this.sessionRepo.find({
+    //     where: {
+    //       parent: {
+    //         id: foundUser.parent.id,
+    //       },
+    //     },
+    //   });
+    // } catch (exp) {
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.NOT_IMPLEMENTED,
+    //       error: adminMessages.checkingSession + exp,
+    //     },
+    //     HttpStatus.NOT_IMPLEMENTED,
+    //   );
+    // }
+
+    // if (!foundSession) {
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.NOT_IMPLEMENTED,
+    //       error: adminMessages.sessionNotFoundWithId,
+    //     },
+    //     HttpStatus.NOT_IMPLEMENTED,
+    //   );
+    // }
+
+    return {
+      success: true,
+      sessions: foundUser.parent.sessions,
+    };
   }
 }
