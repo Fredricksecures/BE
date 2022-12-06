@@ -6,7 +6,12 @@ import { User } from 'src/entities/user.entity';
 export class GetAllUsersSessionsReq {
   @IsNotEmpty()
   @IsString()
-  id: string;
+  userId: string;
+}
+export class EndUsersSessionsReq {
+  @IsNotEmpty()
+  @IsString()
+  userId: string;
 }
 
 export class GetAllUsersSessionsRes {

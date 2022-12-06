@@ -29,11 +29,81 @@ export class AdminService {
   ) {}
 
   async getUserSessions(user: GetAllUsersSessionsReq) {
-    const { id } = user;
+    const { userId } = user;
     let foundUser: User;
     try {
       foundUser = await this.userRepo.findOne({
-        where: { id },
+        where: { id: userId },
+        relations: ['parent'],
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminMessages.checkingUser + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminMessages.userNotFoundWithId,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (foundUser.parent) {
+      let foundSession: Array<Session>;
+      try {
+        foundSession = await this.sessionRepo.find({
+          where: {
+            parent: {
+              id: foundUser.parent.id,
+            },
+          },
+        });
+      } catch (exp) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: adminMessages.checkingSession + exp,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+      if (!foundSession) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: adminMessages.sessionNotFoundWithId,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+      return {
+        success: true,
+        sessions: foundSession,
+      };
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminMessages.noParentFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async endUserSessions(user: GetAllUsersSessionsReq) {
+    const { userId } = user;
+    let foundUser: User;
+    try {
+      foundUser = await this.userRepo.findOne({
+        where: { id: userId },
         relations: ['parent'],
       });
     } catch (exp) {
