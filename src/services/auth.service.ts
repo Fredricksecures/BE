@@ -192,14 +192,20 @@ export class AuthService {
 
   async formatPayload(user: any, type: string) {
     switch (type) {
+      case UserTypes.DEFAULT:
+        delete user?.createdAt;
+        delete user?.updatedAt;
+        delete user?.parent?.id;
+        delete user?.parent?.createdAt;
+        delete user?.parent?.updatedAt;
+        delete user?.parent?.password;
+        delete user?.parent?.passwordResetPin;
+        break;
+
       case UserTypes.PARENT:
-        delete user.createdAt;
-        delete user.updatedAt;
-        delete user.parent.id;
-        delete user.parent.createdAt;
-        delete user.parent.updatedAt;
-        delete user.parent.password;
-        delete user.parent.passwordResetPin;
+        delete user?.password;
+        delete user?.passwordResetPin;
+        delete user?.onboardingStage;
         break;
 
       default:
@@ -477,7 +483,6 @@ export class AuthService {
     try {
       updatedParent = await this.parentRepo.save({
         ...foundUser.parent,
-        id: foundUser.parent.id,
         email: email ?? foundUser.parent.email,
         phoneNumber: phoneNumber ?? foundUser.parent.phoneNumber,
         address: address ?? foundUser.parent.address,

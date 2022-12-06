@@ -21,7 +21,6 @@ import {
   LoginRes,
   UpdateStudentReq,
   BasicUpdateRes,
-  UpdateParentReq,
 } from 'src/dto/auth.dto';
 import { authErrors, authMessages, profileMessages } from 'src/constants';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
@@ -73,7 +72,7 @@ export class AuthController {
     );
 
     if (success) {
-      user = await this.authService.formatPayload(user, UserTypes.PARENT);
+      user = await this.authService.formatPayload(user, UserTypes.DEFAULT);
 
       //* add new session to user response payload
       user = {
