@@ -79,17 +79,20 @@ export const profileMessages = {
 export const adminMessages = {
   fetchSessionSuccess: 'User sessions fetched successfully -------',
   endSessionSuccess: 'User sessions ended successfully -------',
+  recoverSessionSuccess: 'User sessions recovered successfully -------',
 };
 
 export const adminErrors = {
   fetchSessionFailed: 'Failed to fetch user sessions -------',
   endSessionFailed: 'Failed to end user sessions -------',
+  recoverSessionFailed: 'Failed to recover user sessions -------',
   userNotFoundWithId: 'No user found with this id. --------- ',
   checkingUser: 'error while fetching user. --------- ',
   checkingSession: 'error while fetching session. --------- ',
   sessionNotFoundWithId: 'no session found for this parent. --------- ',
   noParentFound: 'parent not found with this user id. --------- ',
   tokenCreate: 'could not create token --------- ',
+  tokenVerify: 'could not verify session token --------- ',
 };
 
 export const authErrors = {

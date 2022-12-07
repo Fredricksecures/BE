@@ -130,14 +130,13 @@ export class AdminService {
     }
   }
 
-  async refreshUserSessions(user: UsersSessionsReq) {
+  async recoverUserSessions(user: UsersSessionsReq) {
     const { sessionId } = user;
     let foundSession: Session;
 
     try {
       foundSession = await this.sessionRepo.findOne({
         where: { id: sessionId },
-        relations: ['parent', 'parent.user'],
       });
     } catch (exp) {
       throw new HttpException(
@@ -154,6 +153,59 @@ export class AdminService {
         {
           status: HttpStatus.NOT_IMPLEMENTED,
           error: adminErrors.sessionNotFoundWithId,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    let decodedUserId, token;
+
+    try {
+      const info = await this.jwtService.decode(foundSession.token);
+      decodedUserId = info['id'];
+    } catch (e) {
+      Logger.error(e);
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: adminErrors.tokenVerify + e,
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    try {
+      token = await this.jwtService.signAsync({
+        id: decodedUserId,
+        date: new Date().getTime(),
+      });
+    } catch (exp) {
+      Logger.error(exp).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.tokenCreate + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      const session = await this.sessionRepo.save({
+        ...foundSession,
+        token,
+        expired: false,
+      });
+      return {
+        success: true,
+        session,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.recoverSessionFailed,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );

@@ -72,18 +72,18 @@ export class AdminController {
     }
   }
 
-  @Get('refresh-user-sessions')
-  async refreshUserSessions(
+  @Get('recover-user-sessions')
+  async recoverUserSessions(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query() query: UsersSessionsReq,
   ) {
     const { success, session }: UsersSessionsRes =
-      await this.authService.refreshUserSessions(query);
+      await this.authService.recoverUserSessions(query);
     if (success) {
       resp.json({
         status: HttpStatus.OK,
-        message: adminMessages.endSessionSuccess,
+        message: adminMessages.recoverSessionSuccess,
         session,
       });
     } else {
