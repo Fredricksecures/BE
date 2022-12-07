@@ -48,8 +48,8 @@ export const GET_ALL_ENTITIES = () => [
 //* MESSAGES_______________________________________
 
 export const utlityMessages = {
-  devices: 'Fetched devices successfully --------- ',
-  countries: 'Fetched countries successfully --------- ',
+  devices: 'Fetched devices successfully',
+  countries: 'Fetched countries successfully',
 };
 
 export const utilityErrors = {
@@ -60,14 +60,14 @@ export const utilityErrors = {
 };
 
 export const authMessages = {
-  countries: 'all countries retrieved successfully --------- ',
-  endpoints: 'authentication endpoints retrieved successfully --------- ',
-  userCreated: 'user created successfully --------- ',
-  login: 'login successful --------- ',
-  teacherCreated: 'Teacher profile created successfully --------- ',
-  profileUpdateSuccessful: 'profile updated successfully --------- ',
-  passwordEmailSent: 'reset email sent successfully --------- ',
-  pwordReset: 'Password reset successfully --------- ',
+  countries: 'all countries retrieved successfully',
+  endpoints: 'authentication endpoints retrieved successfully',
+  userCreated: 'user created successfully',
+  login: 'login successful',
+  teacherCreated: 'Teacher profile created successfully',
+  profileUpdateSuccessful: 'profile updated successfully',
+  passwordEmailSent: 'reset email sent successfully',
+  pwordReset: 'Password reset successfully',
 };
 
 export const profileMessages = {

@@ -1,11 +1,9 @@
 import {
   Body,
-  Param,
   Controller,
   HttpStatus,
   Post,
   Res,
-  Get,
   Req,
   HttpException,
 } from '@nestjs/common';
@@ -23,9 +21,10 @@ import {
   LoginRes,
   UpdateStudentReq,
   BasicUpdateRes,
-  UpdateParentReq,
 } from 'src/dto/auth.dto';
 import { authErrors, authMessages, profileMessages } from 'src/constants';
+import { Middleware, UseMiddleware } from 'src/utils/middleware';
+import { UserTypes } from 'src/enums';
 
 @Controller('auth')
 export class AuthController {
@@ -35,6 +34,14 @@ export class AuthController {
     @InjectRepository(Device) private deviceRepo: Repository<Device>,
     @InjectRepository(Country) private countryRepo: Repository<Country>,
   ) {}
+
+  @Middleware
+  async sessionGuard(req, resp) {
+    await this.authService.verifyToken(req, resp, {
+      noTimeout: true,
+      useCookies: true,
+    });
+  }
 
   @Post('register')
   async basicRegistrationCtlr(
@@ -60,12 +67,22 @@ export class AuthController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: LoginReq,
   ) {
-    const { success, user }: LoginRes = await this.authService.login(body);
-
-    console.log(user);
+    let { success, user, session }: LoginRes = await this.authService.login(
+      body,
+    );
 
     if (success) {
-      // resp.cookie('jwt', token, { httpOnly: true });
+      user = await this.authService.formatPayload(user, UserTypes.DEFAULT);
+
+      //* add new session to user response payload
+      user = {
+        ...user,
+        parent: {
+          ...user.parent,
+          session,
+        },
+      };
+      resp.cookie('jwt', user.parent.session.token, { httpOnly: true });
 
       resp.json({
         status: HttpStatus.CREATED,
@@ -84,19 +101,27 @@ export class AuthController {
   }
 
   @Post('update-parent')
+  @UseMiddleware('sessionGuard')
   async updateParent(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Body() body: UpdateParentReq,
   ) {
-    const { user, success }: BasicUpdateRes =
-      await this.authService.updateParentProfile(body);
+    let { updatedParent, success }: BasicUpdateRes =
+      await this.authService.updateParentProfile({
+        ...req.body,
+      });
+
     if (success) {
+      updatedParent = await this.authService.formatPayload(
+        updatedParent,
+        UserTypes.PARENT,
+      );
+
       resp.json({
         success,
         message: profileMessages.updatedSuccess,
         status: HttpStatus.OK,
-        user,
+        updatedParent,
       });
     } else {
       throw new HttpException(
@@ -115,8 +140,8 @@ export class AuthController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: UpdateStudentReq,
   ) {
-    const { user, success }: BasicUpdateRes =
-      await this.authService.updateStudentProfile(body);
+    const { user, success } = await this.authService.updateStudentProfile(body);
+
     if (success) {
       resp.json({
         success,

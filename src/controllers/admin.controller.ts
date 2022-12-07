@@ -1,9 +1,7 @@
 import {
-  Body,
   Query,
   Controller,
   HttpStatus,
-  Post,
   Res,
   Get,
   Req,

@@ -7,7 +7,6 @@ import { User } from '../entities/user.entity';
 import { GetAllUsersSessionsReq, UsersSessionsReq } from 'src/dto/admin.dto';
 import { adminMessages, adminErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
-
 import { Session } from 'src/entities/session.entity';
 
 config();
@@ -31,6 +30,8 @@ export class AdminService {
         relations: ['parent', 'parent.sessions'],
       });
     } catch (exp) {
+      Logger.error(adminErrors.checkingUser + exp);
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -41,6 +42,8 @@ export class AdminService {
     }
 
     if (!foundUser) {
+      Logger.error(adminErrors.userNotFoundWithId);
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -51,6 +54,8 @@ export class AdminService {
     }
 
     if (!foundUser.parent) {
+      Logger.error(adminErrors.noParentFound);
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -61,6 +66,8 @@ export class AdminService {
     }
 
     if (!foundUser.parent.sessions) {
+      Logger.error(adminErrors.sessionNotFoundWithId);
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -151,36 +158,5 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
-    // this.jwtService.signAsync(
-    //   {
-    //     sub: userId,
-    //     username,
-    //   },
-    //   {
-    //     secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-    //     expiresIn: '7d',
-    //   },
-    // )
-
-    // try {
-    //   const session = await this.sessionRepo.save({
-    //     ...foundSession,
-    //     expired: true,
-    //   });
-    //   return {
-    //     success: true,
-    //     session,
-    //   };
-    // } catch (e) {
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_IMPLEMENTED,
-    //       error: adminErrors.endSessionFailed,
-    //     },
-    //     HttpStatus.NOT_IMPLEMENTED,
-    //   );
-    // }
   }
-
 }

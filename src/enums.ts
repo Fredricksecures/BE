@@ -1,6 +1,8 @@
 export const UserTypes = {
   STUDENT: 'STUDENT',
   PARENT: 'PARENT',
+  ADMIN: 'ADMIN',
+  DEFAULT: 'DEFAULT',
 };
 
 export const DeviceTypes = {
