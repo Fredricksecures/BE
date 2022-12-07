@@ -12,6 +12,8 @@ import {
 import {
   GetAllUsersSessionsReq,
   GetAllUsersSessionsRes,
+  UsersSessionsReq,
+  UsersSessionsRes,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { Request, Response } from 'express';
@@ -47,25 +49,50 @@ export class AdminController {
     }
   }
 
-  @Get('end-sessions')
+  @Get('end-user-sessions')
   async endUserSessions(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query() query: GetAllUsersSessionsReq,
+    @Query() query: UsersSessionsReq,
   ) {
-    const { success, sessions }: GetAllUsersSessionsRes =
+    const { success, session }: UsersSessionsRes =
       await this.authService.endUserSessions(query);
     if (success) {
       resp.json({
         status: HttpStatus.OK,
-        message: adminMessages.fetchSessionSuccess,
-        sessions,
+        message: adminMessages.endSessionSuccess,
+        session,
       });
     } else {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: adminMessages.fetchSessionFailed,
+          error: adminErrors.endSessionFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('refresh-user-sessions')
+  async refreshUserSessions(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Query() query: UsersSessionsReq,
+  ) {
+    const { success, session }: UsersSessionsRes =
+      await this.authService.refreshUserSessions(query);
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.endSessionSuccess,
+        session,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.endSessionFailed,
         },
         HttpStatus.NOT_FOUND,
       );

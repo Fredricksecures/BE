@@ -8,13 +8,17 @@ export class GetAllUsersSessionsReq {
   @IsString()
   userId: string;
 }
-export class EndUsersSessionsReq {
+export class UsersSessionsReq {
   @IsNotEmpty()
   @IsString()
-  userId: string;
+  sessionId: string;
 }
 
 export class GetAllUsersSessionsRes {
   sessions?: Array<Session> | undefined;
+  success?: boolean;
+}
+export class UsersSessionsRes {
+  session?: Session;
   success?: boolean;
 }

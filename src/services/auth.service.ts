@@ -186,9 +186,6 @@ export class AuthService {
     return createdSession;
   }
 
-  async recoverSession() {}
-
-  async endSession(sessionId: string) {}
 
   async registerUser(regUserReq: RegisterUserReq) {
     //* Register Basic User Details_______________________________________________________________
@@ -438,7 +435,6 @@ export class AuthService {
   async updateParentProfile(updateParentReq: UpdateParentReq) {
     const { id, email, phoneNumber, address } = updateParentReq;
 
-    //! RUSS: changed variable name for readability
     let foundParent: Parent;
 
     try {
@@ -456,7 +452,6 @@ export class AuthService {
     }
 
     if (!foundParent) {
-      //! RUSS: created a new error for parent
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -467,7 +462,6 @@ export class AuthService {
     }
 
     try {
-      //! RUSS: removed unchanged fields (password, password reset pin)
       const user = await this.parentRepo.save({
         ...foundParent,
         email: email ?? foundParent.email,
