@@ -14,6 +14,12 @@ export class UsersSessionsReq {
   sessionId: string;
 }
 
+export class SuspendUserReq {
+  @IsNotEmpty()
+  @IsString()
+  userId: string;
+}
+
 export class GetAllUsersSessionsRes {
   sessions?: Array<Session> | undefined;
   success?: boolean;

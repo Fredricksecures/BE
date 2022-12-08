@@ -4,10 +4,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
-import { GetAllUsersSessionsReq, UsersSessionsReq } from 'src/dto/admin.dto';
+import {
+  GetAllUsersSessionsReq,
+  UsersSessionsReq,
+  SuspendUserReq,
+} from 'src/dto/admin.dto';
 import { adminMessages, adminErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
+import { Student } from 'src/entities/student.entity';
+import { Parent } from 'src/entities/parent.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -18,6 +24,8 @@ export class AdminService {
     private jwtService: JwtService,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
+    @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
   async getUserSessions(user: GetAllUsersSessionsReq) {
@@ -212,20 +220,88 @@ export class AdminService {
     }
   }
 
-  async getUsers() {
-    let foundUsers: Array<User>;
-
+  async getStudents(parentId) {
+    let foundStudents: Array<Student>;
     try {
-      foundUsers = await this.sessionRepo.find();
+      foundStudents = await this.studentRepo.find({
+        where: {
+          parent: {
+            id: parentId,
+          },
+        },
+      });
     } catch (exp) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: adminErrors.failedToFetchUsers + exp,
+          error: adminErrors.failedToFetchStudents + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundUsers;
+    return foundStudents;
+  }
+
+  async suspendUser(params: SuspendUserReq) {
+    let foundUser: User;
+    try {
+      foundUser = await this.userRepo.findOne({
+        where: {
+          id: params.userId,
+        },
+        relations: ['parent', 'parent.sessions'],
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.fetchUserFailed + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.noUserFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      foundUser = await this.userRepo.save({
+        ...foundUser,
+        suspended: true,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.endSessionFailed,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      foundUser.parent.sessions.map((item) => {
+        return (item.expired = true);
+      });
+      await this.sessionRepo.save(foundUser.parent.sessions);
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updateSessionFailed,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    delete foundUser.parent;
+    return {
+      success: true,
+      user: foundUser,
+    };
   }
 }

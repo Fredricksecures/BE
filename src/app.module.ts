@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { GET_ALL_ENTITIES } from './constants';
 import { AuthModule } from './modules/auth.module';
 import { AdminModule } from './modules/admin.module';
+import { SubscriptionModule } from './modules/subscription.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configService } from './services/config.service';
 import { UtilityModule } from './modules/utility.module';
@@ -14,6 +15,7 @@ import { UtilityModule } from './modules/utility.module';
     UtilityModule,
     AuthModule,
     AdminModule,
+    SubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

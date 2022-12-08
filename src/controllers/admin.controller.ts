@@ -5,6 +5,8 @@ import {
   Res,
   Get,
   Req,
+  Patch,
+  Body,
   HttpException,
 } from '@nestjs/common';
 import {
@@ -12,6 +14,7 @@ import {
   GetAllUsersSessionsRes,
   UsersSessionsReq,
   UsersSessionsRes,
+  SuspendUserReq,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { Request, Response } from 'express';
@@ -97,16 +100,41 @@ export class AdminController {
     }
   }
 
-  @Get('users')
+  @Get('students')
   async getUsers(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query() params,
   ) {
-    const users = await this.authService.getUsers();
+    const users = await this.authService.getStudents(params.parentId);
     resp.json({
       status: HttpStatus.OK,
-      message: adminMessages.usersFetchSuccess,
+      message: adminMessages.studentFetchSuccess,
       users,
     });
+  }
+
+  @Patch('suspend')
+  async suspendUser(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: SuspendUserReq,
+  ) {
+    const { success, user } = await this.authService.suspendUser(body);
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.userSuspendedSuccess,
+        user,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.failedToSuspendUser,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }
