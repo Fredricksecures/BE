@@ -8,7 +8,6 @@ import {
   ValidateIf,
   IsNotEmpty,
   IsMobilePhone,
-  IsNumber,
 } from 'class-validator';
 import { Country } from 'src/entities/country.entity';
 import { Device } from 'src/entities/device.entity';
@@ -24,6 +23,14 @@ export class MockAuthSeedDTO {
 }
 
 export class RegisterUserReq {
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
   @IsOptional()
   @IsString()
   @IsEmail()
@@ -123,6 +130,42 @@ export class LoginRes {
   user: any;
   success: boolean;
   session: Session;
+}
+
+export class ForgotPasswordReq {
+  @IsOptional()
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
+  @IsString()
+  phoneNumber: string;
+}
+
+export class ForgotPasswordRes {
+  resetPin: string;
+}
+export class ResetPasswordReq {
+  @IsString()
+  @MinLength(8)
+  @MaxLength(12)
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'password too weak',
+  })
+  password: string;
+  @IsOptional()
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
+  @IsString()
+  phoneNumber: string;
+}
+
+export class ResetPasswordRes {
+  success: boolean;
 }
 
 export class UpdateParentReq {

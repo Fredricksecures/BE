@@ -1,17 +1,19 @@
-import { BrowserTypes, OSTypes } from 'src/enums';
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
-import { Session } from './session.entity';
+import { LearningPackage } from './learningPackage.entity';
+import { Student } from './student.entity';
 
-@Entity('devices')
-export class Device {
-  constructor(data?: Device) {
+@Entity('subscription')
+export class Subscription {
+  constructor(data?: Subscription) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -23,19 +25,16 @@ export class Device {
   id?: string;
 
   @Column({ type: 'varchar' })
-  type?: string;
+  price?: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  ip?: string;
+  @OneToMany(
+    () => LearningPackage,
+    (LearningPackage) => LearningPackage.subscription,
+  )
+  learningPackages?: LearningPackage[];
 
-  @Column({ type: 'varchar', default: BrowserTypes.CHROME })
-  client?: string;
-
-  @Column({ type: 'varchar', default: OSTypes.UNKNOWN })
-  OS?: string;
-
-  @OneToOne(() => Session)
-  session?: Session;
+  @OneToOne(() => Student)
+  student?: Student;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

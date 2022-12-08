@@ -21,10 +21,15 @@ import {
   LoginRes,
   UpdateStudentReq,
   BasicUpdateRes,
+  ForgotPasswordReq,
+  ForgotPasswordRes,
+  ResetPasswordReq,
+  ResetPasswordRes,
 } from 'src/dto/auth.dto';
 import { authErrors, authMessages, profileMessages } from 'src/constants';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/enums';
+import { Patch } from '@nestjs/common/decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -100,7 +105,39 @@ export class AuthController {
     }
   }
 
-  @Post('update-parent')
+  @Post('forgot-password')
+  async forgotPasswordCtlr(
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: ForgotPasswordReq,
+  ) {
+    const { resetPin }: ForgotPasswordRes =
+      await this.authService.forgotPassword(body);
+
+    resp.json({
+      message: authMessages.passwordEmailSent,
+      status: HttpStatus.OK,
+      success: true,
+      resetPin,
+    });
+  }
+
+  @Post('reset-password')
+  async resetPasswordCtlr(
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: ResetPasswordReq,
+  ) {
+    const { success }: ResetPasswordRes = await this.authService.resetPassword(
+      body,
+    );
+
+    resp.json({
+      status: HttpStatus.OK,
+      message: authMessages.pwordReset,
+      success,
+    });
+  }
+
+  @Patch('update-parent')
   @UseMiddleware('sessionGuard')
   async updateParent(
     @Req() req: Request,
@@ -134,7 +171,7 @@ export class AuthController {
     }
   }
 
-  @Post('update-student')
+  @Patch('update-student')
   async updateStudent(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
