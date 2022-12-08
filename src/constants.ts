@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { DeviceTypes, UserTypes } from './enums';
+import { DeviceTypes, Genders, PackageTypes, UserTypes } from './enums';
 import { JwtModule } from '@nestjs/jwt';
 import { Device } from './entities/device.entity';
 import { Country } from './entities/country.entity';
@@ -7,6 +7,8 @@ import { User } from './entities/user.entity';
 import { Student } from './entities/student.entity';
 import { Parent } from './entities/parent.entity';
 import { Session } from './entities/session.entity';
+import { LearningPackage } from './entities/learningPackage.entity';
+import { Subscription } from './entities/subscription.entity';
 
 config();
 
@@ -21,7 +23,16 @@ export const jwtConfig = JwtModule.register({
 
 export const ModuleConfigs = {
   app: {
-    entities: [],
+    entities: [
+      User,
+      Student,
+      Parent,
+      Device,
+      Country,
+      Session,
+      LearningPackage,
+      Subscription,
+    ],
   },
   utility: {
     entities: [Device, Country],
@@ -38,12 +49,34 @@ export const GET_ALL_ENTITIES = () => [
   ...new Set(
     [].concat.apply(
       [],
-      Object.keys(ModuleConfigs).map((key, val) =>
+      Object.keys(ModuleConfigs).map((key) =>
         [].concat.apply([], ModuleConfigs[key].entities),
       ),
     ),
   ),
 ];
+
+//* LEARNING PACKAGES_______________________________________
+export const learningPackages = {
+  RECEPTION: { name: 'RECEPTION', type: PackageTypes.PRE_SCHOOL },
+
+  GRADE_1: { name: 'GRADE_1', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_2: { name: 'GRADE_2', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_3: { name: 'GRADE_3', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_4: { name: 'GRADE_4', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_5: { name: 'GRADE_5', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_6: { name: 'GRADE_6', type: PackageTypes.PRIMARY_SCHOOL },
+
+  NIGERIAN_LANGUAGES: {
+    name: 'NIGERIAN_LANGUAGES',
+    type: PackageTypes.NIGERIAN_LANGUAGES,
+  },
+
+  BRITISH: { name: 'BRITISH', type: PackageTypes.SECONDARY_SCHOOL },
+  CATHOLIC: { name: 'CATHOLIC', type: PackageTypes.SECONDARY_SCHOOL },
+  MILITARY: { name: 'MILITARY', type: PackageTypes.SECONDARY_SCHOOL },
+  NATIONAL: { name: 'NATIONAL', type: PackageTypes.SECONDARY_SCHOOL },
+};
 
 //* MESSAGES_______________________________________
 
@@ -57,6 +90,7 @@ export const utilityErrors = {
   seedCountries: 'failed to seed countries --------- ',
   getCountry: 'failed to fecth country info --------- ',
   getDevice: 'failed to fecth device info --------- ',
+  seedPackages: 'failed to seed learning packages --------- ',
 };
 
 export const authMessages = {
@@ -123,7 +157,7 @@ export const authErrors = {
   checkingEmail: 'Error querying for matching emails --------- ',
   checkingPassword: 'Error querying for matching passwords --------- ',
   emailNotFound: 'user with specified email not found --------- ',
-  invalidPassword: 'password invalid for email provided --------- ',
+  invalidPassword: 'your password is incorrect',
   loginFailed: 'login failed --------- ',
   updateFailed: 'login failed --------- ',
   invalidNotificationInformation:
@@ -150,6 +184,9 @@ export const authErrors = {
 
 export const USER_SEED = [
   {
+    firstName: 'Russell',
+    lastName: 'Emekoba',
+    gender: Genders.MALE,
     email: 'rjemekoba@gmail.com',
     password: 'Password1$',
     type: UserTypes.PARENT,

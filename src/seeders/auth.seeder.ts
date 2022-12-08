@@ -9,20 +9,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
-import * as bcrypt from 'bcrypt';
 import { authErrors, USER_SEED } from '../constants';
-import { Genders, UserTypes } from '../enums';
-import { Student } from 'src/entities/student.entity';
-import { Parent } from 'src/entities/parent.entity';
 import { Device } from 'src/entities/device.entity';
 import { Country } from 'src/entities/country.entity';
 import { AuthService } from 'src/services/auth.service';
-import { MockAuthSeedDTO } from 'src/dto/auth.dto';
 import { Session } from 'src/entities/session.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
-const SALT = parseInt(BCRYPT_SALT);
 
 @Injectable()
 export class AuthSeeder {
@@ -32,8 +26,6 @@ export class AuthSeeder {
     @InjectRepository(Device) private deviceRepo: Repository<Device>,
     @InjectRepository(Country) private countryRepo: Repository<Country>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
-    @InjectRepository(Student) private studentRepo: Repository<Student>,
-    @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
   async onApplicationBootstrap() {
@@ -125,6 +117,8 @@ export class AuthSeeder {
       Promise.all(
         USER_SEED.map(async (user: any) => {
           const regResp = await this.authService.registerUser({
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
             phoneNumber: user.phoneNumber,
             password: user.password,

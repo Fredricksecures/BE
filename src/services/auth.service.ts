@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  Get,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Res,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,11 +18,15 @@ import {
   UpdateParentReq,
   UpdateStudentReq,
   LoginRes,
+  ResetPasswordReq,
+  ResetPasswordRes,
+  ForgotPasswordReq,
+  ForgotPasswordRes,
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Device } from 'src/entities/device.entity';
-import { isEmpty } from 'src/utils/helpers';
+import { generateRandomHash, isEmpty } from 'src/utils/helpers';
 import { authErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
 import * as bcrypt from 'bcrypt';
@@ -217,7 +227,8 @@ export class AuthService {
 
   async registerUser(regUserReq: RegisterUserReq) {
     //* Register Basic User Details_______________________________________________________________
-    let { phoneNumber, email, password, countryId } = regUserReq;
+    let { firstName, lastName, phoneNumber, email, password, countryId } =
+      regUserReq;
 
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
@@ -232,7 +243,7 @@ export class AuthService {
           },
         });
       } catch (e) {
-        Logger.error(authErrors.dupPNQuery + e);
+        Logger.error(authErrors.dupPNQuery + e).console();
 
         throw new HttpException(
           {
@@ -265,7 +276,7 @@ export class AuthService {
           },
         });
       } catch {
-        Logger.error(authErrors.dupEmailQuery);
+        Logger.error(authErrors.dupEmailQuery).console();
 
         throw new HttpException(
           {
@@ -299,6 +310,9 @@ export class AuthService {
       });
 
       createdUser = await this.userRepo.save({
+        firstName,
+        lastName,
+        profilePicture: '',
         type: UserTypes.PARENT,
         parent: createdParent,
       });
@@ -312,7 +326,7 @@ export class AuthService {
       //   );
       // }
     } catch (e) {
-      Logger.error(authErrors.saveUser + e);
+      Logger.error(authErrors.saveUser + e).console();
 
       throw new HttpException(
         {
@@ -342,9 +356,6 @@ export class AuthService {
     // });
 
     const device = await this.utilityService.getDevice(deviceId);
-
-    //* create user session upon creating account
-    // await this.createSession(createdUser, device);
 
     let foundUser: User;
 
@@ -377,29 +388,31 @@ export class AuthService {
     }
 
     //* compare provided with password in DB
-    try {
-      if (!(await bcrypt.compare(password, foundUser.parent.password))) {
-        Logger.error(authErrors.invalidPassword);
+    // try {
 
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: authErrors.invalidPassword,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
-    } catch (exp) {
-      Logger.error(exp).console();
+    if (!(await bcrypt.compare(password, foundUser.parent.password))) {
+      Logger.error(authErrors.invalidPassword).console();
 
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.checkingPassword + exp,
+          error: authErrors.invalidPassword,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
+
+    // } catch (exp) {
+    //   Logger.error(authErrors.invalidPassword + exp).console();
+
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.NOT_IMPLEMENTED,
+    //       error: authErrors.checkingPassword + exp,
+    //     },
+    //     HttpStatus.NOT_IMPLEMENTED,
+    //   );
+    // }
 
     //* create user session
     const newSession = await this.createSession(foundUser, device);
@@ -414,6 +427,144 @@ export class AuthService {
       success: true,
       user: foundUser,
       session: newSession,
+    };
+  }
+
+  async forgotPassword(body: ForgotPasswordReq): Promise<ForgotPasswordRes> {
+    const { email, phoneNumber } = body;
+
+    let foundParent: Parent;
+
+    //* find user with matching email / phone-number
+    try {
+      foundParent = await this.parentRepo.findOneOrFail({
+        where: email ? { email } : { phoneNumber },
+      });
+    } catch (exp) {
+      Logger.error(exp).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.checkingEmail + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundParent) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.emailNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    //* generate reset token
+    const resetPin: string = generateRandomHash(6);
+
+    //* save reset pin to user db
+    try {
+      this.parentRepo.save({
+        ...foundParent,
+        passwordResetPin: resetPin,
+      });
+    } catch (exp) {
+      Logger.error(authErrors.savePin + exp).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.savePin + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    //* send notification to user
+    // this.notificationsBridge.sendPasswordResetPin({
+    //   recipientEmail: email,
+    //   resetPin,
+    // });
+
+    return {
+      resetPin,
+    };
+  }
+
+  async resetPassword(body: ResetPasswordReq): Promise<ResetPasswordRes> {
+    const { email, phoneNumber, password } = body;
+
+    let foundParent: Parent;
+
+    //* get user from id.
+    try {
+      foundParent = await this.parentRepo.findOneOrFail({
+        where: email ? { email } : { phoneNumber },
+      });
+    } catch (e) {
+      Logger.error(authErrors.queryById + e);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.queryById + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    //* check if user was found.
+    if (!foundParent) {
+      Logger.error(authErrors.userNotFoundById).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.userNotFoundById,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    //* check if the new password is the same as the previous one.
+    if (await bcrypt.compare(password, foundParent.password)) {
+      Logger.error(authErrors.sameNewAndPrevPassword).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: authErrors.sameNewAndPrevPassword,
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    //* save the new password
+    try {
+      this.parentRepo.save({
+        ...foundParent,
+        password: await bcrypt.hash(password, parseInt(BCRYPT_SALT)),
+      });
+    } catch (e) {
+      Logger.error(authErrors.savingNewPword + e).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.savingNewPword + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    //* send notification to user.
+    // this.notificationsBridge.sendPasswordUpdatedNotification(foundUser.email);
+
+    return {
+      success: true,
     };
   }
 
@@ -434,7 +585,7 @@ export class AuthService {
         students: [],
       });
     } catch (e) {
-      Logger.error(authErrors.createdParent + e);
+      Logger.error(authErrors.createdParent + e).console();
 
       throw new HttpException(
         {
@@ -505,7 +656,9 @@ export class AuthService {
 
   async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
     const { id, firstName, lastName, dateOfBirth } = updateStudentReq;
+
     let foundUser: Student;
+
     try {
       foundUser = await this.studentRepo.findOne({
         where: {
@@ -534,10 +687,8 @@ export class AuthService {
     try {
       const user = await this.studentRepo.save({
         id,
-        firstName: firstName || foundUser.firstName,
-        lastName: lastName || foundUser.lastName,
-        dateOfBirth: dateOfBirth || foundUser.dateOfBirth,
-        parent: foundUser.parent,
+        // dateOfBirth: dateOfBirth || foundUser.dateOfBirth,
+        // parent: foundUser.parent,
       });
       return {
         success: true,

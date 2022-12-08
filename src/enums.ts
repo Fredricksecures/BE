@@ -20,9 +20,26 @@ export const BrowserTypes = {
   UNKNOWN: 'UNKNOWN',
 };
 
+export const OSTypes = {
+  WINDOWS: 'WINDOWS',
+  LINUX: 'LINUX',
+  MACINTOSH: 'MACINTOSH',
+  ANDROID: 'ANDROID',
+  IOS: 'IOS',
+  UNKNOWN: 'UNKNOWN',
+};
+
 export const Genders = {
   MALE: 'MALE',
   FEMALE: 'FEMALE',
+};
+
+export const PackageTypes = {
+  PRE_SCHOOL: 'PRE_SCHOOL',
+  PRIMARY_SCHOOL: 'PRIMARY_SCHOOL',
+  SECONDARY_SCHOOL: 'SECONDARY_SCHOOL',
+  LEADER_IN_ME: 'LEADER_IN_ME',
+  NIGERIAN_LANGUAGES: 'NIGERIAN_LANGUAGES',
 };
 
 export const OnboardingStages = {

@@ -1,20 +1,17 @@
 import {
+  Column,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
   ManyToOne,
-  OneToMany,
 } from 'typeorm';
-import { LearningPackage } from './learningPackage.entity';
-import { Parent } from './parent.entity';
+import { Student } from './student.entity';
 import { Subscription } from './subscription.entity';
-import { User } from './user.entity';
 
-@Entity('students')
-export class Student {
-  constructor(data?: Student) {
+@Entity('learning-packages')
+export class LearningPackage {
+  constructor(data?: LearningPackage) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -25,14 +22,17 @@ export class Student {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @OneToOne(() => User)
-  user?: User;
+  @Column({ type: 'varchar' })
+  name?: string;
 
-  @OneToOne(() => Subscription)
+  @Column({ type: 'varchar' })
+  type?: string;
+
+  @ManyToOne(
+    () => Subscription,
+    (Subscription) => Subscription.learningPackages,
+  )
   subscription?: Subscription;
-
-  @ManyToOne(() => Parent, (Parent) => Parent.students)
-  parent?: Parent;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

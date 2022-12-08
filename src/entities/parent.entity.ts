@@ -13,6 +13,7 @@ import { Country } from './country.entity';
 import { Session } from './session.entity';
 import { Student } from './student.entity';
 import { User } from './user.entity';
+
 @Entity('parents')
 export class Parent {
   constructor(data?: Parent) {
