@@ -211,4 +211,21 @@ export class AdminService {
       );
     }
   }
+
+  async getUsers() {
+    let foundUsers: Array<User>;
+
+    try {
+      foundUsers = await this.sessionRepo.find();
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchUsers + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundUsers;
+  }
 }

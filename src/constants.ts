@@ -80,6 +80,7 @@ export const adminMessages = {
   fetchSessionSuccess: 'User sessions fetched successfully -------',
   endSessionSuccess: 'User sessions ended successfully -------',
   recoverSessionSuccess: 'User sessions recovered successfully -------',
+  usersFetchSuccess: 'Users Fetched successfully -------',
 };
 
 export const adminErrors = {
@@ -89,6 +90,7 @@ export const adminErrors = {
   userNotFoundWithId: 'No user found with this id. --------- ',
   checkingUser: 'error while fetching user. --------- ',
   checkingSession: 'error while fetching session. --------- ',
+  failedToFetchUsers: 'error while fetching users. --------- ',
   sessionNotFoundWithId: 'no session found for this parent. --------- ',
   noParentFound: 'parent not found with this user id. --------- ',
   tokenCreate: 'could not create token --------- ',

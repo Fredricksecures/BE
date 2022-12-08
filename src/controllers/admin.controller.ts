@@ -96,4 +96,17 @@ export class AdminController {
       );
     }
   }
+
+  @Get('users')
+  async getUsers(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const users = await this.authService.getUsers();
+    resp.json({
+      status: HttpStatus.OK,
+      message: adminMessages.usersFetchSuccess,
+      users,
+    });
+  }
 }
