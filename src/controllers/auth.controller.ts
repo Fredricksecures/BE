@@ -172,6 +172,7 @@ export class AuthController {
   }
 
   @Patch('update-student')
+  @UseMiddleware('sessionGuard')
   async updateStudent(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
