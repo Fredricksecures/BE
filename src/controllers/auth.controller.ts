@@ -8,6 +8,7 @@ import {
   Get,
   Param,
   HttpException,
+  Patch,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -31,7 +32,6 @@ import {
 import { authErrors, authMessages, profileMessages } from 'src/constants';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/enums';
-import { Patch } from '@nestjs/common/decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -199,11 +199,12 @@ export class AuthController {
       );
     }
   }
+
   @Get('logout/:all?')
   async logout(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Param('all') all,
+    @Param('all') all: any,
   ) {
     const { success } = await this.authService.logout(all, req.cookies.jwt);
 
