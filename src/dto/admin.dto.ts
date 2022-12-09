@@ -6,10 +6,25 @@ import { User } from 'src/entities/user.entity';
 export class GetAllUsersSessionsReq {
   @IsNotEmpty()
   @IsString()
-  id: string;
+  userId: string;
+}
+export class UsersSessionsReq {
+  @IsNotEmpty()
+  @IsString()
+  sessionId: string;
+}
+
+export class SuspendUserReq {
+  @IsNotEmpty()
+  @IsString()
+  userId: string;
 }
 
 export class GetAllUsersSessionsRes {
   sessions?: Array<Session> | undefined;
+  success?: boolean;
+}
+export class UsersSessionsRes {
+  session?: Session;
   success?: boolean;
 }

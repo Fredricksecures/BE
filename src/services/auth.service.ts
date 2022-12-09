@@ -704,4 +704,98 @@ export class AuthService {
       );
     }
   }
+
+  async logout(all, token) {
+    const { id, date } = await this.jwtService.verifyAsync(token);
+    if (all) {
+      let foundUser;
+      try {
+        foundUser = await this.userRepo.findOne({
+          where: {
+            id,
+          },
+          relations: ['parent', 'parent.sessions'],
+        });
+      } catch (exp) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: authErrors.findingUserWithId + exp,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+      if (!foundUser) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: authErrors.findingUserWithId,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+
+      try {
+        foundUser.parent.sessions.map((item) => {
+          return (item.expired = true);
+        });
+        await this.sessionRepo.save(foundUser.parent.sessions);
+        return {
+          success: true,
+        };
+      } catch (e) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: authErrors.logoutFailed,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+    } else {
+      let foundSession;
+      try {
+        foundSession = await this.sessionRepo.findOne({
+          where: {
+            token,
+          },
+        });
+      } catch (exp) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: authErrors.checkingSession + exp,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+      if (!foundSession) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: authErrors.checkingSession,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+
+      try {
+        await this.sessionRepo.save({
+          ...foundSession,
+          expired: true,
+        });
+        return {
+          success: true,
+        };
+      } catch (exp) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: authErrors.logoutFailed + exp,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+    }
+  }
 }
