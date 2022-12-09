@@ -185,7 +185,6 @@ export class UpdateParentReq {
   address: string;
 }
 export class UpdateStudentReq {
-  //! RUSS: removed non-string validators
   @IsString()
   @IsNotEmpty()
   id: string;

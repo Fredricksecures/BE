@@ -5,6 +5,8 @@ import {
   Post,
   Res,
   Req,
+  Get,
+  Param,
   HttpException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -192,6 +194,30 @@ export class AuthController {
         {
           status: HttpStatus.NOT_FOUND,
           error: authErrors.updateFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Get('logout/:all?')
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Param('all') all,
+  ) {
+    const { success } = await this.authService.logout(all, req.cookies.jwt);
+
+    if (success) {
+      resp.json({
+        success,
+        message: authMessages.logout,
+        status: HttpStatus.OK,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.logoutFailed,
         },
         HttpStatus.NOT_FOUND,
       );
