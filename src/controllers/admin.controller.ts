@@ -5,11 +5,16 @@ import {
   Res,
   Get,
   Req,
+  Patch,
+  Body,
   HttpException,
 } from '@nestjs/common';
 import {
   GetAllUsersSessionsReq,
   GetAllUsersSessionsRes,
+  UsersSessionsReq,
+  UsersSessionsRes,
+  SuspendUserReq,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { Request, Response } from 'express';
@@ -39,6 +44,94 @@ export class AdminController {
         {
           status: HttpStatus.NOT_FOUND,
           error: adminErrors.fetchSessionFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('end-user-sessions')
+  async endUserSessions(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Query() query: UsersSessionsReq,
+  ) {
+    const { success, session }: UsersSessionsRes =
+      await this.authService.endUserSessions(query);
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.endSessionSuccess,
+        session,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.endSessionFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('recover-user-sessions')
+  async recoverUserSessions(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Query() query: UsersSessionsReq,
+  ) {
+    const { success, session }: UsersSessionsRes =
+      await this.authService.recoverUserSessions(query);
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.recoverSessionSuccess,
+        session,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.endSessionFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('students')
+  async getUsers(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Query() params,
+  ) {
+    const users = await this.authService.getStudents(params.parentId);
+    resp.json({
+      status: HttpStatus.OK,
+      message: adminMessages.studentFetchSuccess,
+      users,
+    });
+  }
+
+  @Patch('suspend')
+  async suspendUser(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: SuspendUserReq,
+  ) {
+    const { success, user } = await this.authService.suspendUser(body);
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.userSuspendedSuccess,
+        user,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.failedToSuspendUser,
         },
         HttpStatus.NOT_FOUND,
       );

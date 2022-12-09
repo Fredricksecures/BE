@@ -9,6 +9,7 @@ import { Parent } from './entities/parent.entity';
 import { Session } from './entities/session.entity';
 import { LearningPackage } from './entities/learningPackage.entity';
 import { Subscription } from './entities/subscription.entity';
+import { Invoices } from './entities/invoices.entity';
 
 config();
 
@@ -32,6 +33,7 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
+      Invoices,
     ],
   },
   utility: {
@@ -41,7 +43,10 @@ export const ModuleConfigs = {
     entities: [User, Student, Parent, Device, Country, Session],
   },
   admin: {
-    entities: [User, Session],
+    entities: [User, Session, Student, Parent],
+  },
+  subscription: {
+    entities: [Subscription, LearningPackage, Invoices],
   },
 };
 
@@ -93,6 +98,19 @@ export const utilityErrors = {
   seedPackages: 'failed to seed learning packages --------- ',
 };
 
+export const subscriptionMessages = {
+  fetchSubscriptionSuccess: 'Subscriptions fetched successfully',
+  fetchInvoiceHistorySuccess: 'Invoices History fetched successfully',
+};
+export const subscriptionError = {
+  fetchSubscriptionFailed: 'Failed to fetch Subscriptions',
+  fetchSubscriptionHistoryFailed: 'Failed to fetch Subscription history',
+  fetchInvoicesFailed: 'Failed to fetch Invoices history',
+  checkingSubscription: 'Error querying for finding subscriptions ---------',
+  checkingInvoices: 'Error querying for finding invoices ---------',
+  failedToFetchSubscriptions: 'Failed to fetch subscriptions ---------',
+};
+
 export const authMessages = {
   countries: 'all countries retrieved successfully',
   endpoints: 'authentication endpoints retrieved successfully',
@@ -102,6 +120,7 @@ export const authMessages = {
   profileUpdateSuccessful: 'profile updated successfully',
   passwordEmailSent: 'reset email sent successfully',
   pwordReset: 'Password reset successfully',
+  logout: 'Logout successfully',
 };
 
 export const profileMessages = {
@@ -111,17 +130,29 @@ export const profileMessages = {
 };
 
 export const adminMessages = {
-  fetchSessionSuccess: 'User sessions fetched successfully',
+  fetchSessionSuccess: 'User sessions fetched successfully -------',
+  endSessionSuccess: 'User sessions ended successfully -------',
+  recoverSessionSuccess: 'User sessions recovered successfully -------',
+  userSuspendedSuccess: 'User suspended successfully -------',
+  studentFetchSuccess: 'Students Fetched successfully -------',
 };
 
-//! RUSS added admin errors for error cases
 export const adminErrors = {
   fetchSessionFailed: 'Failed to fetch user sessions -------',
+  fetchUserFailed: 'Failed to fetch user -------',
+  endSessionFailed: 'Failed to end user sessions -------',
+  updateSessionFailed: 'Failed to update user sessions -------',
+  recoverSessionFailed: 'Failed to recover user sessions -------',
   userNotFoundWithId: 'No user found with this id. --------- ',
   checkingUser: 'error while fetching user. --------- ',
   checkingSession: 'error while fetching session. --------- ',
+  failedToFetchStudents: 'error while fetching students. --------- ',
+  failedToSuspendUser: 'error while suspending user. --------- ',
   sessionNotFoundWithId: 'no session found for this parent. --------- ',
   noParentFound: 'parent not found with this user id. --------- ',
+  noUserFound: 'user not found with this id. --------- ',
+  tokenCreate: 'could not create token --------- ',
+  tokenVerify: 'could not verify session token --------- ',
 };
 
 export const authErrors = {
@@ -171,6 +202,8 @@ export const authErrors = {
   checkingStudent: 'Error querying for finding student --------- ',
   updatingStudent: 'Error querying for updating student --------- ',
   parentNotFound: 'could not find parent with id provided ---------',
+  logoutFailed: 'could not logout --------- ',
+  checkingSession: 'could not found session --------- ',
 };
 
 //* SEEDS____________________________________________
