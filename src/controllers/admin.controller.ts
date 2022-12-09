@@ -6,6 +6,7 @@ import {
   Get,
   Req,
   Patch,
+  Post,
   Body,
   HttpException,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import {
   UsersSessionsReq,
   UsersSessionsRes,
   SuspendUserReq,
+  CustomerCareAgentReq,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { Request, Response } from 'express';
@@ -126,6 +128,31 @@ export class AdminController {
         status: HttpStatus.OK,
         message: adminMessages.userSuspendedSuccess,
         user,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.failedToSuspendUser,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('create-customer-care-agent')
+  async createCustomerCareAgent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: CustomerCareAgentReq,
+  ) {
+    const { success, createdCustomerCare } =
+      await this.authService.createCustomerCareAgent(body);
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.addCustomerCareSuccess,
+        createdCustomerCare,
       });
     } else {
       throw new HttpException(

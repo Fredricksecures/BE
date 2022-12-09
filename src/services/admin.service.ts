@@ -8,12 +8,19 @@ import {
   GetAllUsersSessionsReq,
   UsersSessionsReq,
   SuspendUserReq,
+  CustomerCareAgentReq,
 } from 'src/dto/admin.dto';
 import { adminMessages, adminErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
+import { CustomerCare } from 'src/entities/customerCare.entity';
+import { generateRandomHash, isEmpty } from 'src/utils/helpers';
+import * as bcrypt from 'bcrypt';
+import { UserTypes } from 'src/enums';
+import { UtilityService } from './utility.service';
+import { Country } from 'src/entities/country.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -22,10 +29,13 @@ const { BCRYPT_SALT } = process.env;
 export class AdminService {
   constructor(
     private jwtService: JwtService,
+    private readonly utilityService: UtilityService,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
     @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+    @InjectRepository(CustomerCare)
+    private customerCareRepo: Repository<CustomerCare>,
   ) {}
 
   async getUserSessions(user: GetAllUsersSessionsReq) {
@@ -303,5 +313,142 @@ export class AdminService {
       success: true,
       user: foundUser,
     };
+  }
+
+  async createCustomerCareAgent(params: CustomerCareAgentReq) {
+    let { firstName, lastName, email, phoneNumber, password, countryId } =
+      params;
+
+    let duplicatePhoneNumber: User,
+      duplicateEmail: User,
+      createdCustomerCare: User;
+
+    if (!isEmpty(phoneNumber)) {
+      try {
+        duplicatePhoneNumber = await this.userRepo.findOne({
+          where: {
+            customerCare: {
+              phoneNumber,
+            },
+          },
+          relations: ['customerCare'],
+        });
+      } catch (e) {
+        Logger.error(adminErrors.dupPNQuery + e).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: adminErrors.dupPNQuery + e,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+
+      if (
+        duplicatePhoneNumber &&
+        duplicatePhoneNumber.customerCare.phoneNumber != phoneNumber
+      ) {
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: `phone number ( ${phoneNumber} ) is already taken`,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
+
+    if (!isEmpty(email)) {
+      try {
+        duplicateEmail = await this.userRepo.findOne({
+          where: {
+            customerCare: {
+              email,
+            },
+          },
+          relations: ['customerCare'],
+        });
+      } catch {
+        Logger.error(adminErrors.dupEmailQuery).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: adminErrors.dupEmailQuery,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+
+      if (duplicateEmail && duplicateEmail.customerCare.email != email) {
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: email + ' : ' + 'email already exists',
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
+
+    try {
+      password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
+      const createdParent = await this.createCustomerCare({
+        email,
+        phoneNumber,
+        password,
+        countryId,
+      });
+      createdCustomerCare = await this.userRepo.save({
+        firstName,
+        lastName,
+        profilePicture: '',
+        type: UserTypes.CUSTOMERCARE,
+        customerCare: createdParent,
+      });
+    } catch (e) {
+      Logger.error(adminErrors.saveUser + e).console();
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveUser + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return {
+      success: true,
+      createdCustomerCare,
+    };
+  }
+
+  async createCustomerCare(params): Promise<CustomerCare> {
+    const { phoneNumber, email, password, countryId } = params;
+    let createdCustomerCare: CustomerCare;
+
+    const country: Country = await this.utilityService.getCountry(countryId);
+
+    try {
+      createdCustomerCare = await this.customerCareRepo.save({
+        phoneNumber,
+        email,
+        password,
+        passwordResetPin: '',
+        country,
+      });
+    } catch (e) {
+      Logger.error(adminErrors.customerCareCreateFailed + e).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminMessages.addCustomerCareSuccess + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return createdCustomerCare;
   }
 }
