@@ -6,6 +6,7 @@ import { config } from 'dotenv';
 import { subscriptionMessages, subscriptionError } from 'src/constants';
 import Logger from 'src/utils/logger';
 import { Subscription } from 'src/entities/subscription.entity';
+import { Invoices } from 'src/entities/invoices.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 
 config();
@@ -19,6 +20,8 @@ export class SubscriptionService {
     private subscriptionRepo: Repository<Subscription>,
     @InjectRepository(LearningPackage)
     private sessionRepo: Repository<LearningPackage>,
+    @InjectRepository(Invoices)
+    private invoicesRepo: Repository<Invoices>,
   ) {}
 
   async getSubscriptions() {
@@ -50,6 +53,41 @@ export class SubscriptionService {
     return {
       success: true,
       subscriptions: foundSubscriptions,
+    };
+  }
+
+  async getSubscriptionHistory(subscriptionId) {
+    let foundInvoices: Array<Invoices>;
+    try {
+      foundInvoices = await this.invoicesRepo.find({
+        where: {
+          subscription: {
+            id: subscriptionId,
+          },
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: subscriptionError.checkingInvoices + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundInvoices) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: subscriptionError.fetchInvoicesFailed,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return {
+      success: true,
+      history: foundInvoices,
     };
   }
 }

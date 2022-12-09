@@ -9,6 +9,7 @@ import { Parent } from './entities/parent.entity';
 import { Session } from './entities/session.entity';
 import { LearningPackage } from './entities/learningPackage.entity';
 import { Subscription } from './entities/subscription.entity';
+import { Invoices } from './entities/invoices.entity';
 
 config();
 
@@ -32,6 +33,7 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
+      Invoices,
     ],
   },
   utility: {
@@ -44,7 +46,7 @@ export const ModuleConfigs = {
     entities: [User, Session, Student, Parent],
   },
   subscription: {
-    entities: [Subscription, LearningPackage],
+    entities: [Subscription, LearningPackage, Invoices],
   },
 };
 
@@ -98,10 +100,14 @@ export const utilityErrors = {
 
 export const subscriptionMessages = {
   fetchSubscriptionSuccess: 'Subscriptions fetched successfully',
+  fetchInvoiceHistorySuccess: 'Invoices History fetched successfully',
 };
 export const subscriptionError = {
   fetchSubscriptionFailed: 'Failed to fetch Subscriptions',
+  fetchSubscriptionHistoryFailed: 'Failed to fetch Subscription history',
+  fetchInvoicesFailed: 'Failed to fetch Invoices history',
   checkingSubscription: 'Error querying for finding subscriptions ---------',
+  checkingInvoices: 'Error querying for finding invoices ---------',
   failedToFetchSubscriptions: 'Failed to fetch subscriptions ---------',
 };
 
