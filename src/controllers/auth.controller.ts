@@ -199,11 +199,12 @@ export class AuthController {
       );
     }
   }
+
   @Get('logout/:all?')
   async logout(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Param('all') all,
+    @Param('all') all: any,
   ) {
     const { success } = await this.authService.logout(all, req.cookies.jwt);
 

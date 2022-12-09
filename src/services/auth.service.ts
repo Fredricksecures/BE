@@ -705,10 +705,12 @@ export class AuthService {
     }
   }
 
-  async logout(all, token) {
-    const { id, date } = await this.jwtService.verifyAsync(token);
+  async logout(all: any, token: string) {
+    const { id } = await this.jwtService.verifyAsync(token);
+
     if (all) {
-      let foundUser;
+      let foundUser: User;
+
       try {
         foundUser = await this.userRepo.findOne({
           where: {
@@ -725,6 +727,7 @@ export class AuthService {
           HttpStatus.NOT_IMPLEMENTED,
         );
       }
+
       if (!foundUser) {
         throw new HttpException(
           {
@@ -739,10 +742,8 @@ export class AuthService {
         foundUser.parent.sessions.map((item) => {
           return (item.expired = true);
         });
+
         await this.sessionRepo.save(foundUser.parent.sessions);
-        return {
-          success: true,
-        };
       } catch (e) {
         throw new HttpException(
           {
@@ -752,13 +753,16 @@ export class AuthService {
           HttpStatus.NOT_IMPLEMENTED,
         );
       }
+
+      return {
+        success: true,
+      };
     } else {
-      let foundSession;
+      let foundSession: Session;
+
       try {
         foundSession = await this.sessionRepo.findOne({
-          where: {
-            token,
-          },
+          where: { token },
         });
       } catch (exp) {
         throw new HttpException(
@@ -769,6 +773,7 @@ export class AuthService {
           HttpStatus.NOT_IMPLEMENTED,
         );
       }
+
       if (!foundSession) {
         throw new HttpException(
           {
@@ -784,9 +789,6 @@ export class AuthService {
           ...foundSession,
           expired: true,
         });
-        return {
-          success: true,
-        };
       } catch (exp) {
         throw new HttpException(
           {
@@ -796,6 +798,10 @@ export class AuthService {
           HttpStatus.NOT_IMPLEMENTED,
         );
       }
+
+      return {
+        success: true,
+      };
     }
   }
 }
