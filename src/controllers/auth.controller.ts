@@ -6,6 +6,7 @@ import {
   Res,
   Req,
   HttpException,
+  Patch,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -29,7 +30,6 @@ import {
 import { authErrors, authMessages, profileMessages } from 'src/constants';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/enums';
-import { Patch } from '@nestjs/common/decorators';
 
 @Controller('auth')
 export class AuthController {
