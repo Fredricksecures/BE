@@ -2,6 +2,7 @@ export const UserTypes = {
   STUDENT: 'STUDENT',
   PARENT: 'PARENT',
   ADMIN: 'ADMIN',
+  CUSTOMERCARE: 'CUSTOMERCARE',
   DEFAULT: 'DEFAULT',
 };
 

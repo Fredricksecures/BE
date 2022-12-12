@@ -9,7 +9,9 @@ import { Parent } from './entities/parent.entity';
 import { Session } from './entities/session.entity';
 import { LearningPackage } from './entities/learningPackage.entity';
 import { Subscription } from './entities/subscription.entity';
+import { CustomerCare } from './entities/customerCare.entity';
 import { Invoice } from './entities/invoice.entity';
+
 
 config();
 
@@ -33,6 +35,7 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
+      CustomerCare,
       Invoice,
     ],
   },
@@ -43,7 +46,7 @@ export const ModuleConfigs = {
     entities: [User, Student, Parent, Device, Country, Session],
   },
   admin: {
-    entities: [User, Session, Student, Parent],
+    entities: [User, Session, Student, Parent, CustomerCare, Device, Country],
   },
   subscription: {
     entities: [Subscription, LearningPackage, Invoice],
@@ -124,6 +127,44 @@ export const authMessages = {
   pwordReset: 'Password reset successfully',
   logout: 'Logout successfully',
 };
+
+export const profileMessages = {
+  updatedSuccess: 'Profile updated successfully',
+  updatedFail: 'Profile updated successfully',
+  userNotFound: 'No user found',
+};
+
+export const adminMessages = {
+  fetchSessionSuccess: 'User sessions fetched successfully -------',
+  addCustomerCareSuccess: 'Customer Care Added successfully -------',
+  endSessionSuccess: 'User sessions ended successfully -------',
+  recoverSessionSuccess: 'User sessions recovered successfully -------',
+  userSuspendedSuccess: 'User suspended successfully -------',
+  studentFetchSuccess: 'Students Fetched successfully -------',
+};
+
+export const adminErrors = {
+  fetchSessionFailed: 'Failed to fetch user sessions -------',
+  fetchUserFailed: 'Failed to fetch user -------',
+  endSessionFailed: 'Failed to end user sessions -------',
+  updateSessionFailed: 'Failed to update user sessions -------',
+  recoverSessionFailed: 'Failed to recover user sessions -------',
+  userNotFoundWithId: 'No user found with this id. --------- ',
+  checkingUser: 'error while fetching user. --------- ',
+  checkingSession: 'error while fetching session. --------- ',
+  customerCareCreateFailed: 'error while creating customer care. --------- ',
+  failedToFetchStudents: 'error while fetching students. --------- ',
+  failedToSuspendUser: 'error while suspending user. --------- ',
+  sessionNotFoundWithId: 'no session found for this parent. --------- ',
+  noParentFound: 'parent not found with this user id. --------- ',
+  noUserFound: 'user not found with this id. --------- ',
+  tokenCreate: 'could not create token --------- ',
+  tokenVerify: 'could not verify session token --------- ',
+  dupPNQuery: 'query for duplicate phone number failed --------- ',
+  dupEmailQuery: 'query for duplicate email failed --------- ',
+  saveUser: 'could not save new user --------- ',
+};
+
 export const authErrors = {
   noMockDevice: 'could not find mock device for seeder --------- ',
   sessionExpired:

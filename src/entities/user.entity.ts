@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Student } from './student.entity';
 import { Parent } from './parent.entity';
+import { CustomerCare } from './customerCare.entity';
 import { Genders } from 'src/enums';
 
 @Entity('users')
@@ -48,6 +49,10 @@ export class User {
   @OneToOne(() => Parent)
   @JoinColumn()
   parent?: Parent;
+
+  @OneToOne(() => CustomerCare)
+  @JoinColumn()
+  customerCare?: CustomerCare;
 
   @OneToOne(() => Student)
   @JoinColumn()
