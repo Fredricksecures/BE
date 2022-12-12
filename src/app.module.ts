@@ -8,6 +8,7 @@ import { SubscriptionModule } from './modules/subscription.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configService } from './services/config.service';
 import { UtilityModule } from './modules/utility.module';
+import { ContentModule } from './modules/content.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UtilityModule } from './modules/utility.module';
     AuthModule,
     AdminModule,
     SubscriptionModule,
+    ContentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

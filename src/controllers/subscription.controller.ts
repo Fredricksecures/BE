@@ -19,7 +19,7 @@ import { subscriptionError, subscriptionMessages } from 'src/constants';
 export class SubscriptionController {
   constructor(private readonly authService: SubscriptionService) {}
 
-  @Get('subscriptions')
+  @Get('all')
   async getSubscriptions(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
@@ -44,7 +44,7 @@ export class SubscriptionController {
     }
   }
 
-  @Get('subscription-history/:subscriptionId')
+  @Get('history/:subscriptionId')
   async getSubscriptionHistory(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,

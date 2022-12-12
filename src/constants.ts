@@ -9,8 +9,9 @@ import { Parent } from './entities/parent.entity';
 import { Session } from './entities/session.entity';
 import { LearningPackage } from './entities/learningPackage.entity';
 import { Subscription } from './entities/subscription.entity';
-import { Invoices } from './entities/invoices.entity';
 import { CustomerCare } from './entities/customerCare.entity';
+import { Invoice } from './entities/invoice.entity';
+
 
 config();
 
@@ -34,8 +35,8 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
-      Invoices,
       CustomerCare,
+      Invoice,
     ],
   },
   utility: {
@@ -48,7 +49,10 @@ export const ModuleConfigs = {
     entities: [User, Session, Student, Parent, CustomerCare, Device, Country],
   },
   subscription: {
-    entities: [Subscription, LearningPackage, Invoices],
+    entities: [Subscription, LearningPackage, Invoice],
+  },
+  content: {
+    entities: [],
   },
 };
 
@@ -91,7 +95,6 @@ export const utlityMessages = {
   devices: 'Fetched devices successfully',
   countries: 'Fetched countries successfully',
 };
-
 export const utilityErrors = {
   seedDevices: 'failed to seed devices --------- ',
   seedCountries: 'failed to seed countries --------- ',
@@ -164,6 +167,11 @@ export const adminErrors = {
 
 export const authErrors = {
   noMockDevice: 'could not find mock device for seeder --------- ',
+  sessionExpired:
+    'your session has expired. Login again to get a new session and token',
+  studentsNotFound: 'could not find students',
+  queryingParent: 'could not find parent with user id provided',
+  getStudentsFailed: 'failed to fetch students',
   createSession: 'could not create a new session for user --------- ',
   noMockCountry: 'could not find mock country for seeder --------- ',
   saveUser: 'could not save new user --------- ',
@@ -206,16 +214,50 @@ export const authErrors = {
   findingUserWithId: 'Could not find user with given id --------- ',
   checkingParent: 'Error querying for finding parent --------- ',
   updatingParent: 'Error querying for updating parent --------- ',
-  checkingStudent: 'Error querying for finding student --------- ',
+  checkingStudent: 'Error querying for student --------- ',
   updatingStudent: 'Error querying for updating student --------- ',
   parentNotFound: 'could not find parent with id provided ---------',
   logoutFailed: 'could not logout --------- ',
   checkingSession: 'could not found session --------- ',
 };
 
+export const contentMessages = {};
+export const contentErrors = {};
+
+export const profileMessages = {
+  updatedSuccess: 'Profile updated successfully',
+  updatedFail: 'Profile updated successfully',
+  userNotFound: 'No user found',
+};
+
+export const adminMessages = {
+  fetchSessionSuccess: 'User sessions fetched successfully -------',
+  endSessionSuccess: 'User sessions ended successfully -------',
+  recoverSessionSuccess: 'User sessions recovered successfully -------',
+  userSuspendedSuccess: 'User suspended successfully -------',
+  studentFetchSuccess: 'Students Fetched successfully -------',
+};
+export const adminErrors = {
+  fetchSessionFailed: 'Failed to fetch user sessions -------',
+  fetchUserFailed: 'Failed to fetch user -------',
+  endSessionFailed: 'Failed to end user sessions -------',
+  updateSessionFailed: 'Failed to update user sessions -------',
+  recoverSessionFailed: 'Failed to recover user sessions -------',
+  userNotFoundWithId: 'No user found with this id. --------- ',
+  checkingUser: 'error while fetching user. --------- ',
+  checkingSession: 'error while fetching session. --------- ',
+  failedToFetchStudents: 'error while fetching students. --------- ',
+  failedToSuspendUser: 'error while suspending user. --------- ',
+  sessionNotFoundWithId: 'no session found for this parent. --------- ',
+  noParentFound: 'parent not found with this user id. --------- ',
+  noUserFound: 'user not found with this id. --------- ',
+  tokenCreate: 'could not create token --------- ',
+  tokenVerify: 'could not verify session token --------- ',
+};
+
 //* SEEDS____________________________________________
 
-export const USER_SEED = [
+export const USER_SEED: Array<{}> = [
   {
     firstName: 'Russell',
     lastName: 'Emekoba',
@@ -232,7 +274,7 @@ export const DEVICE_SEED = {
   type: DeviceTypes.WEB,
 };
 
-export const COUNTRY_SEED = {
+export const COUNTRY_SEED: {} = {
   Afghanistan: {},
   Albania: {},
   Algeria: {},
