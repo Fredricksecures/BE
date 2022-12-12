@@ -230,7 +230,7 @@ export class AdminService {
     }
   }
 
-  async getStudents(parentId) {
+  async getStudents(parentId: string) {
     let foundStudents: Array<Student>;
     try {
       foundStudents = await this.studentRepo.find({
@@ -434,7 +434,6 @@ export class AdminService {
         phoneNumber,
         email,
         password,
-        passwordResetPin: '',
         country,
       });
     } catch (e) {

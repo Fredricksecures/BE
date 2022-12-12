@@ -30,6 +30,9 @@ export class Admin {
   @Column({ type: 'varchar', unique: true })
   phoneNumber?: string;
 
+  @Column({ type: 'bool', default: false })
+  isSuper?: boolean;
+
   @OneToOne(() => Country)
   @JoinColumn()
   country?: Country;
