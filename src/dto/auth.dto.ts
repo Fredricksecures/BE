@@ -13,6 +13,7 @@ import { Country } from 'src/entities/country.entity';
 import { Device } from 'src/entities/device.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Session } from 'src/entities/session.entity';
+import { Student } from 'src/entities/student.entity';
 import { User } from 'src/entities/user.entity';
 import { Match } from 'src/utils/decorators';
 
@@ -101,15 +102,33 @@ export class CreateStudentReq {
 
   @IsNotEmpty()
   @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsNotEmpty()
+  @IsString()
   gender: string;
 
   @IsNotEmpty()
   @IsString()
   dateOfBirth: string;
+}
+
+export class GetStudentReq {
+  @IsString()
+  studentId: string;
 
   @IsNotEmpty()
   @IsString()
-  address: string;
+  user: User;
+}
+
+export class GetStudentRes {
+  success: boolean;
+  students: Student | Array<Student>;
 }
 
 export class LoginReq {

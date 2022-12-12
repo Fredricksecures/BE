@@ -200,7 +200,41 @@ export class AuthController {
     }
   }
 
-  @Get('logout/:all?')
+  @Get('get-students')
+  @UseMiddleware('sessionGuard')
+  async getStudents(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const {
+      query: { id },
+      body: { user },
+    } = req;
+
+    const { success, students } = await this.authService.getStudents({
+      studentId: `${id}`,
+      user,
+    });
+
+    if (success) {
+      resp.json({
+        success,
+        message: authMessages.logout,
+        status: HttpStatus.OK,
+        [`student${id ? 's' : ''}`]: students,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.getStudentsFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('logout/:all?')
   async logout(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,

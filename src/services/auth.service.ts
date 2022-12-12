@@ -22,6 +22,8 @@ import {
   ResetPasswordRes,
   ForgotPasswordReq,
   ForgotPasswordRes,
+  GetStudentReq,
+  GetStudentRes,
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
@@ -79,9 +81,11 @@ export class AuthService {
   ) {
     let decodedId: string;
     let decodedDate: Date;
+    let token: string;
+    let foundUser: User;
 
     if (options.useCookies) {
-      const token = req.cookies['jwt'];
+      token = req.cookies['jwt'];
 
       try {
         const { id, date } = await this.jwtService.verifyAsync(token);
@@ -89,7 +93,7 @@ export class AuthService {
         decodedId = id;
         decodedDate = date;
       } catch (e) {
-        Logger.error(e);
+        Logger.error(e).console();
 
         throw new HttpException(
           {
@@ -145,8 +149,9 @@ export class AuthService {
     }
 
     try {
-      const foundUser = await this.userRepo.findOne({
+      foundUser = await this.userRepo.findOne({
         where: { id: decodedId },
+        relations: ['parent.sessions'],
       });
 
       if (!foundUser) {
@@ -158,8 +163,6 @@ export class AuthService {
           HttpStatus.NOT_FOUND,
         );
       }
-
-      req.body.user = foundUser;
     } catch (e) {
       throw new HttpException(
         {
@@ -169,6 +172,22 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
       );
     }
+
+    const foundActiveSection = foundUser.parent.sessions.find(
+      (e) => e.expired === false && e.token === token,
+    );
+
+    if (!foundActiveSection) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_ACCEPTABLE,
+          error: authErrors.sessionExpired,
+        },
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
+
+    req.body.user = foundUser;
   }
 
   async createSession(user: User, device: Device): Promise<Session> {
@@ -223,6 +242,46 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async getParentDetails(
+    userId: string,
+    relations: Array<string>,
+  ): Promise<Parent> {
+    let foundParent: Parent;
+
+    try {
+      foundParent = await this.parentRepo.findOne({
+        where: {
+          user: { id: userId },
+        },
+        relations,
+      });
+    } catch (exp) {
+      Logger.error(authErrors.checkingStudent + exp).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.queryingParent + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundParent) {
+      Logger.error(authErrors.parentNotFound).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.parentNotFound,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return foundParent;
   }
 
   async registerUser(regUserReq: RegisterUserReq) {
@@ -601,8 +660,35 @@ export class AuthService {
 
   async createStudentProfile(createStudentReq: CreateStudentReq) {}
 
+  async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
+    const { studentId, user } = getStudentReq;
+
+    let foundStudents: Student | Array<Student>;
+
+    let parent = await this.getParentDetails(user.id, ['students']);
+
+    if (!foundStudents) {
+      Logger.error(authErrors.studentsNotFound).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.studentsNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      success: true,
+      students: foundStudents,
+    };
+  }
+
   async updateParentProfile(updateParentReq: UpdateParentReq) {
     const { user, email, phoneNumber, address } = updateParentReq;
+
+    console.log(user);
 
     let foundUser: User, updatedParent: Parent;
 
@@ -706,6 +792,11 @@ export class AuthService {
   }
 
   async logout(all: any, token: string) {
+    //! this is a security breach. intruders can log a user out of all their sessions
+    //! if they get their hand on any token even an expired one.
+    //! let use a session guard to get the id and in the process, bounce requests
+    //! from expired tokens
+
     const { id } = await this.jwtService.verifyAsync(token);
 
     if (all) {
@@ -716,7 +807,7 @@ export class AuthService {
           where: {
             id,
           },
-          relations: ['parent', 'parent.sessions'],
+          relations: ['parent.sessions'],
         });
       } catch (exp) {
         throw new HttpException(
