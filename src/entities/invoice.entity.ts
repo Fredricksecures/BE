@@ -10,8 +10,8 @@ import {
 import { Subscription } from './subscription.entity';
 
 @Entity('invoices')
-export class Invoices {
-  constructor(data?: Invoices) {
+export class Invoice {
+  constructor(data?: Invoice) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
