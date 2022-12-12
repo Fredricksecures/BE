@@ -5,17 +5,15 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  OneToMany,
   Column,
   JoinColumn,
 } from 'typeorm';
 import { Country } from './country.entity';
-import { Session } from './session.entity';
 import { User } from './user.entity';
 
-@Entity('customer-care')
-export class CustomerCare {
-  constructor(data?: CustomerCare) {
+@Entity('admin')
+export class Admin {
+  constructor(data?: Admin) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -31,9 +29,6 @@ export class CustomerCare {
 
   @Column({ type: 'varchar', unique: true })
   phoneNumber?: string;
-
-  @Column({ type: 'varchar' })
-  password?: string;
 
   @OneToOne(() => Country)
   @JoinColumn()
