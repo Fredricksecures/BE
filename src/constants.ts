@@ -11,6 +11,7 @@ import { LearningPackage } from './entities/learningPackage.entity';
 import { Subscription } from './entities/subscription.entity';
 import { CustomerCare } from './entities/customerCare.entity';
 import { Invoice } from './entities/invoice.entity';
+import { Admin } from './entities/admin.entity';
 
 config();
 
@@ -36,6 +37,7 @@ export const ModuleConfigs = {
       Subscription,
       CustomerCare,
       Invoice,
+      Admin,
     ],
   },
   utility: {
