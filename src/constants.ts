@@ -132,15 +132,19 @@ export const profileMessages = {
 };
 
 export const adminMessages = {
+  
+  updatedCustomerSuccess: 'Customer profile updated successfully',
   fetchSessionSuccess: 'User sessions fetched successfully -------',
   addCustomerCareSuccess: 'Customer Care Added successfully -------',
   endSessionSuccess: 'User sessions ended successfully -------',
   recoverSessionSuccess: 'User sessions recovered successfully -------',
   userSuspendedSuccess: 'User suspended successfully -------',
   studentFetchSuccess: 'Students Fetched successfully -------',
+  customerFetchSuccess: 'Customers Fetched successfully -------',
 };
 
 export const adminErrors = {
+  customerNotFound: 'could not find customer with id provided ---------',
   fetchSessionFailed: 'Failed to fetch user sessions -------',
   fetchUserFailed: 'Failed to fetch user -------',
   endSessionFailed: 'Failed to end user sessions -------',
@@ -151,6 +155,7 @@ export const adminErrors = {
   checkingSession: 'error while fetching session. --------- ',
   customerCareCreateFailed: 'error while creating customer care. --------- ',
   failedToFetchStudents: 'error while fetching students. --------- ',
+  failedToFetchCustomers: 'error while fetching customers. --------- ',
   failedToSuspendUser: 'error while suspending user. --------- ',
   sessionNotFoundWithId: 'no session found for this parent. --------- ',
   noParentFound: 'parent not found with this user id. --------- ',
@@ -160,6 +165,9 @@ export const adminErrors = {
   dupPNQuery: 'query for duplicate phone number failed --------- ',
   dupEmailQuery: 'query for duplicate email failed --------- ',
   saveUser: 'could not save new user --------- ',
+  checkingCustomer: 'Error querying for finding customer --------- ',
+  updatingCustomer: 'Error querying for updating customer --------- ',
+  updateFailed: 'login failed --------- ',
 };
 
 export const authErrors = {
@@ -205,10 +213,13 @@ export const authErrors = {
   savingNewPword: 'Error updating user password --------- ',
   findingUserWithId: 'Could not find user with given id --------- ',
   checkingParent: 'Error querying for finding parent --------- ',
+ 
   updatingParent: 'Error querying for updating parent --------- ',
+  
   checkingStudent: 'Error querying for finding student --------- ',
   updatingStudent: 'Error querying for updating student --------- ',
   parentNotFound: 'could not find parent with id provided ---------',
+  
   logoutFailed: 'could not logout --------- ',
   checkingSession: 'could not found session --------- ',
 };

@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Body,
+  Param,
   HttpException,
 } from '@nestjs/common';
 import {
@@ -17,14 +18,17 @@ import {
   UsersSessionsRes,
   SuspendUserReq,
   CustomerCareAgentReq,
+  UpdateCustomerReq,
+  BasicUpdateCustomerRes,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
+import { UserTypes } from 'src/enums';
 import { Request, Response } from 'express';
 import { adminErrors, adminMessages } from 'src/constants';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly authService: AdminService) {}
+  constructor(private readonly adminService: AdminService) {}
 
   @Get('user-sessions')
   async getUserSessions(
@@ -33,7 +37,7 @@ export class AdminController {
     @Query() query: GetAllUsersSessionsReq,
   ) {
     const { success, sessions }: GetAllUsersSessionsRes =
-      await this.authService.getUserSessions(query);
+      await this.adminService.getUserSessions(query);
 
     if (success) {
       resp.json({
@@ -59,7 +63,7 @@ export class AdminController {
     @Query() query: UsersSessionsReq,
   ) {
     const { success, session }: UsersSessionsRes =
-      await this.authService.endUserSessions(query);
+      await this.adminService.endUserSessions(query);
     if (success) {
       resp.json({
         status: HttpStatus.OK,
@@ -84,7 +88,7 @@ export class AdminController {
     @Query() query: UsersSessionsReq,
   ) {
     const { success, session }: UsersSessionsRes =
-      await this.authService.recoverUserSessions(query);
+      await this.adminService.recoverUserSessions(query);
     if (success) {
       resp.json({
         status: HttpStatus.OK,
@@ -108,7 +112,7 @@ export class AdminController {
     @Res({ passthrough: true }) resp: Response,
     @Query() params,
   ) {
-    const users = await this.authService.getStudents(params.parentId);
+    const users = await this.adminService.getStudents(params.parentId);
     resp.json({
       status: HttpStatus.OK,
       message: adminMessages.studentFetchSuccess,
@@ -116,13 +120,15 @@ export class AdminController {
     });
   }
 
+
+
   @Patch('suspend')
   async suspendUser(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Body() body: SuspendUserReq,
   ) {
-    const { success, user } = await this.authService.suspendUser(body);
+    const { success, user } = await this.adminService.suspendUser(body);
     if (success) {
       resp.json({
         status: HttpStatus.OK,
@@ -147,7 +153,7 @@ export class AdminController {
     @Body() body: CustomerCareAgentReq,
   ) {
     const { success, createdCustomerCare } =
-      await this.authService.createCustomerCareAgent(body);
+      await this.adminService.createCustomerCareAgent(body);
     if (success) {
       resp.json({
         status: HttpStatus.OK,
@@ -163,5 +169,52 @@ export class AdminController {
         HttpStatus.NOT_FOUND,
       );
     }
+  }
+
+  @Patch('update-customer-agent/:id')
+  async updateCustomer(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: UpdateCustomerReq,
+    @Param('id') id,
+  ) {
+    let { updatedCustomer, success }: BasicUpdateCustomerRes =
+      await this.adminService.updateCustomerProfile(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      updatedCustomer = await this.adminService.formatPayload(
+        updatedCustomer,
+        UserTypes.CUSTOMERCARE,
+      );
+      resp.json({
+        success,
+        message: adminMessages.updatedCustomerSuccess,
+        status: HttpStatus.OK,
+        updatedCustomer,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.updateFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  
+  @Get('get-customer-agents')
+  async getCustomers(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const users = await this.adminService.getCustomers();
+    resp.json({
+      status: HttpStatus.OK,
+      message: adminMessages.customerFetchSuccess,
+      users,
+    });
   }
 }
