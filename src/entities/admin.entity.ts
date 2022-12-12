@@ -5,18 +5,15 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  OneToMany,
   Column,
   JoinColumn,
 } from 'typeorm';
 import { Country } from './country.entity';
-import { Session } from './session.entity';
-import { Student } from './student.entity';
 import { User } from './user.entity';
 
-@Entity('parents')
-export class Parent {
-  constructor(data?: Parent) {
+@Entity('admin')
+export class Admin {
+  constructor(data?: Admin) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -33,17 +30,8 @@ export class Parent {
   @Column({ type: 'varchar', unique: true })
   phoneNumber?: string;
 
-  @Column({ type: 'varchar' })
-  address?: string;
-
-  @Column({ type: 'varchar' })
-  password?: string;
-
-  @Column({ type: 'varchar' })
-  passwordResetPin?: string;
-
-  @Column({ type: 'varchar', default: OnboardingStages.STAGE_0 })
-  onboardingStage?: string;
+  @Column({ type: 'bool', default: false })
+  isSuper?: boolean;
 
   @OneToOne(() => Country)
   @JoinColumn()
@@ -51,12 +39,6 @@ export class Parent {
 
   @OneToOne(() => User)
   user?: User;
-
-  @OneToMany(() => Student, (Student) => Student.parent)
-  students?: Student[];
-
-  @OneToMany(() => Session, (Session) => Session.parent)
-  sessions?: Session[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

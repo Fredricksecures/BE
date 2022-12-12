@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { Device } from './device.entity';
 import { Parent } from './parent.entity';
-import { User } from './user.entity';
 
 @Entity('sessions')
 export class Session {
@@ -32,10 +31,14 @@ export class Session {
   @PrimaryGeneratedColumn('uuid')
   id?: string;
 
+  @Column({ type: 'bool', default: false })
+  expired?: boolean;
+
   @Column({ type: 'varchar' })
   token?: string;
 
   @ManyToOne(() => Parent, (Parent) => Parent.sessions)
+  @JoinColumn()
   parent?: Parent;
 
   @OneToOne(() => Device)

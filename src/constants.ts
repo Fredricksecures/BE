@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { DeviceTypes, UserTypes } from './enums';
+import { DeviceTypes, Genders, PackageTypes, UserTypes } from './enums';
 import { JwtModule } from '@nestjs/jwt';
 import { Device } from './entities/device.entity';
 import { Country } from './entities/country.entity';
@@ -7,6 +7,11 @@ import { User } from './entities/user.entity';
 import { Student } from './entities/student.entity';
 import { Parent } from './entities/parent.entity';
 import { Session } from './entities/session.entity';
+import { LearningPackage } from './entities/learningPackage.entity';
+import { Subscription } from './entities/subscription.entity';
+import { CustomerCare } from './entities/customerCare.entity';
+import { Invoice } from './entities/invoice.entity';
+import { Admin } from './entities/admin.entity';
 
 config();
 
@@ -21,7 +26,19 @@ export const jwtConfig = JwtModule.register({
 
 export const ModuleConfigs = {
   app: {
-    entities: [],
+    entities: [
+      User,
+      Student,
+      Parent,
+      Device,
+      Country,
+      Session,
+      LearningPackage,
+      Subscription,
+      CustomerCare,
+      Invoice,
+      Admin,
+    ],
   },
   utility: {
     entities: [Device, Country],
@@ -29,18 +46,49 @@ export const ModuleConfigs = {
   auth: {
     entities: [User, Student, Parent, Device, Country, Session],
   },
+  admin: {
+    entities: [User, Session, Student, Parent, CustomerCare, Device, Country],
+  },
+  subscription: {
+    entities: [Subscription, LearningPackage, Invoice],
+  },
+  content: {
+    entities: [],
+  },
 };
 
 export const GET_ALL_ENTITIES = () => [
   ...new Set(
     [].concat.apply(
       [],
-      Object.keys(ModuleConfigs).map((key, val) =>
+      Object.keys(ModuleConfigs).map((key) =>
         [].concat.apply([], ModuleConfigs[key].entities),
       ),
     ),
   ),
 ];
+
+//* LEARNING PACKAGES_______________________________________
+export const learningPackages = {
+  RECEPTION: { name: 'RECEPTION', type: PackageTypes.PRE_SCHOOL },
+
+  GRADE_1: { name: 'GRADE_1', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_2: { name: 'GRADE_2', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_3: { name: 'GRADE_3', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_4: { name: 'GRADE_4', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_5: { name: 'GRADE_5', type: PackageTypes.PRIMARY_SCHOOL },
+  GRADE_6: { name: 'GRADE_6', type: PackageTypes.PRIMARY_SCHOOL },
+
+  NIGERIAN_LANGUAGES: {
+    name: 'NIGERIAN_LANGUAGES',
+    type: PackageTypes.NIGERIAN_LANGUAGES,
+  },
+
+  BRITISH: { name: 'BRITISH', type: PackageTypes.SECONDARY_SCHOOL },
+  CATHOLIC: { name: 'CATHOLIC', type: PackageTypes.SECONDARY_SCHOOL },
+  MILITARY: { name: 'MILITARY', type: PackageTypes.SECONDARY_SCHOOL },
+  NATIONAL: { name: 'NATIONAL', type: PackageTypes.SECONDARY_SCHOOL },
+};
 
 //* MESSAGES_______________________________________
 
@@ -48,71 +96,140 @@ export const utlityMessages = {
   devices: 'Fetched devices successfully',
   countries: 'Fetched countries successfully',
 };
-
 export const utilityErrors = {
-  seedDevices: 'failed to seed devices',
-  seedCountries: 'failed to seed countries',
-  getCountry: 'failed to fecth country info',
-  getDevice: 'failed to fecth device info',
+  seedDevices: 'failed to seed devices --------- ',
+  seedCountries: 'failed to seed countries --------- ',
+  getCountry: 'failed to fecth country info --------- ',
+  getDevice: 'failed to fecth device info --------- ',
+  seedPackages: 'failed to seed learning packages --------- ',
+};
+
+export const subscriptionMessages = {
+  fetchSubscriptionSuccess: 'Subscriptions fetched successfully',
+  fetchInvoiceHistorySuccess: 'Invoices History fetched successfully',
+};
+export const subscriptionError = {
+  fetchSubscriptionFailed: 'Failed to fetch Subscriptions',
+  fetchSubscriptionHistoryFailed: 'Failed to fetch Subscription history',
+  fetchInvoicesFailed: 'Failed to fetch Invoices history',
+  checkingSubscription: 'Error querying for finding subscriptions ---------',
+  checkingInvoices: 'Error querying for finding invoices ---------',
+  failedToFetchSubscriptions: 'Failed to fetch subscriptions ---------',
 };
 
 export const authMessages = {
   countries: 'all countries retrieved successfully',
-  endpoints: 'authentication endpoints retrieved successfully ',
-  userCreated: 'user created successfully ',
-  login: 'login successful ',
+  endpoints: 'authentication endpoints retrieved successfully',
+  userCreated: 'user created successfully',
+  login: 'login successful',
   teacherCreated: 'Teacher profile created successfully',
   profileUpdateSuccessful: 'profile updated successfully',
   passwordEmailSent: 'reset email sent successfully',
   pwordReset: 'Password reset successfully',
+  logout: 'Logout successfully',
+};
+export const authErrors = {
+  noMockDevice: 'could not find mock device for seeder --------- ',
+  sessionExpired:
+    'your session has expired. Login again to get a new session and token',
+  studentsNotFound: 'could not find students',
+  queryingParent: 'could not find parent with user id provided',
+  getStudentsFailed: 'failed to fetch students',
+  createSession: 'could not create a new session for user --------- ',
+  noMockCountry: 'could not find mock country for seeder --------- ',
+  saveUser: 'could not save new user --------- ',
+  savedCountries: 'could not save new country to db --------- ',
+  createdTeacher: 'could not create new teacher --------- ',
+  savedTeacherToUser: 'could not save new teacher id to user --------- ',
+  createdSchool: 'could not create new school --------- ',
+  savedSchoolToUser: 'could not save new school id to user --------- ',
+  createdParent: 'could not create new parent --------- ',
+  createdClass: 'could not create new class --------- ',
+  createdDevice: 'could not create new device --------- ',
+  foundClass: 'could not find class of specified id --------- ',
+  savedParentToUser: 'could not save new parent id to user --------- ',
+  createdStudent: 'could not create new student --------- ',
+  savedStudentToUser: 'could not save new student id to user --------- ',
+  savedEntranceExamSubscription:
+    'could not create new entrance exam subscription --------- ',
+  dupPNQuery: 'query for duplicate phone number failed --------- ',
+  dupEmailQuery: 'query for duplicate email failed --------- ',
+  tokenCreate: 'could not create token --------- ',
+  userTokenUpdate: 'could not update user token --------- ',
+  checkingEmail: 'Error querying for matching emails --------- ',
+  checkingPassword: 'Error querying for matching passwords --------- ',
+  emailNotFound: 'user with specified email not found --------- ',
+  invalidPassword: 'your password is incorrect',
+  loginFailed: 'login failed --------- ',
+  updateFailed: 'login failed --------- ',
+  invalidNotificationInformation:
+    'no email or phone number recieved --------- ',
+  invalidToken: 'Invalid Token --------- ',
+  noTokenIdMatch: 'could not match user to decoded id --------- ',
+  noAuthTokenPassed: 'no authorization token passed --------- ',
+  noCookieTokenPassed: 'no token passed via cookies --------- ',
+  invalidEmail: 'no user with given email --------- ',
+  savePin: 'could not save user reset pin --------- ',
+  userNotFoundById: 'Could not find matching user of given id --------- ',
+  queryById: 'Error querying user via id  --------- ',
+  sameNewAndPrevPassword: 'New Password is the same as old password --------- ',
+  savingNewPword: 'Error updating user password --------- ',
+  findingUserWithId: 'Could not find user with given id --------- ',
+  checkingParent: 'Error querying for finding parent --------- ',
+  updatingParent: 'Error querying for updating parent --------- ',
+  checkingStudent: 'Error querying for student --------- ',
+  updatingStudent: 'Error querying for updating student --------- ',
+  parentNotFound: 'could not find parent with id provided ---------',
+  logoutFailed: 'could not logout --------- ',
+  checkingSession: 'could not found session --------- ',
 };
 
-export const authErrors = {
-  noMockDevice: 'could not find mock device for seeder ',
-  createSession: 'could not create a new session for user ',
-  noMockCountry: 'could not find mock country for seeder ',
-  saveUser: 'could not save new user ',
-  savedCountries: 'could not save new country to db ',
-  createdTeacher: 'could not create new teacher ',
-  savedTeacherToUser: 'could not save new teacher id to user ',
-  createdSchool: 'could not create new school ',
-  savedSchoolToUser: 'could not save new school id to user ',
-  createdParent: 'could not create new parent ',
-  createdClass: 'could not create new class ',
-  createdDevice: 'could not create new device ',
-  foundClass: 'could not find class of specified id ',
-  savedParentToUser: 'could not save new parent id to user ',
-  createdStudent: 'could not create new student ',
-  savedStudentToUser: 'could not save new student id to user ',
-  savedEntranceExamSubscription:
-    'could not create new entrance exam subscription ',
-  dupPNQuery: 'query for duplicate phone number failed ',
-  dupEmailQuery: 'query for duplicate email failed ',
-  tokenCreate: 'could not create token ',
-  userTokenUpdate: 'could not update user token ',
-  checkingEmail: 'Error querying for matching emails ',
-  checkingPassword: 'Error querying for matching passwords ',
-  emailNotFound: 'user with specified email not found ',
-  invalidPassword: 'password invalid for email provided ',
-  loginFailed: 'login failed',
-  invalidNotificationInformation: 'no email or phone number recieved',
-  invalidToken: 'Invalid Token',
-  noTokenIdMatch: 'could not match user to decoded id ',
-  noAuthTokenPassed: 'no authorization token passed ',
-  noCookieTokenPassed: 'no token passed via cookies ',
-  invalidEmail: 'no user with given email ',
-  savePin: 'could not save user reset pin ',
-  userNotFoundById: 'Could not find matching user of given id ',
-  queryById: 'Error querying user via id  ',
-  sameNewAndPrevPassword: 'New Password is the same as old password ',
-  savingNewPword: 'Error updating user password ',
-  findingUserWithId: 'Could not find user with given id ',
+export const contentMessages = {};
+export const contentErrors = {};
+
+export const profileMessages = {
+  updatedSuccess: 'Profile updated successfully',
+  updatedFail: 'Profile updated successfully',
+  userNotFound: 'No user found',
+};
+
+export const adminMessages = {
+  fetchSessionSuccess: 'User sessions fetched successfully',
+  endSessionSuccess: 'User sessions ended successfully',
+  recoverSessionSuccess: 'User sessions recovered successfully',
+  userSuspendedSuccess: 'User suspended successfully',
+  studentFetchSuccess: 'Students Fetched successfully',
+  addCustomerCareSuccess: 'Customer Care Added successfully',
+};
+export const adminErrors = {
+  fetchSessionFailed: 'Failed to fetch user sessions -------',
+  fetchUserFailed: 'Failed to fetch user -------',
+  endSessionFailed: 'Failed to end user sessions -------',
+  updateSessionFailed: 'Failed to update user sessions -------',
+  recoverSessionFailed: 'Failed to recover user sessions -------',
+  userNotFoundWithId: 'No user found with this id. --------- ',
+  checkingUser: 'error while fetching user. --------- ',
+  checkingSession: 'error while fetching session. --------- ',
+  failedToFetchStudents: 'error while fetching students. --------- ',
+  failedToSuspendUser: 'error while suspending user. --------- ',
+  sessionNotFoundWithId: 'no session found for this parent. --------- ',
+  noParentFound: 'parent not found with this user id. --------- ',
+  noUserFound: 'user not found with this id. --------- ',
+  tokenCreate: 'could not create token --------- ',
+  tokenVerify: 'could not verify session token --------- ',
+  customerCareCreateFailed: 'error while creating customer care. --------- ',
+  dupPNQuery: 'query for duplicate phone number failed --------- ',
+  dupEmailQuery: 'query for duplicate email failed --------- ',
+  saveUser: 'could not save new user --------- ',
 };
 
 //* SEEDS____________________________________________
 
-export const USER_SEED = [
+export const USER_SEED: Array<{}> = [
   {
+    firstName: 'Russell',
+    lastName: 'Emekoba',
+    gender: Genders.MALE,
     email: 'rjemekoba@gmail.com',
     password: 'Password1$',
     type: UserTypes.PARENT,
@@ -125,7 +242,7 @@ export const DEVICE_SEED = {
   type: DeviceTypes.WEB,
 };
 
-export const COUNTRY_SEED = {
+export const COUNTRY_SEED: {} = {
   Afghanistan: {},
   Albania: {},
   Algeria: {},

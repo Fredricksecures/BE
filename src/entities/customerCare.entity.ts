@@ -11,12 +11,11 @@ import {
 } from 'typeorm';
 import { Country } from './country.entity';
 import { Session } from './session.entity';
-import { Student } from './student.entity';
 import { User } from './user.entity';
 
-@Entity('parents')
-export class Parent {
-  constructor(data?: Parent) {
+@Entity('customer-care')
+export class CustomerCare {
+  constructor(data?: CustomerCare) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -34,16 +33,7 @@ export class Parent {
   phoneNumber?: string;
 
   @Column({ type: 'varchar' })
-  address?: string;
-
-  @Column({ type: 'varchar' })
   password?: string;
-
-  @Column({ type: 'varchar' })
-  passwordResetPin?: string;
-
-  @Column({ type: 'varchar', default: OnboardingStages.STAGE_0 })
-  onboardingStage?: string;
 
   @OneToOne(() => Country)
   @JoinColumn()
@@ -51,12 +41,6 @@ export class Parent {
 
   @OneToOne(() => User)
   user?: User;
-
-  @OneToMany(() => Student, (Student) => Student.parent)
-  students?: Student[];
-
-  @OneToMany(() => Session, (Session) => Session.parent)
-  sessions?: Session[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

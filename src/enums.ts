@@ -1,6 +1,9 @@
 export const UserTypes = {
   STUDENT: 'STUDENT',
   PARENT: 'PARENT',
+  ADMIN: 'ADMIN',
+  CUSTOMERCARE: 'CUSTOMERCARE',
+  DEFAULT: 'DEFAULT',
 };
 
 export const DeviceTypes = {
@@ -11,9 +14,33 @@ export const DeviceTypes = {
   UNKNOWN: 'UNKNOWN',
 };
 
+export const BrowserTypes = {
+  CHROME: 'CHROME',
+  EDGE: 'EDGE',
+  SAFARI: 'SAFARI',
+  UNKNOWN: 'UNKNOWN',
+};
+
+export const OSTypes = {
+  WINDOWS: 'WINDOWS',
+  LINUX: 'LINUX',
+  MACINTOSH: 'MACINTOSH',
+  ANDROID: 'ANDROID',
+  IOS: 'IOS',
+  UNKNOWN: 'UNKNOWN',
+};
+
 export const Genders = {
   MALE: 'MALE',
   FEMALE: 'FEMALE',
+};
+
+export const PackageTypes = {
+  PRE_SCHOOL: 'PRE_SCHOOL',
+  PRIMARY_SCHOOL: 'PRIMARY_SCHOOL',
+  SECONDARY_SCHOOL: 'SECONDARY_SCHOOL',
+  LEADER_IN_ME: 'LEADER_IN_ME',
+  NIGERIAN_LANGUAGES: 'NIGERIAN_LANGUAGES',
 };
 
 export const OnboardingStages = {
