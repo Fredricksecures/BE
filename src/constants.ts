@@ -12,7 +12,6 @@ import { Subscription } from './entities/subscription.entity';
 import { CustomerCare } from './entities/customerCare.entity';
 import { Invoice } from './entities/invoice.entity';
 
-
 config();
 
 const { JWT_SECRET, JWT_EXPIRATION_TIME } = process.env;
@@ -135,6 +134,8 @@ export const profileMessages = {
 };
 
 export const adminMessages = {
+  customerFetchSuccess:'Customers Fetched successfully -------',
+  updatedCustomerSuccess:'Customer profile updated successfully',
   fetchSessionSuccess: 'User sessions fetched successfully -------',
   addCustomerCareSuccess: 'Customer Care Added successfully -------',
   endSessionSuccess: 'User sessions ended successfully -------',
@@ -144,6 +145,11 @@ export const adminMessages = {
 };
 
 export const adminErrors = {
+  updatingCustomer:'Error querying for updating customer --------- ',
+  checkingCustomer:'Error querying for finding customer --------- ',
+  failedToFetchCustomers:'error while fetching customers. --------- ',
+  updateFailed: 'login failed --------- ',
+  customerNotFound: 'could not find customer with id provided ---------',
   fetchSessionFailed: 'Failed to fetch user sessions -------',
   fetchUserFailed: 'Failed to fetch user -------',
   endSessionFailed: 'Failed to end user sessions -------',
@@ -224,36 +230,7 @@ export const authErrors = {
 export const contentMessages = {};
 export const contentErrors = {};
 
-export const profileMessages = {
-  updatedSuccess: 'Profile updated successfully',
-  updatedFail: 'Profile updated successfully',
-  userNotFound: 'No user found',
-};
 
-export const adminMessages = {
-  fetchSessionSuccess: 'User sessions fetched successfully -------',
-  endSessionSuccess: 'User sessions ended successfully -------',
-  recoverSessionSuccess: 'User sessions recovered successfully -------',
-  userSuspendedSuccess: 'User suspended successfully -------',
-  studentFetchSuccess: 'Students Fetched successfully -------',
-};
-export const adminErrors = {
-  fetchSessionFailed: 'Failed to fetch user sessions -------',
-  fetchUserFailed: 'Failed to fetch user -------',
-  endSessionFailed: 'Failed to end user sessions -------',
-  updateSessionFailed: 'Failed to update user sessions -------',
-  recoverSessionFailed: 'Failed to recover user sessions -------',
-  userNotFoundWithId: 'No user found with this id. --------- ',
-  checkingUser: 'error while fetching user. --------- ',
-  checkingSession: 'error while fetching session. --------- ',
-  failedToFetchStudents: 'error while fetching students. --------- ',
-  failedToSuspendUser: 'error while suspending user. --------- ',
-  sessionNotFoundWithId: 'no session found for this parent. --------- ',
-  noParentFound: 'parent not found with this user id. --------- ',
-  noUserFound: 'user not found with this id. --------- ',
-  tokenCreate: 'could not create token --------- ',
-  tokenVerify: 'could not verify session token --------- ',
-};
 
 //* SEEDS____________________________________________
 
