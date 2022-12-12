@@ -10,6 +10,7 @@ import {
   IsMobilePhone,
 } from 'class-validator';
 import { Session } from 'src/entities/session.entity';
+import { CustomerCare } from 'src/entities/CustomerCare.entity';
 import { User } from 'src/entities/user.entity';
 
 export class GetAllUsersSessionsReq {
@@ -59,7 +60,52 @@ export class CustomerCareAgentReq {
   @IsNotEmpty()
   countryId: string;
 }
+export class UpdateCustomerIdReq {
+  @IsNotEmpty()
+  @IsString()
+  Id: string; 
+}
+export class UpdateCustomerReq {
+ 
+  @IsOptional()
+  @IsString()
+  @IsEmail()
+  email: string;
 
+  @IsOptional()
+  @IsMobilePhone()
+  phoneNumber: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  dateOfBirth: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  gender: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  profilePicture: string;
+}
+
+export class BasicUpdateCustomerRes {
+  updatedCustomer?: CustomerCare;
+  success?: boolean;
+}
 export class GetAllUsersSessionsRes {
   sessions?: Array<Session> | undefined;
   success?: boolean;
