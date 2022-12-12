@@ -9,8 +9,10 @@ import {
   UsersSessionsReq,
   SuspendUserReq,
   CustomerCareAgentReq,
+  UpdateCustomerReq,
+  UpdateCustomerIdReq,
 } from 'src/dto/admin.dto';
-import { adminMessages, adminErrors } from 'src/constants';
+import { adminMessages, adminErrors, authErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Student } from 'src/entities/student.entity';
@@ -33,11 +35,34 @@ export class AdminService {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
-    @InjectRepository(Parent) private parentRepo: Repository<Parent>,
     @InjectRepository(CustomerCare)
     private customerCareRepo: Repository<CustomerCare>,
+    @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
+  async formatPayload(user: any, type: string) {
+    switch (type) {
+      case UserTypes.DEFAULT:
+        delete user?.createdAt;
+        delete user?.updatedAt;
+        delete user?.parent?.id;
+        delete user?.parent?.createdAt;
+        delete user?.parent?.updatedAt;
+        delete user?.parent?.password;
+        delete user?.parent?.passwordResetPin;
+        break;
+      case UserTypes.CUSTOMERCARE:
+        delete user?.password;
+        delete user?.passwordResetPin;
+        delete user?.onboardingStage;
+        break;
+
+      default:
+        break;
+    }
+
+    return user;
+  }
   async getUserSessions(user: GetAllUsersSessionsReq) {
     const { userId } = user;
     let foundUser: User;
@@ -450,5 +475,81 @@ export class AdminService {
     }
 
     return createdCustomerCare;
+  }
+
+  async updateCustomerProfile(id, updateCustomerReq: UpdateCustomerReq) {
+    const {
+      email,
+      phoneNumber,
+      firstName,
+      lastName,
+      dateOfBirth,
+      gender,
+      profilePicture,
+    } = updateCustomerReq;
+   
+    let foundUser: User, updatedCustomer: CustomerCare;
+
+    try {
+      foundUser = await this.userRepo.findOne({
+        where: { id: id },
+        relations: ['customerCare'],
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingCustomer + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.customerNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedCustomer = await this.customerCareRepo.save({
+        ...foundUser.customerCare,
+        email: email ?? foundUser.customerCare.email,
+        phoneNumber: phoneNumber ?? foundUser.customerCare.phoneNumber,
+      });
+
+      return {
+        success: true,
+        updatedCustomer,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingCustomer,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async getCustomers() {
+    let foundCustomers: Array<Student>;
+    try {
+      foundCustomers = await this.customerCareRepo.find({});
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchCustomers + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundCustomers;
   }
 }

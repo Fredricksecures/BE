@@ -198,7 +198,10 @@ export const adminMessages = {
   userSuspendedSuccess: 'User suspended successfully',
   studentFetchSuccess: 'Students Fetched successfully',
   addCustomerCareSuccess: 'Customer Care Added successfully',
+  customerFetchSuccess:'Customers Fetched successfully -------',
+  updatedCustomerSuccess:'Customer profile updated successfully',
 };
+
 export const adminErrors = {
   fetchSessionFailed: 'Failed to fetch user sessions -------',
   fetchUserFailed: 'Failed to fetch user -------',
@@ -219,6 +222,11 @@ export const adminErrors = {
   dupPNQuery: 'query for duplicate phone number failed --------- ',
   dupEmailQuery: 'query for duplicate email failed --------- ',
   saveUser: 'could not save new user --------- ',
+  updatingCustomer:'Error querying for updating customer --------- ',
+  checkingCustomer:'Error querying for finding customer --------- ',
+  failedToFetchCustomers:'error while fetching customers. --------- ',
+  updateFailed: 'login failed --------- ',
+  customerNotFound: 'could not find customer with id provided ---------',
 };
 
 //* SEEDS____________________________________________
