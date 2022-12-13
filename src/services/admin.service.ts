@@ -14,14 +14,14 @@ import {
   createAdminReq,
   updateAdminReq
 } from 'src/dto/admin.dto';
-import { adminMessages, adminErrors, authErrors } from 'src/constants';
+import { adminMessages, adminErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Admin } from 'src/entities/admin.entity';
 import { CustomerCare } from 'src/entities/customerCare.entity';
-import { generateRandomHash, isEmpty } from 'src/utils/helpers';
+import { isEmpty } from 'src/utils/helpers';
 import * as bcrypt from 'bcrypt';
 import { UserTypes } from 'src/enums';
 import { UtilityService } from './utility.service';
