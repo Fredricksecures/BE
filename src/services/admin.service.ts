@@ -605,12 +605,12 @@ export class AdminService {
         });
         console.log(duplicatePhoneNumber)
       } catch (e) {
-        Logger.error(authErrors.dupPNQuery + e).console();
+        Logger.error(adminErrors.dupPNQuery + e).console();
 
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
-            error: authErrors.dupPNQuery + e,
+            error: adminErrors.dupPNQuery + e,
           },
           HttpStatus.CONFLICT,
         );
@@ -640,12 +640,12 @@ export class AdminService {
         });
         console.log(duplicateEmail)
       } catch {
-        Logger.error(authErrors.dupEmailQuery).console();
+        Logger.error(adminErrors.dupEmailQuery).console();
 
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
-            error: authErrors.dupEmailQuery,
+            error: adminErrors.dupEmailQuery,
           },
           HttpStatus.CONFLICT,
         );
@@ -684,12 +684,12 @@ export class AdminService {
 
    
     } catch (e) {
-      Logger.error(authErrors.saveUser + e).console();
+      Logger.error(adminErrors.saveUser + e).console();
 
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.saveUser + e,
+          error: adminErrors.saveUser + e,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
