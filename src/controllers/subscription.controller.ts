@@ -9,11 +9,13 @@ import {
   Body,
   HttpException,
   Param,
+  Post,
 } from '@nestjs/common';
 
 import { SubscriptionService } from '../services/subscription.service';
 import { Request, Response } from 'express';
 import { subscriptionError, subscriptionMessages } from 'src/constants';
+import { CreateSubscriptionReq } from 'src/dto/subscription.dto';
 
 @Controller('subscription')
 export class SubscriptionController {
@@ -65,6 +67,32 @@ export class SubscriptionController {
         {
           status: HttpStatus.NOT_FOUND,
           error: subscriptionError.fetchInvoicesFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('create')
+  async createSubscription(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: CreateSubscriptionReq,
+  ) {
+    const { success, createdSubscription } =
+      await this.authService.createSubscription(body);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: subscriptionMessages.create,
+        subcription: createdSubscription,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: subscriptionError.create,
         },
         HttpStatus.NOT_FOUND,
       );

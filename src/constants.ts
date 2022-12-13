@@ -27,13 +27,13 @@ export const jwtConfig = JwtModule.register({
 export const ModuleConfigs = {
   app: {
     entities: [
-      User,
-      Student,
-      Parent,
-      Device,
-      Country,
-      Session,
-      LearningPackage,
+      // User,
+      // Student,
+      // Parent,
+      // Device,
+      // Country,
+      // Session,
+      // LearningPackage,
       Subscription,
       CustomerCare,
       Invoice,
@@ -41,7 +41,7 @@ export const ModuleConfigs = {
     ],
   },
   utility: {
-    entities: [Device, Country],
+    entities: [Device, Country, LearningPackage],
   },
   auth: {
     entities: [User, Student, Parent, Device, Country, Session],
@@ -93,6 +93,7 @@ export const learningPackages = {
 //* MESSAGES_______________________________________
 
 export const utlityMessages = {
+  learningPackages: 'learning packages fetched successfully',
   devices: 'Fetched devices successfully',
   countries: 'Fetched countries successfully',
 };
@@ -105,10 +106,12 @@ export const utilityErrors = {
 };
 
 export const subscriptionMessages = {
+  create: 'subscription created successfully',
   fetchSubscriptionSuccess: 'Subscriptions fetched successfully',
   fetchInvoiceHistorySuccess: 'Invoices History fetched successfully',
 };
 export const subscriptionError = {
+  create: 'failed to create subscription',
   fetchSubscriptionFailed: 'Failed to fetch Subscriptions',
   fetchSubscriptionHistoryFailed: 'Failed to fetch Subscription history',
   fetchInvoicesFailed: 'Failed to fetch Invoices history',
@@ -200,8 +203,8 @@ export const adminMessages = {
   userSuspendedSuccess: 'User suspended successfully',
   studentFetchSuccess: 'Students Fetched successfully',
   addCustomerCareSuccess: 'Customer Care Added successfully',
-  customerFetchSuccess:'Customers Fetched successfully -------',
-  updatedCustomerSuccess:'Customer profile updated successfully',
+  customerFetchSuccess: 'Customers Fetched successfully -------',
+  updatedCustomerSuccess: 'Customer profile updated successfully',
 };
 
 export const adminErrors = {
@@ -224,9 +227,9 @@ export const adminErrors = {
   dupPNQuery: 'query for duplicate phone number failed --------- ',
   dupEmailQuery: 'query for duplicate email failed --------- ',
   saveUser: 'could not save new user --------- ',
-  updatingCustomer:'Error querying for updating customer --------- ',
-  checkingCustomer:'Error querying for finding customer --------- ',
-  failedToFetchCustomers:'error while fetching customers. --------- ',
+  updatingCustomer: 'Error querying for updating customer --------- ',
+  checkingCustomer: 'Error querying for finding customer --------- ',
+  failedToFetchCustomers: 'error while fetching customers. --------- ',
   updateFailed: 'login failed --------- ',
   customerNotFound: 'could not find customer with id provided ---------',
 };

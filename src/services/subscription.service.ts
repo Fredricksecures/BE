@@ -2,14 +2,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { config } from 'dotenv';
 import { subscriptionMessages, subscriptionError } from 'src/constants';
 import { Subscription } from 'src/entities/subscription.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Invoice } from 'src/entities/invoice.entity';
-
-config();
-const { BCRYPT_SALT } = process.env;
+import {
+  CreateSubscriptionReq,
+  CreateSubscriptionRes,
+} from 'src/dto/subscription.dto';
 
 @Injectable()
 export class SubscriptionService {
@@ -22,6 +22,16 @@ export class SubscriptionService {
     @InjectRepository(Invoice)
     private invoicesRepo: Repository<Invoice>,
   ) {}
+
+  async createSubscription(
+    params: CreateSubscriptionReq,
+  ): Promise<CreateSubscriptionRes> {
+    return;
+  }
+
+  async getSubscription(subscriptionId: string): Promise<Subscription> {
+    return;
+  }
 
   async getSubscriptions() {
     let foundSubscriptions: Array<Subscription>;

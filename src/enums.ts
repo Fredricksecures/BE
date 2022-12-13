@@ -6,6 +6,10 @@ export const UserTypes = {
   DEFAULT: 'DEFAULT',
 };
 
+export const SubscriptionStates = {
+  ACTIVE: 'ACTIVE',
+};
+
 export const DeviceTypes = {
   ANDROID: 'ANDROID',
   IOS: 'IOS',
