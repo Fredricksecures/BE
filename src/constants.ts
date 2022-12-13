@@ -14,6 +14,8 @@ import { Invoice } from './entities/invoice.entity';
 import { Admin } from './entities/admin.entity';
 import { Subject } from './entities/subject.entity';
 import { Lesson } from './entities/lesson.entity';
+import { Material } from './entities/material.entity';
+import { Chapter } from './entities/chapter.entity';
 
 config();
 
@@ -42,6 +44,8 @@ export const ModuleConfigs = {
       Admin,
       Subject,
       Lesson,
+      Material,
+      Chapter,
     ],
   },
   utility: {

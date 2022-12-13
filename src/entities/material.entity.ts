@@ -1,3 +1,4 @@
+import { MaterialTypes } from 'src/enums';
 import {
   Column,
   Entity,
@@ -5,15 +6,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany,
 } from 'typeorm';
-import { Chapter } from './chapter.entity';
-import { Material } from './material.entity';
-import { Subject } from './subject.entity';
+import { Lesson } from './lesson.entity';
 
-@Entity('lessons')
-export class Lesson {
-  constructor(data?: Lesson) {
+@Entity('materials')
+export class Material {
+  constructor(data?: Material) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -24,14 +22,11 @@ export class Lesson {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', default: MaterialTypes.VIDEO })
   type?: string;
 
-  @ManyToOne(() => Chapter, (Chapter) => Chapter.lessons)
-  chapter?: Chapter;
-
-  @OneToMany(() => Material, (Material) => Material.lesson)
-  materials?: Material[];
+  @ManyToOne(() => Lesson, (Lesson) => Lesson.materials)
+  lesson?: Lesson;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { Chapter } from './chapter.entity';
 import { LearningPackage } from './learningPackage.entity';
 import { Lesson } from './lesson.entity';
 
@@ -32,8 +33,8 @@ export class Subject {
   )
   learningPackage?: LearningPackage;
 
-  @OneToMany(() => Lesson, (Lesson) => Lesson.subject)
-  lessons?: Lesson[];
+  @OneToMany(() => Chapter, (Chapter) => Chapter.subject)
+  chapters?: Chapter[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
