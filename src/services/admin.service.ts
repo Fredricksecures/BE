@@ -11,12 +11,15 @@ import {
   CustomerCareAgentReq,
   UpdateCustomerReq,
   UpdateCustomerIdReq,
+  createAdminReq,
+  updateAdminReq
 } from 'src/dto/admin.dto';
 import { adminMessages, adminErrors, authErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
+import { Admin } from 'src/entities/admin.entity';
 import { CustomerCare } from 'src/entities/customerCare.entity';
 import { generateRandomHash, isEmpty } from 'src/utils/helpers';
 import * as bcrypt from 'bcrypt';
@@ -33,6 +36,7 @@ export class AdminService {
     private jwtService: JwtService,
     private readonly utilityService: UtilityService,
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
     @InjectRepository(CustomerCare)
@@ -486,7 +490,7 @@ export class AdminService {
       gender,
       profilePicture,
     } = updateCustomerReq;
-   
+
     let foundUser: User, updatedCustomer: CustomerCare;
 
     try {
@@ -551,4 +555,229 @@ export class AdminService {
     }
     return foundCustomers;
   }
+
+  // async createAdmin(createAdminReq: createAdminReq)  {
+  //   let { email, phoneNumber, isSuper, countryId } = createAdminReq;
+  //   let createAdmin: Admin;
+  //   //let createAdmin;
+  //   try {
+  //     createAdmin = await this.adminRepo.save({
+  //       email,
+  //       phoneNumber,
+  //       isSuper,
+  //       countryId,
+  //     });
+  //   } catch (e) {
+  //     Logger.error(adminErrors.adminCreateFailed + e).console();
+
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: adminMessages.addAdminCreateSuccess + e,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
+
+  //   return {
+  //     createAdmin,
+  //     success: true,
+  //   };
+  // }
+  
+  async createAdmin(createAdminReq: createAdminReq) {
+    //* Register Basic User Details_______________________________________________________________
+    let { firstName, lastName, phoneNumber, email, gender, countryId, isSuper } =
+    createAdminReq;
+    console.log(createAdminReq)
+    let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
+
+    //* check if phone number is already taken______________________________________________________________
+    if (!isEmpty(phoneNumber)) {
+      try {
+        duplicatePhoneNumber = await this.userRepo.findOne({
+          where: {
+            admin: {
+              phoneNumber,
+            },
+          },
+          relations:['admin']
+        });
+        console.log(duplicatePhoneNumber)
+      } catch (e) {
+        Logger.error(authErrors.dupPNQuery + e).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: authErrors.dupPNQuery + e,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+
+      if (duplicatePhoneNumber && duplicatePhoneNumber.admin.phoneNumber == phoneNumber) {
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: `phone number ( ${phoneNumber} ) is already taken`,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
+
+    //* check if email is already taken_________________________________________________________________
+    if (!isEmpty(email)) {
+      try {
+        duplicateEmail = await this.userRepo.findOne({
+          where: {
+            admin: {
+              email,
+            },
+          },
+          relations:['admin']
+        });
+        console.log(duplicateEmail)
+      } catch {
+        Logger.error(authErrors.dupEmailQuery).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: authErrors.dupEmailQuery,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+
+      if (duplicateEmail && duplicateEmail.admin.email == email) {
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: email + ' : ' + 'email already exists',
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
+
+    //* create user account______________________________________________________________________________
+    try {
+      // password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
+
+      const  createAdmin = await this.adminRepo.save({
+        email,
+        phoneNumber,
+        isSuper,
+        countryId,
+      });
+
+      createdUser = await this.userRepo.save({
+        firstName,
+        lastName,
+        gender,
+        profilePicture: '',
+        type: UserTypes.ADMIN,
+        admin: createAdmin,
+      });
+
+   
+    } catch (e) {
+      Logger.error(authErrors.saveUser + e).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.saveUser + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      createdUser,
+      success: true,
+    };
+  }
+
+
+
+
+
+
+
+  async getAdmin() {
+    let foundAdmin: Array<Admin>;
+    try {
+      foundAdmin = await this.adminRepo.find({});
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchAdmin + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundAdmin;
+  }
+  
+  async updateAdminProfile(id, updateAdminReq: updateAdminReq) {
+    const {
+      email,
+      phoneNumber,
+      isSuper
+    } = updateAdminReq;
+
+    let foundUser, updatedAdmin: Admin;
+
+    try {
+      foundUser = await this.adminRepo.findOne({
+        where: { id },
+
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingAdmin + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.adminNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedAdmin = await this.adminRepo.save({
+        ...foundUser,
+        email: email ?? foundUser.email,
+        phoneNumber: phoneNumber ?? foundUser.phoneNumber,
+        isSuper: isSuper ?? foundUser.isSuper
+      });
+
+      return {
+        success: true,
+        updatedAdmin,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingAdmin,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
 }

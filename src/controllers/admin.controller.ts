@@ -20,6 +20,10 @@ import {
   CustomerCareAgentReq,
   UpdateCustomerReq,
   BasicUpdateCustomerRes,
+  createAdminReq,
+  updateAdminReq,
+  BasicUpdateAdminRes,
+  BasicRegRes
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/enums';
@@ -120,8 +124,6 @@ export class AdminController {
     });
   }
 
-
-
   @Patch('suspend')
   async suspendUser(
     @Req() req: Request,
@@ -204,7 +206,7 @@ export class AdminController {
       );
     }
   }
-  
+
   @Get('get-customer-agents')
   async getCustomers(
     @Req() req: Request,
@@ -216,5 +218,78 @@ export class AdminController {
       message: adminMessages.customerFetchSuccess,
       users,
     });
+  }
+
+  @Post('create-admin')
+  async createAdmin(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createAdminReq,
+  ) {
+    //console.log(body)
+    const { success, createdUser }:BasicRegRes = await this.adminService.createAdmin(body);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.addAdminCreateSuccess,
+        createdUser,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.failToCreateAdmin,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('get-admin')
+  async getAdmin(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const users = await this.adminService.getAdmin();
+    resp.json({
+      status: HttpStatus.OK,
+      message: adminMessages.adminFetchSuccess,
+      users,
+    });
+  }
+
+  @Patch('update-admin/:id')
+  async updateAdmin(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateAdminReq,
+    @Param('id') id,
+  ) {
+    let { updatedAdmin, success }: BasicUpdateAdminRes =
+      await this.adminService.updateAdminProfile(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      updatedAdmin = await this.adminService.formatPayload(
+        updatedAdmin,
+        UserTypes.CUSTOMERCARE,
+      );
+      resp.json({
+        success,
+        message: adminMessages.updatedCustomerSuccess,
+        status: HttpStatus.OK,
+        updatedAdmin,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.updateFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }
