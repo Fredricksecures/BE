@@ -6,6 +6,10 @@ export const UserTypes = {
   DEFAULT: 'DEFAULT',
 };
 
+export const SubscriptionStates = {
+  ACTIVE: 'ACTIVE',
+};
+
 export const DeviceTypes = {
   ANDROID: 'ANDROID',
   IOS: 'IOS',
@@ -40,7 +44,7 @@ export const PackageTypes = {
   PRIMARY_SCHOOL: 'PRIMARY_SCHOOL',
   SECONDARY_SCHOOL: 'SECONDARY_SCHOOL',
   LEADER_IN_ME: 'LEADER_IN_ME',
-  NIGERIAN_LANGUAGES: 'NIGERIAN_LANGUAGES',
+  LANGUAGES: 'LANGUAGES',
 };
 
 export const OnboardingStages = {

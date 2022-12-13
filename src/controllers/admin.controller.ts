@@ -146,7 +146,7 @@ export class AdminController {
     }
   }
 
-  @Post('create-customer-care-agent')
+  @Post('create-ccagent')
   async createCustomerCareAgent(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,

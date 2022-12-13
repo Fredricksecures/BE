@@ -11,6 +11,9 @@ import { LearningPackage } from './entities/learningPackage.entity';
 import { Subscription } from './entities/subscription.entity';
 import { CustomerCare } from './entities/customerCare.entity';
 import { Invoice } from './entities/invoice.entity';
+import { Admin } from './entities/admin.entity';
+import { Subject } from './entities/subject.entity';
+import { Lesson } from './entities/lesson.entity';
 
 config();
 
@@ -26,20 +29,23 @@ export const jwtConfig = JwtModule.register({
 export const ModuleConfigs = {
   app: {
     entities: [
-      User,
-      Student,
-      Parent,
-      Device,
-      Country,
-      Session,
-      LearningPackage,
+      // User,
+      // Student,
+      // Parent,
+      // Device,
+      // Country,
+      // Session,
+      // LearningPackage,
       Subscription,
       CustomerCare,
       Invoice,
+      Admin,
+      Subject,
+      Lesson,
     ],
   },
   utility: {
-    entities: [Device, Country],
+    entities: [Device, Country, LearningPackage],
   },
   auth: {
     entities: [User, Student, Parent, Device, Country, Session],
@@ -77,9 +83,9 @@ export const learningPackages = {
   GRADE_5: { name: 'GRADE_5', type: PackageTypes.PRIMARY_SCHOOL },
   GRADE_6: { name: 'GRADE_6', type: PackageTypes.PRIMARY_SCHOOL },
 
-  NIGERIAN_LANGUAGES: {
+  LANGUAGES: {
     name: 'NIGERIAN_LANGUAGES',
-    type: PackageTypes.NIGERIAN_LANGUAGES,
+    type: PackageTypes.LANGUAGES,
   },
 
   BRITISH: { name: 'BRITISH', type: PackageTypes.SECONDARY_SCHOOL },
@@ -91,6 +97,7 @@ export const learningPackages = {
 //* MESSAGES_______________________________________
 
 export const utlityMessages = {
+  learningPackages: 'learning packages fetched successfully',
   devices: 'Fetched devices successfully',
   countries: 'Fetched countries successfully',
 };
@@ -103,10 +110,12 @@ export const utilityErrors = {
 };
 
 export const subscriptionMessages = {
+  create: 'subscription created successfully',
   fetchSubscriptionSuccess: 'Subscriptions fetched successfully',
   fetchInvoiceHistorySuccess: 'Invoices History fetched successfully',
 };
 export const subscriptionError = {
+  create: 'failed to create subscription',
   fetchSubscriptionFailed: 'Failed to fetch Subscriptions',
   fetchSubscriptionHistoryFailed: 'Failed to fetch Subscription history',
   fetchInvoicesFailed: 'Failed to fetch Invoices history',
@@ -198,8 +207,8 @@ export const adminMessages = {
   userSuspendedSuccess: 'User suspended successfully',
   studentFetchSuccess: 'Students Fetched successfully',
   addCustomerCareSuccess: 'Customer Care Added successfully',
-  customerFetchSuccess:'Customers Fetched successfully -------',
-  updatedCustomerSuccess:'Customer profile updated successfully',
+  customerFetchSuccess: 'Customers Fetched successfully -------',
+  updatedCustomerSuccess: 'Customer profile updated successfully',
 };
 
 export const adminErrors = {
@@ -222,9 +231,9 @@ export const adminErrors = {
   dupPNQuery: 'query for duplicate phone number failed --------- ',
   dupEmailQuery: 'query for duplicate email failed --------- ',
   saveUser: 'could not save new user --------- ',
-  updatingCustomer:'Error querying for updating customer --------- ',
-  checkingCustomer:'Error querying for finding customer --------- ',
-  failedToFetchCustomers:'error while fetching customers. --------- ',
+  updatingCustomer: 'Error querying for updating customer --------- ',
+  checkingCustomer: 'Error querying for finding customer --------- ',
+  failedToFetchCustomers: 'error while fetching customers. --------- ',
   updateFailed: 'login failed --------- ',
   customerNotFound: 'could not find customer with id provided ---------',
 };

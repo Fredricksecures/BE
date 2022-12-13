@@ -62,6 +62,7 @@ export class AdminService {
 
     return user;
   }
+
   async getUserSessions(user: GetAllUsersSessionsReq) {
     const { userId } = user;
     let foundUser: User;
@@ -254,7 +255,7 @@ export class AdminService {
     }
   }
 
-  async getStudents(parentId) {
+  async getStudents(parentId: string) {
     let foundStudents: Array<Student>;
     try {
       foundStudents = await this.studentRepo.find({
@@ -458,7 +459,6 @@ export class AdminService {
         phoneNumber,
         email,
         password,
-        passwordResetPin: '',
         country,
       });
     } catch (e) {

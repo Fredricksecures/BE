@@ -15,6 +15,7 @@ import { Repository } from 'typeorm';
 import { utlityMessages } from 'src/constants';
 import { Device } from 'src/entities/device.entity';
 import { Response, Request } from 'express';
+import { LearningPackage } from './../entities/learningPackage.entity';
 
 @Controller('utility')
 export class UtilityController {
@@ -23,6 +24,8 @@ export class UtilityController {
     private readonly utilityService: UtilityService,
     @InjectRepository(Country) private countryRepo: Repository<Country>,
     @InjectRepository(Device) private deviceRepo: Repository<Device>,
+    @InjectRepository(LearningPackage)
+    private lPRepo: Repository<LearningPackage>,
   ) {}
 
   @Get('all-endpoints')
@@ -62,6 +65,17 @@ export class UtilityController {
       status: HttpStatus.FOUND,
       message: utlityMessages.devices,
       devices,
+    });
+  }
+
+  @Get('learning-packages')
+  async getLPackages(@Req() req: Request, @Res() resp: Response) {
+    const learningPackages: Array<LearningPackage> = await this.lPRepo.find({});
+
+    resp.json({
+      status: HttpStatus.FOUND,
+      message: utlityMessages.learningPackages,
+      packages: learningPackages,
     });
   }
 }

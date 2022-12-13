@@ -11,6 +11,7 @@ import { Student } from './student.entity';
 import { Parent } from './parent.entity';
 import { CustomerCare } from './customerCare.entity';
 import { Genders } from 'src/enums';
+import { Admin } from './admin.entity';
 
 @Entity('users')
 export class User {
@@ -53,6 +54,10 @@ export class User {
   @OneToOne(() => CustomerCare)
   @JoinColumn()
   customerCare?: CustomerCare;
+
+  @OneToOne(() => Admin)
+  @JoinColumn()
+  admin?: Admin;
 
   @OneToOne(() => Student)
   @JoinColumn()
