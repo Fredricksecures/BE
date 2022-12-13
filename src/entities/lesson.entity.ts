@@ -5,15 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany,
 } from 'typeorm';
-import { Student } from './student.entity';
 import { Subject } from './subject.entity';
-import { Subscription } from './subscription.entity';
 
-@Entity('learning-packages')
-export class LearningPackage {
-  constructor(data?: LearningPackage) {
+@Entity('lessons')
+export class Lesson {
+  constructor(data?: Lesson) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -25,19 +22,10 @@ export class LearningPackage {
   id?: string;
 
   @Column({ type: 'varchar' })
-  name?: string;
-
-  @Column({ type: 'varchar' })
   type?: string;
 
-  @ManyToOne(
-    () => Subscription,
-    (Subscription) => Subscription.learningPackages,
-  )
-  subscription?: Subscription;
-
-  @OneToMany(() => Subject, (Subject) => Subject.learningPackage)
-  subjects?: Subject[];
+  @ManyToOne(() => Subject, (Subject) => Subject.lessons)
+  subject?: Subject;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

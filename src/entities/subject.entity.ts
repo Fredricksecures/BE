@@ -7,13 +7,12 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { Student } from './student.entity';
-import { Subject } from './subject.entity';
-import { Subscription } from './subscription.entity';
+import { LearningPackage } from './learningPackage.entity';
+import { Lesson } from './lesson.entity';
 
-@Entity('learning-packages')
-export class LearningPackage {
-  constructor(data?: LearningPackage) {
+@Entity('subjects')
+export class Subject {
+  constructor(data?: Subject) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -25,19 +24,16 @@ export class LearningPackage {
   id?: string;
 
   @Column({ type: 'varchar' })
-  name?: string;
-
-  @Column({ type: 'varchar' })
   type?: string;
 
   @ManyToOne(
-    () => Subscription,
-    (Subscription) => Subscription.learningPackages,
+    () => LearningPackage,
+    (LearningPackage) => LearningPackage.subjects,
   )
-  subscription?: Subscription;
+  learningPackage?: LearningPackage;
 
-  @OneToMany(() => Subject, (Subject) => Subject.learningPackage)
-  subjects?: Subject[];
+  @OneToMany(() => Lesson, (Lesson) => Lesson.subject)
+  lessons?: Lesson[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

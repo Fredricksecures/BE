@@ -12,6 +12,8 @@ import { Subscription } from './entities/subscription.entity';
 import { CustomerCare } from './entities/customerCare.entity';
 import { Invoice } from './entities/invoice.entity';
 import { Admin } from './entities/admin.entity';
+import { Subject } from './entities/subject.entity';
+import { Lesson } from './entities/lesson.entity';
 
 config();
 
@@ -38,6 +40,8 @@ export const ModuleConfigs = {
       CustomerCare,
       Invoice,
       Admin,
+      Subject,
+      Lesson,
     ],
   },
   utility: {
@@ -79,9 +83,9 @@ export const learningPackages = {
   GRADE_5: { name: 'GRADE_5', type: PackageTypes.PRIMARY_SCHOOL },
   GRADE_6: { name: 'GRADE_6', type: PackageTypes.PRIMARY_SCHOOL },
 
-  NIGERIAN_LANGUAGES: {
+  LANGUAGES: {
     name: 'NIGERIAN_LANGUAGES',
-    type: PackageTypes.NIGERIAN_LANGUAGES,
+    type: PackageTypes.LANGUAGES,
   },
 
   BRITISH: { name: 'BRITISH', type: PackageTypes.SECONDARY_SCHOOL },
