@@ -51,7 +51,16 @@ export const ModuleConfigs = {
     entities: [User, Student, Parent, Device, Country, Session],
   },
   admin: {
-    entities: [User, Session, Student, Parent, CustomerCare, Device, Country],
+    entities: [
+      User,
+      Session,
+      Student,
+      Parent,
+      CustomerCare,
+      Device,
+      Country,
+      Admin,
+    ],
   },
   subscription: {
     entities: [Subscription, LearningPackage, Invoice],
@@ -209,6 +218,8 @@ export const adminMessages = {
   addCustomerCareSuccess: 'Customer Care Added successfully',
   customerFetchSuccess: 'Customers Fetched successfully -------',
   updatedCustomerSuccess: 'Customer profile updated successfully',
+  addAdminCreateSuccess: 'Admin created successfully',
+  adminFetchSuccess: 'Admin fetched successfully',
 };
 
 export const adminErrors = {
@@ -236,6 +247,12 @@ export const adminErrors = {
   failedToFetchCustomers: 'error while fetching customers. --------- ',
   updateFailed: 'login failed --------- ',
   customerNotFound: 'could not find customer with id provided ---------',
+  failToCreateAdmin: 'Error while creating admin',
+  adminCreateFailed: 'Failed to create new admin  ---------',
+  failedToFetchAdmin: 'Failed to fetch admin  ---------',
+  checkingAdmin: 'Error querying for finding admin --------- ',
+  adminNotFound: 'could not find admin with id provided ---------',
+  updatingAdmin: 'Error querying for updating admin --------- ',
 };
 
 //* SEEDS____________________________________________
