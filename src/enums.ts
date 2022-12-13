@@ -47,6 +47,11 @@ export const PackageTypes = {
   LANGUAGES: 'LANGUAGES',
 };
 
+export const MaterialTypes = {
+  VIDEO: 'VIDEO',
+  EBOOK: 'EBOOK',
+};
+
 export const OnboardingStages = {
   STAGE_0: 'STAGE_0', //* basic registration. Default stage
   STAGE_1: 'STAGE_1',

@@ -12,7 +12,7 @@ import {
   UpdateCustomerReq,
   UpdateCustomerIdReq,
   createAdminReq,
-  updateAdminReq
+  updateAdminReq,
 } from 'src/dto/admin.dto';
 import { adminMessages, adminErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
@@ -557,40 +557,18 @@ export class AdminService {
     return foundCustomers;
   }
 
-  // async createAdmin(createAdminReq: createAdminReq)  {
-  //   let { email, phoneNumber, isSuper, countryId } = createAdminReq;
-  //   let createAdmin: Admin;
-  //   //let createAdmin;
-  //   try {
-  //     createAdmin = await this.adminRepo.save({
-  //       email,
-  //       phoneNumber,
-  //       isSuper,
-  //       countryId,
-  //     });
-  //   } catch (e) {
-  //     Logger.error(adminErrors.adminCreateFailed + e).console();
-
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.NOT_IMPLEMENTED,
-  //         error: adminMessages.addAdminCreateSuccess + e,
-  //       },
-  //       HttpStatus.NOT_IMPLEMENTED,
-  //     );
-  //   }
-
-  //   return {
-  //     createAdmin,
-  //     success: true,
-  //   };
-  // }
-  
   async createAdmin(createAdminReq: createAdminReq) {
     //* Register Basic User Details_______________________________________________________________
-    let { firstName, lastName, phoneNumber, email, gender, countryId, isSuper } =
-    createAdminReq;
-    console.log(createAdminReq)
+    const {
+      firstName,
+      lastName,
+      phoneNumber,
+      email,
+      gender,
+      countryId,
+      isSuper,
+    } = createAdminReq;
+
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
     //* check if phone number is already taken______________________________________________________________
@@ -602,9 +580,9 @@ export class AdminService {
               phoneNumber,
             },
           },
-          relations:['admin']
+          relations: ['admin'],
         });
-        console.log(duplicatePhoneNumber)
+        console.log(duplicatePhoneNumber);
       } catch (e) {
         Logger.error(adminErrors.dupPNQuery + e).console();
 
@@ -617,7 +595,10 @@ export class AdminService {
         );
       }
 
-      if (duplicatePhoneNumber && duplicatePhoneNumber.admin.phoneNumber == phoneNumber) {
+      if (
+        duplicatePhoneNumber &&
+        duplicatePhoneNumber.admin.phoneNumber == phoneNumber
+      ) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
@@ -637,9 +618,9 @@ export class AdminService {
               email,
             },
           },
-          relations:['admin']
+          relations: ['admin'],
         });
-        console.log(duplicateEmail)
+        console.log(duplicateEmail);
       } catch {
         Logger.error(adminErrors.dupEmailQuery).console();
 
@@ -663,11 +644,9 @@ export class AdminService {
       }
     }
 
-    //* create user account______________________________________________________________________________
+    //* create admin account______________________________________________________________________________
     try {
-      // password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
-
-      const  createAdmin = await this.adminRepo.save({
+      const createdAdmin = await this.adminRepo.save({
         email,
         phoneNumber,
         isSuper,
@@ -680,10 +659,8 @@ export class AdminService {
         gender,
         profilePicture: '',
         type: UserTypes.ADMIN,
-        admin: createAdmin,
+        admin: createdAdmin,
       });
-
-   
     } catch (e) {
       Logger.error(adminErrors.saveUser + e).console();
 
@@ -702,14 +679,9 @@ export class AdminService {
     };
   }
 
-
-
-
-
-
-
   async getAdmin() {
     let foundAdmin: Array<Admin>;
+
     try {
       foundAdmin = await this.adminRepo.find({});
     } catch (exp) {
@@ -723,20 +695,15 @@ export class AdminService {
     }
     return foundAdmin;
   }
-  
-  async updateAdminProfile(id, updateAdminReq: updateAdminReq) {
-    const {
-      email,
-      phoneNumber,
-      isSuper
-    } = updateAdminReq;
+
+  async updateAdminProfile(id: string, updateAdminReq: updateAdminReq) {
+    const { email, phoneNumber, isSuper } = updateAdminReq;
 
     let foundUser, updatedAdmin: Admin;
 
     try {
       foundUser = await this.adminRepo.findOne({
         where: { id },
-
       });
     } catch (exp) {
       throw new HttpException(
@@ -763,7 +730,7 @@ export class AdminService {
         ...foundUser,
         email: email ?? foundUser.email,
         phoneNumber: phoneNumber ?? foundUser.phoneNumber,
-        isSuper: isSuper ?? foundUser.isSuper
+        isSuper: isSuper ?? foundUser.isSuper,
       });
 
       return {
@@ -780,5 +747,4 @@ export class AdminService {
       );
     }
   }
-
 }

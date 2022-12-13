@@ -23,7 +23,7 @@ import {
   createAdminReq,
   updateAdminReq,
   BasicUpdateAdminRes,
-  BasicRegRes
+  BasicRegRes,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/enums';
@@ -173,7 +173,7 @@ export class AdminController {
     }
   }
 
-  @Patch('update-customer-agent/:id')
+  @Patch('update-ccagent/:id')
   async updateCustomer(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
@@ -207,7 +207,7 @@ export class AdminController {
     }
   }
 
-  @Get('get-customer-agents')
+  @Get('ccagents')
   async getCustomers(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
@@ -227,7 +227,8 @@ export class AdminController {
     @Body() body: createAdminReq,
   ) {
     //console.log(body)
-    const { success, createdUser }:BasicRegRes = await this.adminService.createAdmin(body);
+    const { success, createdUser }: BasicRegRes =
+      await this.adminService.createAdmin(body);
 
     if (success) {
       resp.json({
