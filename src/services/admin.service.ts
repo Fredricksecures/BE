@@ -67,6 +67,7 @@ export class AdminService {
 
     return user;
   }
+
   async getUserSessions(user: GetAllUsersSessionsReq) {
     const { userId } = user;
     let foundUser: User;

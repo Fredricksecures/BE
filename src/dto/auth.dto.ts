@@ -95,11 +95,7 @@ export class CreateParentReq {
   countryId: string;
 }
 
-export class CreateStudentReq {
-  @IsNotEmpty()
-  @IsString()
-  parentId: string;
-
+class StudentReqObj {
   @IsNotEmpty()
   @IsString()
   firstName: string;
@@ -115,6 +111,14 @@ export class CreateStudentReq {
   @IsNotEmpty()
   @IsString()
   dateOfBirth: string;
+}
+
+export class CreateStudentReq {
+  @IsNotEmpty()
+  @IsString()
+  parentId: string;
+
+  children: Array<StudentReqObj>;
 }
 
 export class GetStudentReq {
