@@ -70,7 +70,7 @@ export const ModuleConfigs = {
     entities: [Subscription, LearningPackage, Invoice],
   },
   content: {
-    entities: [],
+    entities: [Chapter,Lesson,Subject],
   },
 };
 
@@ -204,8 +204,31 @@ export const authErrors = {
   checkingSession: 'could not found session --------- ',
 };
 
-export const contentMessages = {};
-export const contentErrors = {};
+export const contentMessages = { 
+  lessonCreateSuccess: 'Lesson created successfully',
+  failToCreateLesson: 'Error while creating lesson',
+  chapterCreateSuccess: 'Chapter created successfully',
+  failToCreateChapter: 'Error while creating chapter',
+  lessonsFetchSuccess : 'Lessons fetch successfully',
+  chaptersFetchSuccess: 'Chapters fetch successfully',
+  updatedChapterSuccess: 'Chapter updated successfully',
+  updatedLessonSuccess:'Lesson updated successfully'
+};
+export const contentErrors = {
+  saveLesson: 'could not save new lesson --------- ',
+  saveChapter: 'could not save new chapter --------- ',
+  failedToFetchSubject: 'Failed to fetch subject with this id --------- ',
+  failedToFetchChapter: 'Failed to fetch chapter with this id --------- ',
+  failedToFetchLessons: 'Failed to fetch lessons with this id ---------',
+  updatingChapter: 'Error querying for updating chapter --------- ',
+  updatingLesson:'Error querying for updating lesson --------- ',
+  checkingChapter : 'error while fetching chapter. --------- ',
+  chapterNotFound : 'could not find chapter with id provided ---------',
+  lessonNotFound : 'could not find lesson with id provided ---------',
+  updatingChapterFail:'Failed to update chapter sessions -------',
+  updatingLessonFail: 'Failed to update lesson sessions -------',
+  checkingLesson:'error while fetching lesson --------- ',
+};
 
 export const profileMessages = {
   updatedSuccess: 'Profile updated successfully',
