@@ -9,20 +9,27 @@ import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
+var moment = require("moment");
 
-import{ 
-  createLessonReq, 
+
+import {
+  createLessonReq,
   createChapterReq,
+  createSubjectReq,
   updateChapterReq,
-  updateLessonReq
- } from 'src/dto/content.dto';
+  updateLessonReq,
+  updateSubjectReq
+} from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
-import { adminErrors, adminMessages,contentMessages,contentErrors } from 'src/constants';
+import {
+  adminErrors,
+  adminMessages,
+  contentMessages,
+  contentErrors,
+} from 'src/constants';
 import { Chapter } from 'src/entities/chapter.entity';
 import { Subject } from 'src/entities/subject.entity';
-
-
-
+import { LearningPackage } from 'src/entities/learningPackage.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -30,15 +37,16 @@ const { BCRYPT_SALT } = process.env;
 @Injectable()
 export class ContentService {
   constructor(
-    private jwtService: JwtService, 
+    private jwtService: JwtService,
     @InjectRepository(Lesson) private lessonRepo: Repository<Lesson>,
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
-    @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
-    // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
-  ) // @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Subject) private subjectRepo: Repository<Subject>, 
+    @InjectRepository(LearningPackage) private learningPackageRepo: Repository<LearningPackage>,
+    // @InjectRepository(User) private userRepo: Repository<User>,
+  ) // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   // @InjectRepository(Session) private sessionRepo: Repository<Session>,
   // @InjectRepository(Student) private studentRepo: Repository<Student>,
-  
+
   {}
 
   // async formatPayload(user: any, type: string) {
@@ -66,59 +74,59 @@ export class ContentService {
   // }
 
   //async getChapters(user: GetAllUsersSessionsReq) {
-    // const { userId } = user;
-    // let foundUser: User;
-    // try {
-    //   foundUser = await this.userRepo.findOne({
-    //     where: { id: userId },
-    //     relations: ['parent', 'parent.sessions'],
-    //   });
-    // } catch (exp) {
-    //   Logger.error(adminErrors.checkingUser + exp);
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_IMPLEMENTED,
-    //       error: adminErrors.checkingUser + exp,
-    //     },
-    //     HttpStatus.NOT_IMPLEMENTED,
-    //   );
-    // }
-    // if (!foundUser) {
-    //   Logger.error(adminErrors.userNotFoundWithId);
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_IMPLEMENTED,
-    //       error: adminErrors.userNotFoundWithId,
-    //     },
-    //     HttpStatus.NOT_IMPLEMENTED,
-    //   );
-    // }
-    // if (!foundUser.parent) {
-    //   Logger.error(adminErrors.noParentFound);
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_IMPLEMENTED,
-    //       error: adminErrors.noParentFound,
-    //     },
-    //     HttpStatus.NOT_IMPLEMENTED,
-    //   );
-    // }
-    // if (!foundUser.parent.sessions) {
-    //   Logger.error(adminErrors.sessionNotFoundWithId);
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_IMPLEMENTED,
-    //       error: adminErrors.sessionNotFoundWithId,
-    //     },
-    //     HttpStatus.NOT_IMPLEMENTED,
-    //   );
-    // }
-    // return {
-    //   success: true,
-    //   sessions: foundUser.parent.sessions,
-    // };
+  // const { userId } = user;
+  // let foundUser: User;
+  // try {
+  //   foundUser = await this.userRepo.findOne({
+  //     where: { id: userId },
+  //     relations: ['parent', 'parent.sessions'],
+  //   });
+  // } catch (exp) {
+  //   Logger.error(adminErrors.checkingUser + exp);
+  //   throw new HttpException(
+  //     {
+  //       status: HttpStatus.NOT_IMPLEMENTED,
+  //       error: adminErrors.checkingUser + exp,
+  //     },
+  //     HttpStatus.NOT_IMPLEMENTED,
+  //   );
+  // }
+  // if (!foundUser) {
+  //   Logger.error(adminErrors.userNotFoundWithId);
+  //   throw new HttpException(
+  //     {
+  //       status: HttpStatus.NOT_IMPLEMENTED,
+  //       error: adminErrors.userNotFoundWithId,
+  //     },
+  //     HttpStatus.NOT_IMPLEMENTED,
+  //   );
+  // }
+  // if (!foundUser.parent) {
+  //   Logger.error(adminErrors.noParentFound);
+  //   throw new HttpException(
+  //     {
+  //       status: HttpStatus.NOT_IMPLEMENTED,
+  //       error: adminErrors.noParentFound,
+  //     },
+  //     HttpStatus.NOT_IMPLEMENTED,
+  //   );
+  // }
+  // if (!foundUser.parent.sessions) {
+  //   Logger.error(adminErrors.sessionNotFoundWithId);
+  //   throw new HttpException(
+  //     {
+  //       status: HttpStatus.NOT_IMPLEMENTED,
+  //       error: adminErrors.sessionNotFoundWithId,
+  //     },
+  //     HttpStatus.NOT_IMPLEMENTED,
+  //   );
+  // }
+  // return {
+  //   success: true,
+  //   sessions: foundUser.parent.sessions,
+  // };
   //}
-  async getChapters(){
+  async getChapters() {
     let foundChapters: Array<Chapter>;
     try {
       foundChapters = await this.chapterRepo.find({});
@@ -149,23 +157,19 @@ export class ContentService {
     return foundLessons;
   }
   async createLesson(createLessonReq: createLessonReq) {
-    const {
-      type,
-      chapterId
-    } = createLessonReq;
-    let  lessonCreated: Lesson, foundChapterId:Chapter;
+    const { type, chapterId } = createLessonReq;
+    let lessonCreated: Lesson, foundChapterId: Chapter;
     try {
       foundChapterId = await this.chapterRepo.findOne({
         where: {
-            id: chapterId,
+          id: chapterId,
         },
-       
       });
     } catch (exp) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchChapter+ exp,
+          error: contentErrors.failedToFetchChapter + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -173,75 +177,66 @@ export class ContentService {
     try {
       lessonCreated = await this.lessonRepo.save({
         type,
-        chapter:foundChapterId,
-        
+        chapter: foundChapterId,
       });
-    }
-      catch (e) {
-       
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: contentErrors.saveLesson + e,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
-  
-      return {
-        lessonCreated,
-        success: true,
-      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.saveLesson + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
     }
 
-      async createChapter(createChapterReq: createChapterReq) {
-        const {
-          type,
-          subjectId
-        } = createChapterReq;
-        let  chapterCreated: Chapter, foundSubjectId:Subject;
-        try {
-          foundSubjectId = await this.subjectRepo.findOne({
-            where: {
-                id: subjectId,
-            },
-           
-          });
-        } catch (exp) {
-          throw new HttpException(
-            {
-              status: HttpStatus.NOT_IMPLEMENTED,
-              error: contentErrors.failedToFetchSubject+ exp,
-            },
-            HttpStatus.NOT_IMPLEMENTED,
-          );
-        }
-        try {
-          chapterCreated = await this.chapterRepo.save({
-            type,
-            subject:foundSubjectId,
-           
-          });
-        }
-          catch (e) {
-            throw new HttpException(
-              {
-                status: HttpStatus.NOT_IMPLEMENTED,
-                error: contentErrors.saveChapter + e,
-              },
-              HttpStatus.NOT_IMPLEMENTED,
-            );
-          }
-      
-          return {
-            chapterCreated,
-            success: true,
-          };
+    return {
+      lessonCreated,
+      success: true,
+    };
   }
-  
+
+  async createChapter(createChapterReq: createChapterReq) {
+    const { type, subjectId } = createChapterReq;
+    let chapterCreated: Chapter, foundSubjectId: Subject;
+    try {
+      foundSubjectId = await this.subjectRepo.findOne({
+        where: {
+          id: subjectId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchSubject + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      chapterCreated = await this.chapterRepo.save({
+        type,
+        subject: foundSubjectId,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.saveChapter + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      chapterCreated,
+      success: true,
+    };
+  }
+
   async updateChapterProfile(id: string, updateChapterReq: updateChapterReq) {
     const { type } = updateChapterReq;
-
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
     let foundChapter, updatedChapter: Chapter;
 
     try {
@@ -271,7 +266,8 @@ export class ContentService {
     try {
       updatedChapter = await this.chapterRepo.save({
         ...foundChapter,
-        type: type ?? foundChapter.type
+        type: type ?? foundChapter.type,
+        updatedAt:date
       });
 
       return {
@@ -288,10 +284,10 @@ export class ContentService {
       );
     }
   }
-  
+
   async updateLessonProfile(id: string, updateLessonReq: updateLessonReq) {
     const { type } = updateLessonReq;
-
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
     let foundLesson, updatedLesson: Lesson;
 
     try {
@@ -321,7 +317,8 @@ export class ContentService {
     try {
       updatedLesson = await this.lessonRepo.save({
         ...foundLesson,
-        type: type ?? foundLesson.type
+        type: type ?? foundLesson.type,
+        updatedAt:date
       });
 
       return {
@@ -337,5 +334,111 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
+  }
+  async createSubject(  createSubjectReq: createSubjectReq) {
+    const { type, learningPackageId } = createSubjectReq;
+    let subjectCreated: Subject, foundLearningPackageId: LearningPackage;
+    try {
+      foundLearningPackageId = await this.learningPackageRepo.findOne({
+        where: {
+          id: learningPackageId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchLearningPackage + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      console.log(foundLearningPackageId)
+      subjectCreated = await this.subjectRepo.save({
+        type,
+        learningPackage: foundLearningPackageId,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.saveSubject + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      subjectCreated,
+      success: true,
+    };
+  }
+  
+  async updateSubjectProfile(id: string, updateSubjectReq: updateSubjectReq) {
+    const { type } = updateSubjectReq;
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    let foundSubject, updatedSubject: Subject;
+
+    try {
+      foundSubject = await this.subjectRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.checkingSubject + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundSubject) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.subjectNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedSubject = await this.subjectRepo.save({
+        ...foundSubject,
+        type: type ?? foundSubject.type,
+        updatedAt:date
+      });
+
+      return {
+        success: true,
+        updatedSubject,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.updatingSubject,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+  
+  async getSubjects() {
+    let foundSubjects: Array<Subject>;
+    try {
+      foundSubjects = await this.subjectRepo.find({});
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchsubject + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundSubjects;
   }
 }

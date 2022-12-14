@@ -70,7 +70,7 @@ export const ModuleConfigs = {
     entities: [Subscription, LearningPackage, Invoice],
   },
   content: {
-    entities: [Chapter,Lesson,Subject],
+    entities: [Chapter,Lesson,Subject,LearningPackage],
   },
 };
 
@@ -212,7 +212,11 @@ export const contentMessages = {
   lessonsFetchSuccess : 'Lessons fetch successfully',
   chaptersFetchSuccess: 'Chapters fetch successfully',
   updatedChapterSuccess: 'Chapter updated successfully',
-  updatedLessonSuccess:'Lesson updated successfully'
+  updatedLessonSuccess:'Lesson updated successfully',
+  subjectCreateSuccess:'Subject created successfully',
+  failToCreateSubject:'Error while creating subject',
+  updatedSubjectSuccess:'Subject updated successfully',
+  subjectFetchSuccess:'Subjects fetch successfully'
 };
 export const contentErrors = {
   saveLesson: 'could not save new lesson --------- ',
@@ -228,6 +232,13 @@ export const contentErrors = {
   updatingChapterFail:'Failed to update chapter sessions -------',
   updatingLessonFail: 'Failed to update lesson sessions -------',
   checkingLesson:'error while fetching lesson --------- ',
+  failedToFetchLearningPackage:'Failed to fetch learning package with this id ---------',
+  saveSubject:'could not save new subject --------- ',
+  updatingSubjectFail:'Failed to update subject -------',
+  checkingSubject:'error while fetching subject. --------- ',
+  subjectNotFound:'could not find subject with id provided ---------',
+  updatingSubject:'Error querying for updating subject ---------',
+  failedToFetchsubject:'Failed to fetch subject---------'
 };
 
 export const profileMessages = {

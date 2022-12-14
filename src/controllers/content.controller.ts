@@ -20,8 +20,8 @@ import{
   createChapterReq,
   updateChapterReq,
   updateLessonReq,
-  BasicUpdateChapterRes,
-  BasicUpdateLessonRes
+  createSubjectReq,
+  updateSubjectReq
  } from 'src/dto/content.dto';
 import { Request, Response } from 'express';
 import { adminErrors, adminMessages,contentMessages,contentErrors } from 'src/constants';
@@ -31,12 +31,12 @@ import { ContentService } from 'src/services/content.service';
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
-  @Get('subjects')
-  async getSubjects(
-    @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response,
-    @Query() query: GetAllUsersSessionsReq,
-  ) {
+  // @Get('subjects')
+  // async getSubjects(
+  //   @Req() req: Request,
+  //   @Res({ passthrough: true }) resp: Response,
+  //   @Query() query: GetAllUsersSessionsReq,
+  // ) {
     // const { success, sessions }: GetAllUsersSessionsRes =
     //   await this.contentService.getUserSessions(query);
     // if (success) {
@@ -54,7 +54,7 @@ export class ContentController {
     //     HttpStatus.NOT_FOUND,
     //   );
     // }
-  }
+ // }
 
   @Get('chapters')
   async getChapters(
@@ -103,6 +103,31 @@ export class ContentController {
         {
           status: HttpStatus.NOT_FOUND,
           error: contentMessages.failToCreateLesson,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Post('create-subject')
+  async createSubject(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createSubjectReq,
+  ) {
+    const { success, subjectCreated } =
+      await this.contentService.createSubject(body);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: contentMessages.subjectCreateSuccess,
+        subjectCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentMessages.failToCreateSubject,
         },
         HttpStatus.NOT_FOUND,
       );
@@ -196,5 +221,47 @@ export class ContentController {
       );
     }
   }
+  @Patch('update-subject/:id')
+  async updateSubject(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateSubjectReq,
+    @Param('id') id,
+  ) {
+    let { updatedSubject, success }=
+      await this.contentService.updateSubjectProfile(id, {
+        ...req.body,
+      });
 
+    if (success) {
+      resp.json({
+        success,
+        message: contentMessages.updatedSubjectSuccess,
+        status: HttpStatus.OK,
+        updatedSubject,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.updatingSubjectFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('subjects')
+  async getSubjects(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response
+   
+  ) {
+    const subjects = await this.contentService.getSubjects();
+    resp.json({
+      status: HttpStatus.OK,
+      message: contentMessages.subjectFetchSuccess, 
+      subjects,
+    });
+  }
 }

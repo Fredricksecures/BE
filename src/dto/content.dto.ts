@@ -26,6 +26,16 @@ export class createChapterReq {
     subjectId: string;
   
   }
+  export class createSubjectReq {
+    @IsNotEmpty()
+    @IsString()
+    type: string;
+  
+    @IsNotEmpty()
+    @IsString()
+    learningPackageId: string;
+  
+  }
   export class updateChapterReq {
     @IsNotEmpty()
     @IsString()
@@ -36,13 +46,11 @@ export class createChapterReq {
     @IsNotEmpty()
     @IsString()
     type: string;
+  }
+  export class updateSubjectReq {
+    @IsNotEmpty()
+    @IsString()
+    type: string;
+  }
   
-  }
-  export class BasicUpdateChapterRes {
-    updatedChapter?: Chapter;
-    success?: boolean;
-  }
-  export class BasicUpdateLessonRes {
-    updatedLesson?: Lesson;
-    success?: boolean;
-  }
+  
