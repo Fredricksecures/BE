@@ -68,6 +68,28 @@ export class createChapterReq {
     topic: string;
    
   }
+  export class createReportCardReq {
+    @IsNotEmpty()
+    @IsString()
+    remark: string;
+  
+    @IsNotEmpty()
+    @IsString()
+    lessonId: string;
+
+    @IsNotEmpty()
+    @IsString()
+    subjectId: string;
+
+    @IsNotEmpty()
+    @IsString()
+    studentId: string;
+
+    @IsNotEmpty()
+    @IsString()
+    testId: string;
+  
+  }
  
   
   

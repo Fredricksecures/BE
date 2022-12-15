@@ -26,7 +26,7 @@ import { Test } from './test.entity';
     id?: string;
   
     @Column({ type: 'varchar' })
-    remarks?: string;
+    remark?: string;
 
     @ManyToOne(() => Lesson, (lesson) => lesson.reportCard)
     lesson?: Lesson;

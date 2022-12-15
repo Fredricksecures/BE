@@ -20,7 +20,8 @@ import {
   updateLessonReq,
   updateSubjectReq,
   createTestReq,
-  updateTestReq
+  updateTestReq,
+  createReportCardReq
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
 import {
@@ -33,6 +34,7 @@ import { Chapter } from 'src/entities/chapter.entity';
 import { Subject } from 'src/entities/subject.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Test } from 'src/entities/test.entity';
+import { ReportCard } from 'src/entities/reportCard.entity';
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -45,6 +47,8 @@ export class ContentService {
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>, 
     @InjectRepository(LearningPackage) private learningPackageRepo: Repository<LearningPackage>,
     @InjectRepository(Test) private testRepo: Repository<Test>, 
+    @InjectRepository(Student) private studentRepo: Repository<Student>, 
+    @InjectRepository(ReportCard) private reportCardRepo: Repository<ReportCard>,
     // @InjectRepository(User) private userRepo: Repository<User>,
   ) // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   // @InjectRepository(Session) private sessionRepo: Repository<Session>,
@@ -552,6 +556,94 @@ export class ContentService {
     }
     return foundTests;
   }
- 
+  
+  async createReportCard(  createReportCardReq: createReportCardReq) {
+    const { remark, lessonId, subjectId, studentId, testId } = createReportCardReq;
+    let reportCardCreated: Test, foundLessonId: Lesson, foundSubjectId: Subject, foundTestId: Test, foundStudentId: Student;
+    try {
+      foundStudentId = await this.studentRepo.findOne({
+        where: {
+          id: studentId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToStudent + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      foundTestId = await this.testRepo.findOne({
+        where: {
+          id: testId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      foundLessonId = await this.lessonRepo.findOne({
+        where: {
+          id: lessonId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchLesson + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      foundSubjectId = await this.subjectRepo.findOne({
+        where: {
+          id: subjectId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchSubject + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      
+      reportCardCreated = await this.reportCardRepo.save({
+        remark,
+        lesson: foundLessonId,
+        student: foundStudentId,
+        test: foundTestId,
+        subject: foundSubjectId
+
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.saveReportCard + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      reportCardCreated,
+      success: true,
+    };
+  }
   
 }

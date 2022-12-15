@@ -36,9 +36,10 @@ export class Lesson {
 
   @OneToMany(() => Test, (test) => test.lesson)
   tests?: Test[];
-
+  
   @OneToMany(() => ReportCard, (reportCard) => reportCard.lesson)
   reportCard?: ReportCard[];
+
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

@@ -23,7 +23,8 @@ import{
   createSubjectReq,
   updateSubjectReq,
   createTestReq,
-  updateTestReq
+  updateTestReq,
+  createReportCardReq
  } from 'src/dto/content.dto';
 import { Request, Response } from 'express';
 import { adminErrors, adminMessages,contentMessages,contentErrors } from 'src/constants';
@@ -335,6 +336,33 @@ export class ContentController {
       message: contentMessages.testFetchSuccess, 
       tests,
     });
+  }
+
+  @Post('create-report-card')
+  async createReportCard(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createReportCardReq,
+  ) {
+    
+    const { success, reportCardCreated } =
+      await this.contentService.createReportCard(body);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: contentMessages.reportCardCreateSuccess,
+        reportCardCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentMessages.failToCreateReportCard,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
 }

@@ -77,7 +77,8 @@ export const ModuleConfigs = {
     entities: [Subscription, LearningPackage, Invoice],
   },
   content: {
-    entities: [Chapter,Lesson,Subject,LearningPackage,Test],
+    entities: [Chapter,Lesson,Subject,LearningPackage,Test,Student,
+      ReportCard],
   },
 };
 
@@ -227,7 +228,9 @@ export const contentMessages = {
   testCreateSuccess:'Test created successfully',
   failToCreateTest:'Error while creating test',
   updatedTestSuccess:'Test updated successfully',
-  testFetchSuccess:'Test fetch successfully'
+  testFetchSuccess:'Test fetch successfully',
+  reportCardCreateSuccess:'Report card created successfully',
+  failToCreateReportCard:'Error while creating report card',
 };
 export const contentErrors = {
   saveLesson: 'could not save new lesson --------- ',
@@ -256,7 +259,9 @@ export const contentErrors = {
   checkingTest:'error while fetching test. ---------',
   testNotFound:'could not find test with id provided ---------',
   updatingTest:'Error querying for updating test ---------',
-  failedToFetchTest:'Failed to fetch test---------'
+  failedToFetchTest:'Failed to fetch test---------',
+  failedToStudent:'Failed to fetch student---------',
+  saveReportCard:'could not save new report card ---------'
 };
 
 export const profileMessages = {

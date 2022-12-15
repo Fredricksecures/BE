@@ -10,6 +10,7 @@ import {
 import { Lesson } from './lesson.entity';
 import { Subject } from './subject.entity';
 
+
 @Entity('chapters')
 export class Chapter {
   constructor(data?: Chapter) {
@@ -32,6 +33,7 @@ export class Chapter {
   @OneToMany(() => Lesson, (Lesson) => Lesson.chapter)
   lessons?: Lesson[];
 
+  
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
 
