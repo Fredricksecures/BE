@@ -16,6 +16,7 @@ import { Subject } from './entities/subject.entity';
 import { Lesson } from './entities/lesson.entity';
 import { Material } from './entities/material.entity';
 import { Chapter } from './entities/chapter.entity';
+import { Test } from './entities/test.entity';
 
 config();
 
@@ -46,6 +47,7 @@ export const ModuleConfigs = {
       Lesson,
       Material,
       Chapter,
+      Test
     ],
   },
   utility: {
@@ -70,7 +72,7 @@ export const ModuleConfigs = {
     entities: [Subscription, LearningPackage, Invoice],
   },
   content: {
-    entities: [Chapter,Lesson,Subject,LearningPackage],
+    entities: [Chapter,Lesson,Subject,LearningPackage,Test],
   },
 };
 
@@ -216,7 +218,11 @@ export const contentMessages = {
   subjectCreateSuccess:'Subject created successfully',
   failToCreateSubject:'Error while creating subject',
   updatedSubjectSuccess:'Subject updated successfully',
-  subjectFetchSuccess:'Subjects fetch successfully'
+  subjectFetchSuccess:'Subjects fetch successfully',
+  testCreateSuccess:'Test created successfully',
+  failToCreateTest:'Error while creating test',
+  updatedTestSuccess:'Test updated successfully',
+  testFetchSuccess:'Test fetch successfully'
 };
 export const contentErrors = {
   saveLesson: 'could not save new lesson --------- ',
@@ -238,7 +244,14 @@ export const contentErrors = {
   checkingSubject:'error while fetching subject. --------- ',
   subjectNotFound:'could not find subject with id provided ---------',
   updatingSubject:'Error querying for updating subject ---------',
-  failedToFetchsubject:'Failed to fetch subject---------'
+  failedToFetchsubject:'Failed to fetch subject---------',
+  failedToFetchLesson:'Failed to fetch lesson---------',
+  saveTest:'could not save new test --------- ',
+  updatingTestFail:'Failed to update test sessions -------',
+  checkingTest:'error while fetching test. ---------',
+  testNotFound:'could not find test with id provided ---------',
+  updatingTest:'Error querying for updating test ---------',
+  failedToFetchTest:'Failed to fetch test---------'
 };
 
 export const profileMessages = {

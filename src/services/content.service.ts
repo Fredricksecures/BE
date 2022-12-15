@@ -18,7 +18,9 @@ import {
   createSubjectReq,
   updateChapterReq,
   updateLessonReq,
-  updateSubjectReq
+  updateSubjectReq,
+  createTestReq,
+  updateTestReq
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
 import {
@@ -30,7 +32,7 @@ import {
 import { Chapter } from 'src/entities/chapter.entity';
 import { Subject } from 'src/entities/subject.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
-
+import { Test } from 'src/entities/test.entity';
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -42,6 +44,7 @@ export class ContentService {
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>, 
     @InjectRepository(LearningPackage) private learningPackageRepo: Repository<LearningPackage>,
+    @InjectRepository(Test) private testRepo: Repository<Test>, 
     // @InjectRepository(User) private userRepo: Repository<User>,
   ) // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   // @InjectRepository(Session) private sessionRepo: Repository<Session>,
@@ -354,7 +357,7 @@ export class ContentService {
       );
     }
     try {
-      console.log(foundLearningPackageId)
+      
       subjectCreated = await this.subjectRepo.save({
         type,
         learningPackage: foundLearningPackageId,
@@ -441,4 +444,114 @@ export class ContentService {
     }
     return foundSubjects;
   }
+ 
+
+  async createTest(  createTestReq: createTestReq) {
+    const { topic, lessonId } = createTestReq;
+    let testCreated: Test, foundLessonId: Lesson;
+    try {
+      foundLessonId = await this.lessonRepo.findOne({
+        where: {
+          id: lessonId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchLesson + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      
+      testCreated = await this.testRepo.save({
+        topic,
+        lesson: foundLessonId,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.saveTest + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      testCreated,
+      success: true,
+    };
+  }
+  
+  async updateTestProfile(id: string, updateTestReq: updateTestReq) {
+    const { topic } = updateTestReq;
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    let foundTest, updatedTest: Test;
+
+    try {
+      foundTest = await this.testRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.checkingTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundTest) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.testNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedTest = await this.testRepo.save({
+        ...foundTest,
+        topic: topic ?? foundTest.topic,
+        updatedAt:date
+      });
+
+      return {
+        success: true,
+        updatedTest,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.updatingTest,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+  
+  async getTests() {
+    let foundTests: Array<Test>;
+    try {
+      foundTests = await this.testRepo.find({});
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundTests;
+  }
+ 
+  
 }

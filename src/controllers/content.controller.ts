@@ -21,7 +21,9 @@ import{
   updateChapterReq,
   updateLessonReq,
   createSubjectReq,
-  updateSubjectReq
+  updateSubjectReq,
+  createTestReq,
+  updateTestReq
  } from 'src/dto/content.dto';
 import { Request, Response } from 'express';
 import { adminErrors, adminMessages,contentMessages,contentErrors } from 'src/constants';
@@ -264,4 +266,75 @@ export class ContentController {
       subjects,
     });
   }
+
+  @Post('create-test')
+  async createTest(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createTestReq,
+  ) {
+    
+    const { success, testCreated } =
+      await this.contentService.createTest(body);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: contentMessages.testCreateSuccess,
+        testCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentMessages.failToCreateTest,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Patch('update-test/:id')
+  async updateTest(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateTestReq,
+    @Param('id') id,
+  ) {
+    let { updatedTest, success }=
+      await this.contentService.updateTestProfile(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      resp.json({
+        success,
+        message: contentMessages.updatedTestSuccess,
+        status: HttpStatus.OK,
+        updatedTest,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.updatingTestFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Get('tests')
+  async getTests(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response
+   
+  ) {
+    const tests = await this.contentService.getTests();
+    resp.json({
+      status: HttpStatus.OK,
+      message: contentMessages.testFetchSuccess, 
+      tests,
+    });
+  }
+
 }

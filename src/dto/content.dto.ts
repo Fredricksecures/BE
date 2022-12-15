@@ -52,5 +52,22 @@ export class createChapterReq {
     @IsString()
     type: string;
   }
+  export class createTestReq {
+    @IsNotEmpty()
+    @IsString()
+    topic: string;
+  
+    @IsNotEmpty()
+    @IsString()
+    lessonId: string;
+  
+  }
+  export class updateTestReq {
+    @IsNotEmpty()
+    @IsString()
+    topic: string;
+   
+  }
+ 
   
   

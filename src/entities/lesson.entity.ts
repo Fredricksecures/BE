@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { Chapter } from './chapter.entity';
 import { Material } from './material.entity';
-import { Subject } from './subject.entity';
 import { Test } from './test.entity';
 
 @Entity('lessons')
@@ -34,7 +33,7 @@ export class Lesson {
   @OneToMany(() => Material, (Material) => Material.lesson)
   materials?: Material[];
 
-  @OneToMany(() => Test, (Test) => Test.lesson)
+  @OneToMany(() => Test, (test) => test.lesson)
   tests?: Test[];
 
   @CreateDateColumn({ type: 'timestamp' })
