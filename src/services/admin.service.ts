@@ -25,7 +25,7 @@ import { isEmpty } from 'src/utils/helpers';
 import * as bcrypt from 'bcrypt';
 import { UserTypes } from 'src/enums';
 import { UtilityService } from './utility.service';
-import { Country } from 'src/entities/country.entity';
+import { CountryList } from 'src/entities/countryList.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -457,7 +457,9 @@ export class AdminService {
     const { phoneNumber, email, password, countryId } = params;
     let createdCustomerCare: CustomerCare;
 
-    const country: Country = await this.utilityService.getCountry(countryId);
+    const country: CountryList = await this.utilityService.getCountryList(
+      countryId,
+    );
 
     try {
       createdCustomerCare = await this.customerCareRepo.save({

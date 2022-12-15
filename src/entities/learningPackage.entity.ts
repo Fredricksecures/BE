@@ -6,7 +6,10 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
+  JoinColumn,
+  OneToOne,
 } from 'typeorm';
+import { LearningPackageList } from './learningPackageList.entity';
 import { Student } from './student.entity';
 import { Subject } from './subject.entity';
 import { Subscription } from './subscription.entity';
@@ -25,10 +28,7 @@ export class LearningPackage {
   id?: string;
 
   @Column({ type: 'varchar' })
-  name?: string;
-
-  @Column({ type: 'varchar' })
-  type?: string;
+  packageListId?: string;
 
   @ManyToOne(
     () => Subscription,
@@ -36,8 +36,19 @@ export class LearningPackage {
   )
   subscription?: Subscription;
 
+  // @OneToMany(
+  //   () => LearningPackageList,
+  //   (LearningPackageList) => LearningPackageList.learningPackage,
+  // )
+  // @JoinColumn()
+  // learningPackageLists?: LearningPackageList[];
+
+  @OneToOne(() => LearningPackageList)
+  @JoinColumn()
+  learningPackageListItem?: LearningPackageList;
+
   @OneToMany(() => Subject, (Subject) => Subject.learningPackage)
-  subjects?: Subject[];
+  subjects?: Array<Subject>;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

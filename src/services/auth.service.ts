@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
 import {
@@ -24,6 +24,7 @@ import {
   ForgotPasswordRes,
   GetStudentReq,
   GetStudentRes,
+  CreateStudentRes,
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
@@ -35,7 +36,10 @@ import * as bcrypt from 'bcrypt';
 import { Session } from 'src/entities/session.entity';
 import { UserTypes } from 'src/enums';
 import { UtilityService } from './utility.service';
-import { Country } from 'src/entities/country.entity';
+import { CountryList } from 'src/entities/countryList.entity';
+import { LearningPackage } from 'src/entities/learningPackage.entity';
+import { Subscription } from 'src/entities/subscription.entity';
+import { LearningPackageList } from 'src/entities/learningPackageList.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -46,9 +50,16 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly utilityService: UtilityService,
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Device) private deviceRepo: Repository<Device>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
     @InjectRepository(Parent) private parentRepo: Repository<Parent>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
+    @InjectRepository(LearningPackage)
+    private packageRepo: Repository<LearningPackage>,
+    @InjectRepository(LearningPackageList)
+    private lPLRepo: Repository<LearningPackageList>,
+    @InjectRepository(Subscription)
+    private subscriptionRepo: Repository<Subscription>,
   ) {}
 
   async generateToken(user: User): Promise<string> {
@@ -285,13 +296,13 @@ export class AuthService {
   }
 
   async registerUser(regUserReq: RegisterUserReq) {
-    //* Register Basic User Details_______________________________________________________________
+    //* Register Basic User Details
     let { firstName, lastName, phoneNumber, email, password, countryId } =
       regUserReq;
 
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
-    //* check if phone number is already taken______________________________________________________________
+    //* check if phone number is already taken
     if (!isEmpty(phoneNumber)) {
       try {
         duplicatePhoneNumber = await this.userRepo.findOne({
@@ -324,7 +335,7 @@ export class AuthService {
       }
     }
 
-    //* check if email is already taken_________________________________________________________________
+    //* check if email is already taken
     if (!isEmpty(email)) {
       try {
         duplicateEmail = await this.userRepo.findOne({
@@ -357,7 +368,7 @@ export class AuthService {
       }
     }
 
-    //* create user account______________________________________________________________________________
+    //* create user account
     try {
       password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
 
@@ -375,15 +386,6 @@ export class AuthService {
         type: UserTypes.PARENT,
         parent: createdParent,
       });
-
-      //* notify user of successful registration
-      // if (createdUser) {
-      //   this.notificationsBridge.notifyNewRegistration(
-      //     createdUser.phoneNumber,
-      //     createdUser.email,
-      //     '',
-      //   );
-      // }
     } catch (e) {
       Logger.error(authErrors.saveUser + e).console();
 
@@ -403,18 +405,7 @@ export class AuthService {
   }
 
   async login(loginReq: LoginReq): Promise<LoginRes> {
-    let { phoneNumber, email, password, deviceId } = loginReq;
-
-    //* check current onboarding stage
-
-    // createdUser = await this.userRepo.findOne({
-    //   where: {
-    //     id: createdUser.id,
-    //   },
-    //   relations: ['sessions', `${createdUser.type.toLowerCase()}`],
-    // });
-
-    const device = await this.utilityService.getDevice(deviceId);
+    let { phoneNumber, email, password, device } = loginReq;
 
     let foundUser: User;
 
@@ -628,10 +619,12 @@ export class AuthService {
   }
 
   async createParentProfile(createParentReq: CreateParentReq): Promise<Parent> {
-    let { phoneNumber, email, password, countryId } = createParentReq;
+    const { phoneNumber, email, password, countryId } = createParentReq;
     let createdParent: Parent;
 
-    const country: Country = await this.utilityService.getCountry(countryId);
+    const country: CountryList = await this.utilityService.getCountryList(
+      countryId,
+    );
 
     try {
       createdParent = await this.parentRepo.save({
@@ -658,7 +651,89 @@ export class AuthService {
     return createdParent;
   }
 
-  async createStudentProfile(createStudentReq: CreateStudentReq) {}
+  async createStudentProfile(
+    createStudentReq: CreateStudentReq,
+  ): Promise<CreateStudentRes> {
+    const { user, children } = createStudentReq;
+
+    let createdUsers: Array<User>,
+      savedUsers: Array<User>,
+      //
+      createdStudents: Array<Student>,
+      savedStudents: Array<Student>,
+      //
+      createdSubscriptions: Array<Subscription>,
+      savedSubscriptions: Array<Subscription>,
+      //
+      createdPackages: Array<LearningPackage>,
+      savedPackages: Array<LearningPackage>,
+      //
+      foundListedPackages: Array<LearningPackageList>;
+
+    const revisedForm = Promise.all(
+      children.map(async (child: any) => {
+        //* fetch package from package list
+        foundListedPackages = await this.lPLRepo.find({
+          where: { id: In(child.packages) },
+        });
+        // .then((res) => {
+        //   return res.map((e) => {
+        //     delete e.id;
+        //     delete e.createdAt;
+        //     delete e.updatedAt;
+
+        //     return e;
+        //   });
+        // });
+
+        foundListedPackages.map((each) => {
+          createdPackages.push(
+            this.packageRepo.create({
+              learningPackageListItem: each,
+            }),
+          );
+        });
+
+        // const newSubscription = await this.subscriptionRepo.save({
+        //   learningPackages: foundPackages,
+        // });
+
+        // console.log('------', newSubscription);
+      }),
+    ).then((res) => res);
+
+    // //* save created learning package list to learning package relation
+
+    // //* save created learning packages to subscription relation
+    // for (const child in children) {
+    // }
+
+    // console.log(createdStudents, user);
+
+    // //* save created subscription to student relation
+    // savedStudents.map((sChild, idx) => {
+    //   createdStudents.push(this.studentRepo.create({}));
+    // });
+
+    // //* save created student to user relation
+    // savedStudents.map((sChild, idx) => {
+    //   createdUsers.push(
+    //     this.userRepo.create({
+    //       firstName: children[idx].firstName,
+    //       lastName: children[idx].lastName,
+    //       profilePicture: '',
+    //       type: UserTypes.STUDENT,
+    //       student: sChild,
+    //     }),
+    //   );
+    // });
+
+    // //* save created user to parent relation
+
+    // // savedUsers = await this.userRepo.save(createdUsers);
+
+    return { success: true, createdStudents };
+  }
 
   async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
     const { studentId, user } = getStudentReq;
@@ -894,5 +969,29 @@ export class AuthService {
         success: true,
       };
     }
+  }
+
+  async getDevice(deviceId: string) {
+    let foundDevice: Device;
+
+    try {
+      foundDevice = await this.deviceRepo.findOne({
+        where: {
+          id: deviceId,
+        },
+      });
+    } catch (exp) {
+      Logger.error(authErrors.getDevice + exp);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.getDevice + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return foundDevice;
   }
 }

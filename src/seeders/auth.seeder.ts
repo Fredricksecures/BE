@@ -11,7 +11,7 @@ import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
 import { authErrors, USER_SEED } from '../constants';
 import { Device } from 'src/entities/device.entity';
-import { Country } from 'src/entities/country.entity';
+import { CountryList } from 'src/entities/countryList.entity';
 import { AuthService } from 'src/services/auth.service';
 import { Session } from 'src/entities/session.entity';
 
@@ -24,21 +24,21 @@ export class AuthSeeder {
     private authService: AuthService,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Device) private deviceRepo: Repository<Device>,
-    @InjectRepository(Country) private countryRepo: Repository<Country>,
+    @InjectRepository(CountryList) private countryRepo: Repository<CountryList>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
   ) {}
 
   async onApplicationBootstrap() {
     //* user registers. we create a session, log the device and register the user
 
-    const mockCountry = await this.getMockCountry();
-    const mockDevice = await this.getMockDevice();
+    const mockCountryList = await this.getMockCountryList();
+    // const mockDevice = await this.getMockDevice();
     // const mockSession = await this.createMockSession(mockDevice);
 
     //! const mockSubscription = await this.seedSubscriptions();
     //! const mockPaymentPlan = await this.seedPaymentPlans();
     //! const mockUserRoles = await this.seedUserRoles();
-    // await this.seedUsers({ mockDevice, mockCountry, mockSession });
+    // await this.seedUsers({ mockDevice, mockCountryList, mockSession });
 
     this.seedUsers();
   }
@@ -71,17 +71,17 @@ export class AuthSeeder {
     return createdSession;
   }
 
-  async getMockCountry() {
+  async getMockCountryList() {
     const mockCountries = await this.countryRepo.find({
       where: { supported: true },
     });
 
     if (mockCountries.length === 0) {
-      Logger.error(authErrors.noMockCountry);
+      Logger.error(authErrors.noMockCountryList);
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: authErrors.noMockCountry,
+          error: authErrors.noMockCountryList,
         },
         HttpStatus.NOT_FOUND,
       );
@@ -95,10 +95,11 @@ export class AuthSeeder {
 
     if (mockDevices.length === 0) {
       Logger.error(authErrors.noMockDevice);
+
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: authErrors.noMockCountry,
+          error: authErrors.noMockDevice,
         },
         HttpStatus.NOT_FOUND,
       );
@@ -123,8 +124,7 @@ export class AuthSeeder {
             phoneNumber: user.phoneNumber,
             password: user.password,
             confirmPassword: user.password,
-            countryId: (await this.getMockCountry()).id.toString(),
-            deviceId: (await this.getMockDevice()).id.toString(),
+            countryId: (await this.getMockCountryList()).id.toString(),
           });
 
           return regResp.createdUser;

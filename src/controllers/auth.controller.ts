@@ -15,7 +15,7 @@ import { Repository } from 'typeorm';
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { Device } from 'src/entities/device.entity';
-import { Country } from 'src/entities/country.entity';
+import { CountryList } from 'src/entities/countryList.entity';
 import { AuthSeeder } from 'src/seeders/auth.seeder';
 import {
   RegisterUserReq,
@@ -28,6 +28,7 @@ import {
   ForgotPasswordRes,
   ResetPasswordReq,
   ResetPasswordRes,
+  CreateStudentReq,
 } from 'src/dto/auth.dto';
 import { authErrors, authMessages, profileMessages } from 'src/constants';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
@@ -39,7 +40,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private authSeeder: AuthSeeder,
     @InjectRepository(Device) private deviceRepo: Repository<Device>,
-    @InjectRepository(Country) private countryRepo: Repository<Country>,
+    @InjectRepository(CountryList) private countryRepo: Repository<CountryList>,
   ) {}
 
   @Middleware
@@ -161,6 +162,34 @@ export class AuthController {
         message: profileMessages.updatedSuccess,
         status: HttpStatus.OK,
         updatedParent,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.updateFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('create-student')
+  @UseMiddleware('sessionGuard')
+  async createStudent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: CreateStudentReq,
+  ) {
+    const { success, createdStudents } =
+      await this.authService.createStudentProfile(req.body);
+
+    if (success) {
+      resp.json({
+        success,
+        message: profileMessages.updatedSuccess,
+        status: HttpStatus.CREATED,
+        students: createdStudents,
       });
     } else {
       throw new HttpException(

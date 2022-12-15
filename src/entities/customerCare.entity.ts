@@ -9,7 +9,7 @@ import {
   Column,
   JoinColumn,
 } from 'typeorm';
-import { Country } from './country.entity';
+import { CountryList } from './countryList.entity';
 import { Session } from './session.entity';
 import { User } from './user.entity';
 
@@ -35,9 +35,9 @@ export class CustomerCare {
   @Column({ type: 'varchar' })
   password?: string;
 
-  @OneToOne(() => Country)
+  @OneToOne(() => CountryList)
   @JoinColumn()
-  country?: Country;
+  country?: CountryList;
 
   @OneToOne(() => User)
   user?: User;

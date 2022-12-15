@@ -8,9 +8,9 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-@Entity('countries')
-export class Country {
-  constructor(data?: Country) {
+@Entity('country-list')
+export class CountryList {
+  constructor(data?: CountryList) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
