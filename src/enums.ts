@@ -91,3 +91,9 @@ export const PrimaryGrades = {
   P5: 'P5',
   P6: 'P6',
 };
+
+export const ClassState = {
+  STARTED: 'STARTED', 
+  ENDED: 'ENDED', 
+  ONGOING: 'ONGOING'
+};

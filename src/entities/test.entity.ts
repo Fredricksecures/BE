@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany
 } from 'typeorm';
 import { Chapter } from './chapter.entity';
 import { LearningPackage } from './learningPackage.entity';
 import { Lesson } from './lesson.entity';
+import { ReportCard } from './reportCard.entity';
 
 @Entity('tests')
 export class Test {
@@ -28,6 +30,9 @@ export class Test {
 
   @ManyToOne(() => Lesson, (lesson) => lesson.tests)
   lesson?: Lesson;
+
+  @OneToMany(() => ReportCard, (reportCard) => reportCard.test)
+  reportCard?: ReportCard[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

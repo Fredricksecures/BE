@@ -17,6 +17,8 @@ import { Lesson } from './entities/lesson.entity';
 import { Material } from './entities/material.entity';
 import { Chapter } from './entities/chapter.entity';
 import { Test } from './entities/test.entity';
+import { Class } from './entities/class.entity';
+import { ReportCard } from './entities/reportCard.entity';
 
 config();
 
@@ -47,7 +49,10 @@ export const ModuleConfigs = {
       Lesson,
       Material,
       Chapter,
-      Test
+      Test,
+      Class,
+      Student,
+      ReportCard
     ],
   },
   utility: {

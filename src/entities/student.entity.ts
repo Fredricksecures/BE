@@ -1,3 +1,4 @@
+import { Test } from '@nestjs/testing';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,10 +8,12 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { Class } from './class.entity';
 import { LearningPackage } from './learningPackage.entity';
 import { Parent } from './parent.entity';
 import { Subscription } from './subscription.entity';
 import { User } from './user.entity';
+import { ReportCard } from './reportCard.entity';
 
 @Entity('students')
 export class Student {
@@ -30,6 +33,12 @@ export class Student {
 
   @OneToOne(() => Subscription)
   subscription?: Subscription;
+
+  @OneToMany(() => Class, (Class) => Class.student)
+  classes?: Class[];
+
+  @OneToMany(() => ReportCard, (reportCard) => reportCard.student)
+  reportCard?: ReportCard[];
 
   @ManyToOne(() => Parent, (Parent) => Parent.students)
   parent?: Parent;
