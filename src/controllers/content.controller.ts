@@ -24,7 +24,8 @@ import{
   updateSubjectReq,
   createTestReq,
   updateTestReq,
-  createReportCardReq
+  createReportCardReq,
+  updateReportCardReq
  } from 'src/dto/content.dto';
 import { Request, Response } from 'express';
 import { adminErrors, adminMessages,contentMessages,contentErrors } from 'src/constants';
@@ -365,4 +366,47 @@ export class ContentController {
     }
   }
 
+  @Patch('update-report-card/:id')
+  async updateReportCard(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateReportCardReq,
+    @Param('id') id,
+  ) {
+    let { updatedReportCard, success }=
+      await this.contentService.updateReportCardProfile(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      resp.json({
+        success,
+        message: contentMessages.updatedReportCardSuccess,
+        status: HttpStatus.OK,
+        updatedReportCard,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.updatingReportCardFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('reportCards')
+  async getReportCards(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response
+   
+  ) {
+    const tests = await this.contentService.getReportCard();
+    resp.json({
+      status: HttpStatus.OK,
+      message: contentMessages.reportCardFetchSuccess, 
+      tests,
+    });
+  }
 }

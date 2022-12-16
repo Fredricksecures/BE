@@ -90,6 +90,12 @@ export class createChapterReq {
     testId: string;
   
   }
+  export class updateReportCardReq {
+    @IsNotEmpty()
+    @IsString()
+    remark: string;
+   
+  }
  
   
   

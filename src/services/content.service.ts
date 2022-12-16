@@ -21,7 +21,8 @@ import {
   updateSubjectReq,
   createTestReq,
   updateTestReq,
-  createReportCardReq
+  createReportCardReq,
+  updateReportCardReq
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
 import {
@@ -646,4 +647,70 @@ export class ContentService {
     };
   }
   
+  async updateReportCardProfile(id: string, updateReportCardReq: updateReportCardReq) {
+    const { remark } = updateReportCardReq;
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    let foundReoprtCard, updatedReportCard: ReportCard;
+
+    try {
+      foundReoprtCard = await this.reportCardRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.checkingReportCard + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundReoprtCard) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.reportCardNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedReportCard = await this.reportCardRepo.save({
+        ...foundReoprtCard,
+        remark: remark ?? foundReoprtCard.remark,
+        updatedAt:date
+      });
+
+      return {
+        success: true,
+        updatedReportCard,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.updatingReportCard,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+  
+  async getReportCard() {
+    let foundReportCards: Array<ReportCard>;
+    try {
+      foundReportCards = await this.reportCardRepo.find({});
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchReportCard + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundReportCards;
+  }
 }

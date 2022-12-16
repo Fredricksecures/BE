@@ -231,6 +231,8 @@ export const contentMessages = {
   testFetchSuccess:'Test fetch successfully',
   reportCardCreateSuccess:'Report card created successfully',
   failToCreateReportCard:'Error while creating report card',
+  updatedReportCardSuccess:'Report card updated successfully',
+  reportCardFetchSuccess:'Report card fetch successfully',
 };
 export const contentErrors = {
   saveLesson: 'could not save new lesson --------- ',
@@ -261,7 +263,12 @@ export const contentErrors = {
   updatingTest:'Error querying for updating test ---------',
   failedToFetchTest:'Failed to fetch test---------',
   failedToStudent:'Failed to fetch student---------',
-  saveReportCard:'could not save new report card ---------'
+  saveReportCard:'could not save new report card ---------',
+  updatingReportCardFail:'Failed to update report card sessions -------',
+  checkingReportCard:'error while fetching report card. ---------',
+  reportCardNotFound:'could not find report card with id provided ---------',
+  updatingReportCard:'Error querying for updating report card ---------',
+  failedToFetchReportCard:'Failed to fetch report card---------',
 };
 
 export const profileMessages = {
