@@ -96,6 +96,39 @@ export class createChapterReq {
     remark: string;
    
   }
+  export class updateLeaderboardReq {
+    @IsNotEmpty()
+    @IsNumber()
+    points: number;
+   
+  }
+  
+  export class createBadgeReq {
+    @IsNotEmpty()
+    @IsString()
+    badgeName: string;
+   
+  }
+  export class updateBadgeReq {
+    @IsNotEmpty()
+    @IsString()
+    badgeName: string;
+   
+  }
+
+  export class createMockTestReq {
+    @IsNotEmpty()
+    @IsString()
+    mockTestName: string;
+   
+  }
+  export class updateMockTestReq {
+    @IsNotEmpty()
+    @IsString()
+    mockTestName: string;
+   
+  }
+ 
  
   
   

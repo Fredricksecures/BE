@@ -22,7 +22,12 @@ import {
   createTestReq,
   updateTestReq,
   createReportCardReq,
-  updateReportCardReq
+  updateReportCardReq,
+  updateLeaderboardReq,
+  createBadgeReq,
+  updateBadgeReq,
+  createMockTestReq,
+  updateMockTestReq
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
 import {
@@ -36,6 +41,9 @@ import { Subject } from 'src/entities/subject.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Test } from 'src/entities/test.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
+import { Leaderboard } from 'src/entities/leaderBoard.entity';
+import { Badge } from 'src/entities/badges.entity';
+import { MockTest } from 'src/entities/mockTest.entity';
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -50,6 +58,9 @@ export class ContentService {
     @InjectRepository(Test) private testRepo: Repository<Test>, 
     @InjectRepository(Student) private studentRepo: Repository<Student>, 
     @InjectRepository(ReportCard) private reportCardRepo: Repository<ReportCard>,
+    @InjectRepository(Leaderboard) private leaderboardRepo: Repository<Leaderboard>,
+    @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
+    @InjectRepository(MockTest) private mockTestRepo: Repository<MockTest>,
     // @InjectRepository(User) private userRepo: Repository<User>,
   ) // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   // @InjectRepository(Session) private sessionRepo: Repository<Session>,
@@ -712,5 +723,261 @@ export class ContentService {
       );
     }
     return foundReportCards;
+ 
   }
+  
+  async updateLeaderboardProfile(id: string, updateLeaderboardReq: updateLeaderboardReq) {
+    const { points } = updateLeaderboardReq;
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    let foundLeaderboard, updatedLeaderboard: Leaderboard;
+
+    try {
+      foundLeaderboard = await this.leaderboardRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.checkingLeaderboard + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundLeaderboard) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.leaderboardNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedLeaderboard = await this.leaderboardRepo.save({
+        ...foundLeaderboard,
+        points: points ?? foundLeaderboard.points,
+        updatedAt:date
+      });
+
+      return {
+        success: true,
+        updatedLeaderboard,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.updatingLeaderboard,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+  
+  async getLeaderboard() {
+    let foundLeaderboards: Array<Leaderboard>;
+    try {
+      foundLeaderboards = await this.leaderboardRepo.find({});
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchLeaderboard + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundLeaderboards;
+ 
+  }
+
+  async createBadge(  createBadgeReq: createBadgeReq) {
+    const { badgeName } = createBadgeReq;
+    let  badgeCreated: Badge;
+    
+    try {
+      
+      badgeCreated = await this.badgeRepo.save({
+        badgeName
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.saveBadge + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      badgeCreated,
+      success: true,
+    };
+  }
+  
+  async updateBadgeProfile(id: string, updateBadgeReq: updateBadgeReq) {
+    const { badgeName } = updateBadgeReq;
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    let foundBadge, updatedBadge: Badge;
+
+    try {
+      foundBadge = await this.badgeRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.checkingBadge + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundBadge) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.badgeNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedBadge = await this.badgeRepo.save({
+        ...foundBadge,
+        badgeName: badgeName ?? foundBadge.badgeName,
+        updatedAt:date
+      });
+
+      return {
+        success: true,
+        updatedBadge,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.updatingBadge,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+  
+  async getBadge() {
+    let foundBadges: Array<Badge>;
+    try {
+      foundBadges = await this.badgeRepo.find({});
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchBadge + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundBadges;
+ 
+  }
+  
+  async createMockTest(  createMockTestReq: createMockTestReq) {
+    const { mockTestName } = createMockTestReq;
+    let  mockTestCreated: MockTest;
+    
+    try {
+      
+      mockTestCreated = await this.mockTestRepo.save({
+        mockTestName
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.saveMockTest + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      mockTestCreated,
+      success: true,
+    };
+  }
+  
+  async updateMockTestProfile(id: string, updateMockTestReq: updateMockTestReq) {
+    const { mockTestName } = updateMockTestReq;
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    let foundMockTest, updatedMockTest: Badge;
+
+    try {
+      foundMockTest = await this.mockTestRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.checkingMockTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundMockTest) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.mockTestNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedMockTest = await this.mockTestRepo.save({
+        ...foundMockTest,
+        mockTestName: mockTestName ?? foundMockTest.mockTestName,
+        updatedAt:date
+      });
+
+      return {
+        success: true,
+        updatedMockTest,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.updatingBadge,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+  
+  async getMockTest() {
+    let foundMockTests: Array<MockTest>;
+    try {
+      foundMockTests = await this.mockTestRepo.find({});
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchMockTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundMockTests;
+ 
+  }
+  
 }

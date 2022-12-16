@@ -25,7 +25,12 @@ import{
   createTestReq,
   updateTestReq,
   createReportCardReq,
-  updateReportCardReq
+  updateReportCardReq,
+  updateLeaderboardReq,
+  createBadgeReq,
+  updateBadgeReq,
+  createMockTestReq,
+  updateMockTestReq
  } from 'src/dto/content.dto';
 import { Request, Response } from 'express';
 import { adminErrors, adminMessages,contentMessages,contentErrors } from 'src/constants';
@@ -396,16 +401,186 @@ export class ContentController {
     }
   }
 
-  @Get('reportCards')
-  async getReportCards(
+ 
+  @Patch('update-leaderboard/:id')
+  async updateLeaderboard(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateLeaderboardReq,
+    @Param('id') id,
+  ) {
+    let { updatedLeaderboard, success }=
+      await this.contentService.updateLeaderboardProfile(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      resp.json({
+        success,
+        message: contentMessages.updatedLeaderboardSuccess,
+        status: HttpStatus.OK,
+        updatedLeaderboard,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.updatingLeaderboardFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('leaderboards')
+  async getLeaderboards(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response
    
   ) {
-    const tests = await this.contentService.getReportCard();
+    const tests = await this.contentService.getLeaderboard();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.reportCardFetchSuccess, 
+      message: contentMessages.leaderboardFetchSuccess, 
+      tests,
+    });
+  }
+  @Post('create-badge')
+  async createBadge(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createBadgeReq,
+  ) {
+    
+    const { success, badgeCreated } =
+      await this.contentService.createBadge(body);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: contentMessages.badgeCreateSuccess,
+        badgeCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentMessages.failToCreateBadge,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Patch('update-badge/:id')
+  async updateBadge(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateBadgeReq,
+    @Param('id') id,
+  ) {
+    let { updatedBadge, success }=
+      await this.contentService.updateBadgeProfile(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      resp.json({
+        success,
+        message: contentMessages.updatedBadgeSuccess,
+        status: HttpStatus.OK,
+        updatedBadge,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.updatingBadgeFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Get('badges')
+  async getBadges(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response
+   
+  ) {
+    const tests = await this.contentService.getBadge();
+    resp.json({
+      status: HttpStatus.OK,
+      message: contentMessages.badgeFetchSuccess, 
+      tests,
+    });
+  }
+
+  @Post('create-mock-test')
+  async createMockTest(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createMockTestReq,
+  ) {
+    
+    const { success, mockTestCreated } =
+      await this.contentService.createMockTest(body);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: contentMessages.mockTestCreateSuccess,
+        mockTestCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentMessages.failToCreateMockTest,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Patch('update-mock-test/:id')
+  async updateMockTest(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateMockTestReq,
+    @Param('id') id,
+  ) {
+    let { updatedMockTest, success }=
+      await this.contentService.updateMockTestProfile(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      resp.json({
+        success,
+        message: contentMessages.updatedMockTestSuccess,
+        status: HttpStatus.OK,
+        updatedMockTest,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.updatingMockTestFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Get('mockTests')
+  async getMockTests(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response
+   
+  ) {
+    const tests = await this.contentService.getMockTest();
+    resp.json({
+      status: HttpStatus.OK,
+      message: contentMessages.mockTestFetchSuccess, 
       tests,
     });
   }

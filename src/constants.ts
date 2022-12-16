@@ -19,6 +19,9 @@ import { Chapter } from './entities/chapter.entity';
 import { Test } from './entities/test.entity';
 import { Class } from './entities/class.entity';
 import { ReportCard } from './entities/reportCard.entity';
+import { Leaderboard } from './entities/leaderBoard.entity';
+import { Badge } from './entities/badges.entity';
+import { MockTest } from './entities/mockTest.entity';
 
 config();
 
@@ -52,7 +55,10 @@ export const ModuleConfigs = {
       Test,
       Class,
       Student,
-      ReportCard
+      ReportCard,
+      Leaderboard,
+      Badge,
+      MockTest
     ],
   },
   utility: {
@@ -78,7 +84,7 @@ export const ModuleConfigs = {
   },
   content: {
     entities: [Chapter,Lesson,Subject,LearningPackage,Test,Student,
-      ReportCard],
+      ReportCard,Leaderboard,Badge,MockTest]
   },
 };
 
@@ -233,6 +239,17 @@ export const contentMessages = {
   failToCreateReportCard:'Error while creating report card',
   updatedReportCardSuccess:'Report card updated successfully',
   reportCardFetchSuccess:'Report card fetch successfully',
+  leaderboardFetchSuccess:'Leaderboard fetch successfully',
+  updatedLeaderboardSuccess:'Leaderboard updated successfully',
+  badgeCreateSuccess:'Badge created successfully',
+  failToCreateBadge:'Error while creating badge',
+  updatedBadgeSuccess:'Badge updated successfully',
+  badgeFetchSuccess:'Badge fetch successfully',
+  mockTestCreateSuccess:'Mock test created successfully',
+  failToCreateMockTest:'Error while creating mock test',
+  updatedMockTestSuccess:'Mock test updated successfully',
+ mockTestFetchSuccess:'Mock test fetch successfully',
+ 
 };
 export const contentErrors = {
   saveLesson: 'could not save new lesson --------- ',
@@ -269,6 +286,22 @@ export const contentErrors = {
   reportCardNotFound:'could not find report card with id provided ---------',
   updatingReportCard:'Error querying for updating report card ---------',
   failedToFetchReportCard:'Failed to fetch report card---------',
+  updatingLeaderboardFail:'Failed to update leaderboard sessions -------',
+  checkingLeaderboard:'error while fetching leaderboard. ---------',
+  leaderboardNotFound:'could not find leaderboard with id provided ---------',
+  updatingLeaderboard:'Error querying for updating leaderboard ---------',
+  failedToFetchLeaderboard:'Failed to fetch leaderboard---------',
+  saveBadge:'could not save new badge --------- ',
+  updatingBadgeFail:'Failed to update badge sessions -------',
+  checkingBadge:'error while fetching badge. ---------',
+  badgeNotFound:'could not find badge with id provided ---------',
+  updatingBadge:'Error querying for updating badge ---------',
+  failedToFetchBadge:'Failed to fetch badge---------',
+  updatingMockTestFail:'Failed to update mock test sessions -------',
+  saveMockTest:'could not save new mock test --------- ',
+  checkingMockTest:'error while fetching mock test. ---------',
+  mockTestNotFound:'could not find mock test with id provided ---------',
+  failedToFetchMockTest:'Failed to fetch mock test---------',
 };
 
 export const profileMessages = {
