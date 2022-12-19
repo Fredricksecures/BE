@@ -97,3 +97,8 @@ export const ClassState = {
   ENDED: 'ENDED', 
   ONGOING: 'ONGOING'
 };
+
+export const SeatReservation = {
+  RESERVE_SEAT: 'RESERVE_SEAT', 
+  RESERVED: 'RESERVED'
+};

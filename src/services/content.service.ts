@@ -44,6 +44,7 @@ import { ReportCard } from 'src/entities/reportCard.entity';
 import { Leaderboard } from 'src/entities/leaderBoard.entity';
 import { Badge } from 'src/entities/badges.entity';
 import { MockTest } from 'src/entities/mockTest.entity';
+import { Class } from 'src/entities/class.entity';
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -61,6 +62,7 @@ export class ContentService {
     @InjectRepository(Leaderboard) private leaderboardRepo: Repository<Leaderboard>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
     @InjectRepository(MockTest) private mockTestRepo: Repository<MockTest>,
+    @InjectRepository(Class) private classRepo: Repository<Class>,
     // @InjectRepository(User) private userRepo: Repository<User>,
   ) // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   // @InjectRepository(Session) private sessionRepo: Repository<Session>,
@@ -188,7 +190,16 @@ export class ContentService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchChapter + exp,
+          error: contentErrors.checkingChapter + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundChapterId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchSubjectById,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -222,12 +233,23 @@ export class ContentService {
         where: {
           id: subjectId,
         },
+        
       });
+      console.log(foundSubjectId)
     } catch (exp) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchSubject + exp,
+          error: contentErrors.checkingSubject + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundSubjectId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchSubjectById,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -332,7 +354,6 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
     try {
       updatedLesson = await this.lessonRepo.save({
         ...foundLesson,
@@ -367,13 +388,21 @@ export class ContentService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchLearningPackage + exp,
+          error: contentErrors.checkingLearningPackage + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    try {
-      
+    if (!foundLearningPackageId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchLearningPackage,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {     
       subjectCreated = await this.subjectRepo.save({
         type,
         learningPackage: foundLearningPackageId,
@@ -475,7 +504,16 @@ export class ContentService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchLesson + exp,
+          error: contentErrors.checkingLesson + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundLessonId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchLesson,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -582,7 +620,16 @@ export class ContentService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToStudent + exp,
+          error: contentErrors.failedToFetchStudents + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundStudentId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToStudent,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -597,7 +644,16 @@ export class ContentService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchTest + exp,
+          error: contentErrors.checkingTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundTestId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchTest,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -612,7 +668,16 @@ export class ContentService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchLesson + exp,
+          error: contentErrors.checkingLesson + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundLessonId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchLesson,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -627,7 +692,16 @@ export class ContentService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchSubject + exp,
+          error: contentErrors.checkingSubject + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundSubjectId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchSubjectById,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -977,6 +1051,23 @@ export class ContentService {
       );
     }
     return foundMockTests;
+ 
+  }
+  
+  async getUpcomingClasses() {
+    let foundUpcomingClasses: Array<MockTest>;
+    try {
+      foundUpcomingClasses = await this.classRepo.find({});
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchUpcomingClasses + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return foundUpcomingClasses;
  
   }
   
