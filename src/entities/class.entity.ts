@@ -6,8 +6,9 @@ import {
     UpdateDateColumn,
     ManyToOne,
   } from 'typeorm';
-import { ClassState } from 'src/enums';
+import { ClassState, SeatReservation } from 'src/enums';
 import { Student } from './student.entity';
+
   
   @Entity('classes')
   export class Class {
@@ -30,6 +31,15 @@ import { Student } from './student.entity';
   
     @ManyToOne(() => Student, (student) => student.classes)
     student?: Student;
+
+    @Column({ type: 'time' })
+    classTime?: Date;
+
+    @Column({ type: 'varchar' })
+    teacherName?: string;
+
+    @Column({ type: 'varchar', default: SeatReservation.RESERVE_SEAT })
+    seatReservation?: string;
   
     @CreateDateColumn({ type: 'timestamp' })
     createdAt?: Date;

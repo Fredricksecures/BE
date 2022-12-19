@@ -401,6 +401,19 @@ export class ContentController {
     }
   }
 
+  @Get('reportCards')
+  async getReportCards(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response
+   
+  ) {
+    const tests = await this.contentService.getReportCard();
+    resp.json({
+      status: HttpStatus.OK,
+      message: contentMessages.reportCardFetchSuccess, 
+      tests,
+    });
+  }
  
   @Patch('update-leaderboard/:id')
   async updateLeaderboard(
@@ -581,6 +594,19 @@ export class ContentController {
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.mockTestFetchSuccess, 
+      tests,
+    });
+  }
+  @Get('upcoming-classes')
+  async getUpcomingClasses(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response
+   
+  ) {
+    const tests = await this.contentService.getUpcomingClasses();
+    resp.json({
+      status: HttpStatus.OK,
+      message: contentMessages.upcomingClassesFetchSuccess, 
       tests,
     });
   }
