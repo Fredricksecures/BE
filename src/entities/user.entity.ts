@@ -35,7 +35,7 @@ export class User {
   @Column({ type: 'varchar', default: Genders.MALE })
   gender?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   profilePicture?: string;
 
   @Column({ type: 'varchar', nullable: true })

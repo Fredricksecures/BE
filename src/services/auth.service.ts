@@ -34,7 +34,7 @@ import { authErrors } from 'src/constants';
 import Logger from 'src/utils/logger';
 import * as bcrypt from 'bcrypt';
 import { Session } from 'src/entities/session.entity';
-import { UserTypes } from 'src/enums';
+import { UserTypes, Genders } from 'src/enums';
 import { UtilityService } from './utility.service';
 import { CountryList } from 'src/entities/countryList.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
@@ -60,7 +60,50 @@ export class AuthService {
     private lPLRepo: Repository<LearningPackageList>,
     @InjectRepository(Subscription)
     private subscriptionRepo: Repository<Subscription>,
-  ) {}
+  ) {
+    this.test();
+  }
+
+  async test() {
+    const children = [
+        {
+          firstName: '{{$randomFirstName}}',
+          lastName: '{{$randomLastName}}',
+          gender: 'female',
+          packages: ['2', '3'],
+        },
+      ],
+      user = {
+        id: 1,
+        firstName: 'Russell',
+        lastName: 'Emekoba',
+        gender: 'MALE',
+        profilePicture: '',
+        dateOfBirth: null,
+        type: 'PARENT',
+        suspended: false,
+        createdAt: '2022-12-19T09:43:26.988Z',
+        updatedAt: '2022-12-19T09:43:26.988Z',
+        parent: {
+          id: 1,
+          email: 'rjemekoba@gmail.com',
+          phoneNumber: '08076607130',
+          address: '',
+          password:
+            '$2b$10$XENVPQW.hSlrmkYlGqrts.KecU0B/J0hBPYpJH0oTtmpjTrSP/5gq',
+          passwordResetPin: '',
+          onboardingStage: 'STAGE_0',
+          createdAt: '2022-12-19T09:43:26.983Z',
+          updatedAt: '2022-12-19T09:43:26.983Z',
+          sessions: [],
+        },
+      };
+
+    this.createStudentProfile({
+      children,
+      user,
+    });
+  }
 
   async generateToken(user: User): Promise<string> {
     let token: string;
@@ -651,86 +694,37 @@ export class AuthService {
     return createdParent;
   }
 
+  async collateSubscriptionCost(packages: Array<string>) {
+    // const packages:Array<LearningPackage> =this.le
+    return 12122;
+  }
+
   async createStudentProfile(
-    createStudentReq: CreateStudentReq,
+    createStudentReq,
+    // : CreateStudentReq,
   ): Promise<CreateStudentRes> {
     const { user, children } = createStudentReq;
 
-    let createdUsers: Array<User>,
-      savedUsers: Array<User>,
-      //
-      createdStudents: Array<Student>,
-      savedStudents: Array<Student>,
-      //
-      createdSubscriptions: Array<Subscription>,
-      savedSubscriptions: Array<Subscription>,
-      //
-      createdPackages: Array<LearningPackage>,
-      savedPackages: Array<LearningPackage>,
-      //
-      foundListedPackages: Array<LearningPackageList>;
-
-    const revisedForm = Promise.all(
-      children.map(async (child: any) => {
-        //* fetch package from package list
-        foundListedPackages = await this.lPLRepo.find({
-          where: { id: In(child.packages) },
-        });
-        // .then((res) => {
-        //   return res.map((e) => {
-        //     delete e.id;
-        //     delete e.createdAt;
-        //     delete e.updatedAt;
-
-        //     return e;
-        //   });
+    const createdStudents: any = Promise.all(
+      children.map(async (child: any, idx: number) => {
+        //* create student user entity
+        // const studentUser: User = await this.userRepo.save({
+        //   firstName: child.firstName,
+        //   lastName: child.lastName,
+        //   gender: Genders[child.gender?.toUpperCase()],
+        //   type: UserTypes.STUDENT,
+        //   student: await this.studentRepo.save({
+        //     subscription: await this.subscriptionRepo.save({
+        //       // learningPackages: foundPackages,
+        //       price: (
+        //         await this.collateSubscriptionCost(child.packages)
+        //       ).toString(),
+        //     }),
+        //   }),
         // });
-
-        foundListedPackages.map((each) => {
-          createdPackages.push(
-            this.packageRepo.create({
-              learningPackageListItem: each,
-            }),
-          );
-        });
-
-        // const newSubscription = await this.subscriptionRepo.save({
-        //   learningPackages: foundPackages,
-        // });
-
-        // console.log('------', newSubscription);
+        // console.log(studentUser);
       }),
     ).then((res) => res);
-
-    // //* save created learning package list to learning package relation
-
-    // //* save created learning packages to subscription relation
-    // for (const child in children) {
-    // }
-
-    // console.log(createdStudents, user);
-
-    // //* save created subscription to student relation
-    // savedStudents.map((sChild, idx) => {
-    //   createdStudents.push(this.studentRepo.create({}));
-    // });
-
-    // //* save created student to user relation
-    // savedStudents.map((sChild, idx) => {
-    //   createdUsers.push(
-    //     this.userRepo.create({
-    //       firstName: children[idx].firstName,
-    //       lastName: children[idx].lastName,
-    //       profilePicture: '',
-    //       type: UserTypes.STUDENT,
-    //       student: sChild,
-    //     }),
-    //   );
-    // });
-
-    // //* save created user to parent relation
-
-    // // savedUsers = await this.userRepo.save(createdUsers);
 
     return { success: true, createdStudents };
   }
