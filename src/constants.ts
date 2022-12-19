@@ -84,7 +84,7 @@ export const ModuleConfigs = {
   },
   content: {
     entities: [Chapter,Lesson,Subject,LearningPackage,Test,Student,
-      ReportCard,Leaderboard,Badge,MockTest]
+      ReportCard,Leaderboard,Badge,MockTest,Class]
   },
 };
 
@@ -248,13 +248,14 @@ export const contentMessages = {
   mockTestCreateSuccess:'Mock test created successfully',
   failToCreateMockTest:'Error while creating mock test',
   updatedMockTestSuccess:'Mock test updated successfully',
- mockTestFetchSuccess:'Mock test fetch successfully',
+  mockTestFetchSuccess:'Mock test fetch successfully',
+  upcomingClassesFetchSuccess:'Upcoming classes fetch successfully',
  
 };
 export const contentErrors = {
   saveLesson: 'could not save new lesson --------- ',
   saveChapter: 'could not save new chapter --------- ',
-  failedToFetchSubject: 'Failed to fetch subject with this id --------- ',
+  failedToFetchSubjectById: 'Failed to fetch subject with this id --------- ',
   failedToFetchChapter: 'Failed to fetch chapter with this id --------- ',
   failedToFetchLessons: 'Failed to fetch lessons with this id ---------',
   updatingChapter: 'Error querying for updating chapter --------- ',
@@ -266,6 +267,7 @@ export const contentErrors = {
   updatingLessonFail: 'Failed to update lesson sessions -------',
   checkingLesson:'error while fetching lesson --------- ',
   failedToFetchLearningPackage:'Failed to fetch learning package with this id ---------',
+  checkingLearningPackage:'error while fetching learning package --------- ',
   saveSubject:'could not save new subject --------- ',
   updatingSubjectFail:'Failed to update subject -------',
   checkingSubject:'error while fetching subject. --------- ',
@@ -302,6 +304,9 @@ export const contentErrors = {
   checkingMockTest:'error while fetching mock test. ---------',
   mockTestNotFound:'could not find mock test with id provided ---------',
   failedToFetchMockTest:'Failed to fetch mock test---------',
+  failedToFetchUpcomingClasses:'Failed to fetch upcoming classes---------',
+  failedToFetchStudents: 'error while fetching students. --------- ',
+  
 };
 
 export const profileMessages = {
