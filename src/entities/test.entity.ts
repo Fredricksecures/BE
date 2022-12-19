@@ -5,16 +5,16 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany,
+  OneToMany
 } from 'typeorm';
 import { Chapter } from './chapter.entity';
-import { Material } from './material.entity';
+import { LearningPackage } from './learningPackage.entity';
+import { Lesson } from './lesson.entity';
 import { ReportCard } from './reportCard.entity';
-import { Test } from './test.entity';
 
-@Entity('lessons')
-export class Lesson {
-  constructor(data?: Lesson) {
+@Entity('tests')
+export class Test {
+  constructor(data?: Test) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -26,20 +26,13 @@ export class Lesson {
   id?: string;
 
   @Column({ type: 'varchar' })
-  type?: string;
+  topic?: string;
 
-  @ManyToOne(() => Chapter, (Chapter) => Chapter.lessons)
-  chapter?: Chapter;
+  @ManyToOne(() => Lesson, (lesson) => lesson.tests)
+  lesson?: Lesson;
 
-  @OneToMany(() => Material, (Material) => Material.lesson)
-  materials?: Material[];
-
-  @OneToMany(() => Test, (test) => test.lesson)
-  tests?: Test[];
-  
-  @OneToMany(() => ReportCard, (reportCard) => reportCard.lesson)
+  @OneToMany(() => ReportCard, (reportCard) => reportCard.test)
   reportCard?: ReportCard[];
-
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
