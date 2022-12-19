@@ -3,13 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { COUNTRY_SEED, learningPackages, utilityErrors } from '../constants';
 import { CountryList } from 'src/entities/countryList.entity';
-import { LearningPackageList } from 'src/entities/learningPackageList.entity';
+import { LearningPackage } from 'src/entities/learningPackage.entity';
 
 @Injectable()
 export class UtilitySeeder {
   constructor(
-    @InjectRepository(LearningPackageList)
-    private lPLRepo: Repository<LearningPackageList>,
+    @InjectRepository(LearningPackage)
+    private lPLRepo: Repository<LearningPackage>,
     @InjectRepository(CountryList) private countryRepo: Repository<CountryList>, // @InjectRepository(LearningPackage) // private learningPackageRepo: Repository<LearningPackage>,
   ) {}
 
@@ -31,6 +31,7 @@ export class UtilitySeeder {
       Object.keys(COUNTRY_SEED).map((k) => {
         createdCountries = this.countryRepo.create({
           name: k,
+          priceRate: COUNTRY_SEED[k]?.priceRate,
           supported: COUNTRY_SEED[k]?.supported,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -65,13 +66,14 @@ export class UtilitySeeder {
 
     if (packageList.length === 0) {
       console.log('seeding learning package list...............📚📖🏫');
-      let createdPackage: LearningPackageList,
-        savedPackages: LearningPackageList[] = [];
+      let createdPackage: LearningPackage,
+        savedPackages: LearningPackage[] = [];
 
       Object.keys(learningPackages).map((k) => {
         createdPackage = this.lPLRepo.create({
           name: learningPackages[k].name,
           type: learningPackages[k].type,
+          price: learningPackages[k].price,
           createdAt: new Date(),
           updatedAt: new Date(),
         });

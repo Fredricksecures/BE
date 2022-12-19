@@ -433,7 +433,6 @@ export class AdminService {
       createdCustomerCare = await this.userRepo.save({
         firstName,
         lastName,
-        profilePicture: '',
         type: UserTypes.CUSTOMERCARE,
         customerCare: createdParent,
       });
@@ -659,7 +658,6 @@ export class AdminService {
         firstName,
         lastName,
         gender,
-        profilePicture: '',
         type: UserTypes.ADMIN,
         admin: createdAdmin,
       });

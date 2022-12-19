@@ -5,7 +5,7 @@ import { CountryList } from 'src/entities/countryList.entity';
 import { Device } from 'src/entities/device.entity';
 import { Repository } from 'typeorm';
 import Logger from 'src/utils/logger';
-import { LearningPackageList } from 'src/entities/learningPackageList.entity';
+import { LearningPackage } from 'src/entities/learningPackage.entity';
 
 @Injectable()
 export class UtilityService {
@@ -13,9 +13,11 @@ export class UtilityService {
     @InjectRepository(Device) private deviceRepo: Repository<Device>,
     @InjectRepository(CountryList)
     private countryLRepo: Repository<CountryList>,
-    @InjectRepository(LearningPackageList)
-    private lPLRepo: Repository<LearningPackageList>,
+    @InjectRepository(LearningPackage)
+    private lPLRepo: Repository<LearningPackage>,
   ) {}
+
+  async updatePriceRate(countryId) {}
 
   async getCountryList(countryId: string) {
     let country: CountryList;

@@ -4,15 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
   OneToMany,
-  JoinColumn,
-  OneToOne,
 } from 'typeorm';
-import { LearningPackageList } from './learningPackageList.entity';
-import { Student } from './student.entity';
 import { Subject } from './subject.entity';
-import { Subscription } from './subscription.entity';
 
 @Entity('learning-packages')
 export class LearningPackage {
@@ -28,24 +22,13 @@ export class LearningPackage {
   id?: string;
 
   @Column({ type: 'varchar' })
-  packageListId?: string;
+  name?: string;
 
-  @ManyToOne(
-    () => Subscription,
-    (Subscription) => Subscription.learningPackages,
-  )
-  subscription?: Subscription;
+  @Column({ type: 'varchar' })
+  price?: string;
 
-  // @OneToMany(
-  //   () => LearningPackageList,
-  //   (LearningPackageList) => LearningPackageList.learningPackage,
-  // )
-  // @JoinColumn()
-  // learningPackageLists?: LearningPackageList[];
-
-  @OneToOne(() => LearningPackageList)
-  @JoinColumn()
-  learningPackageListItem?: LearningPackageList;
+  @Column({ type: 'varchar' })
+  type?: string;
 
   @OneToMany(() => Subject, (Subject) => Subject.learningPackage)
   subjects?: Array<Subject>;

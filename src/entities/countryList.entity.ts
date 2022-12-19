@@ -27,6 +27,9 @@ export class CountryList {
   @Column({ type: 'varchar', unique: true })
   name?: string;
 
+  @Column({ type: 'varchar' })
+  priceRate?: string;
+
   @Column({ type: 'bool', default: false })
   supported?: boolean;
 

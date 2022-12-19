@@ -39,7 +39,6 @@ import { UtilityService } from './utility.service';
 import { CountryList } from 'src/entities/countryList.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Subscription } from 'src/entities/subscription.entity';
-import { LearningPackageList } from 'src/entities/learningPackageList.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -56,8 +55,6 @@ export class AuthService {
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
     @InjectRepository(LearningPackage)
     private packageRepo: Repository<LearningPackage>,
-    @InjectRepository(LearningPackageList)
-    private lPLRepo: Repository<LearningPackageList>,
     @InjectRepository(Subscription)
     private subscriptionRepo: Repository<Subscription>,
   ) {
@@ -70,7 +67,7 @@ export class AuthService {
           firstName: '{{$randomFirstName}}',
           lastName: '{{$randomLastName}}',
           gender: 'female',
-          packages: ['2', '3'],
+          packages: ['7', '9', '13'],
         },
       ],
       user = {
@@ -78,7 +75,6 @@ export class AuthService {
         firstName: 'Russell',
         lastName: 'Emekoba',
         gender: 'MALE',
-        profilePicture: '',
         dateOfBirth: null,
         type: 'PARENT',
         suspended: false,
@@ -425,7 +421,6 @@ export class AuthService {
       createdUser = await this.userRepo.save({
         firstName,
         lastName,
-        profilePicture: '',
         type: UserTypes.PARENT,
         parent: createdParent,
       });
@@ -694,9 +689,16 @@ export class AuthService {
     return createdParent;
   }
 
-  async collateSubscriptionCost(packages: Array<string>) {
-    // const packages:Array<LearningPackage> =this.le
-    return 12122;
+  async collateSubscriptionCost(packages: Array<string>): Promise<string> {
+    const foundPackages: Array<LearningPackage> = await this.packageRepo.find({
+      where: { id: In(packages) },
+    });
+
+    const cost = foundPackages.reduce((total, pkg) => {
+      return total + parseInt(pkg.price);
+    }, 0);
+
+    return cost.toString();
   }
 
   async createStudentProfile(
@@ -708,21 +710,23 @@ export class AuthService {
     const createdStudents: any = Promise.all(
       children.map(async (child: any, idx: number) => {
         //* create student user entity
-        // const studentUser: User = await this.userRepo.save({
-        //   firstName: child.firstName,
-        //   lastName: child.lastName,
-        //   gender: Genders[child.gender?.toUpperCase()],
-        //   type: UserTypes.STUDENT,
-        //   student: await this.studentRepo.save({
-        //     subscription: await this.subscriptionRepo.save({
-        //       // learningPackages: foundPackages,
-        //       price: (
-        //         await this.collateSubscriptionCost(child.packages)
-        //       ).toString(),
-        //     }),
-        //   }),
-        // });
-        // console.log(studentUser);
+        const studentUser: User = await this.userRepo.save({
+          firstName: child.firstName,
+          lastName: child.lastName,
+          gender: Genders[child.gender?.toUpperCase()],
+          type: UserTypes.STUDENT,
+          student: await this.studentRepo.save({
+            subscription: await this.subscriptionRepo.save({
+              learningPackages: child.packages,
+              price: await this.collateSubscriptionCost(child.packages),
+            }),
+            parent: new Parent({
+              id: user.parent.id,
+            }),
+          }),
+        });
+
+        console.log(studentUser);
       }),
     ).then((res) => res);
 
