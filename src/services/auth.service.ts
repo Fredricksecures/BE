@@ -39,6 +39,7 @@ import { UtilityService } from './utility.service';
 import { CountryList } from 'src/entities/countryList.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Subscription } from 'src/entities/subscription.entity';
+import { mailer } from 'src/utils/mailer';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -436,6 +437,10 @@ export class AuthService {
       );
     }
 
+    mailer(createdUser.parent.email, 'Registration Successful', {
+      text: `An action to change your password was successful`,
+    });
+
     return {
       createdUser,
       success: true,
@@ -708,26 +713,24 @@ export class AuthService {
     const { user, children } = createStudentReq;
 
     const createdStudents: any = Promise.all(
-      children.map(async (child: any, idx: number) => {
-        //* create student user entity
-        const studentUser: User = await this.userRepo.save({
-          firstName: child.firstName,
-          lastName: child.lastName,
-          gender: Genders[child.gender?.toUpperCase()],
-          type: UserTypes.STUDENT,
-          student: await this.studentRepo.save({
-            subscription: await this.subscriptionRepo.save({
-              learningPackages: child.packages,
-              price: await this.collateSubscriptionCost(child.packages),
-            }),
-            parent: new Parent({
-              id: user.parent.id,
+      children.map(
+        async (child: any) =>
+          await this.userRepo.save({
+            firstName: child.firstName,
+            lastName: child.lastName,
+            gender: Genders[child.gender?.toUpperCase()],
+            type: UserTypes.STUDENT,
+            student: await this.studentRepo.save({
+              subscription: await this.subscriptionRepo.save({
+                learningPackages: child.packages,
+                price: await this.collateSubscriptionCost(child.packages),
+              }),
+              parent: new Parent({
+                id: user.parent.id,
+              }),
             }),
           }),
-        });
-
-        console.log(studentUser);
-      }),
+      ),
     ).then((res) => res);
 
     return { success: true, createdStudents };
