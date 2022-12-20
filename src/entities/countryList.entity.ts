@@ -8,9 +8,9 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-@Entity('countries')
-export class Country {
-  constructor(data?: Country) {
+@Entity('country-list')
+export class CountryList {
+  constructor(data?: CountryList) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -26,6 +26,9 @@ export class Country {
 
   @Column({ type: 'varchar', unique: true })
   name?: string;
+
+  @Column({ type: 'varchar' })
+  priceRate?: string;
 
   @Column({ type: 'bool', default: false })
   supported?: boolean;

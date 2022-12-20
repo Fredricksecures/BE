@@ -32,8 +32,7 @@ import { isEmpty } from 'src/utils/helpers';
 import * as bcrypt from 'bcrypt';
 import { UserTypes } from 'src/enums';
 import { UtilityService } from './utility.service';
-import { Country } from 'src/entities/country.entity';
-//import { Pagination, PaginationOptionsInterface } from 'src/paginate';
+import { CountryList } from 'src/entities/countryList.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -76,16 +75,17 @@ export class AdminService {
     return user;
   }
 
-  
-
-  async getUserSessions(user: GetAllUsersSessionsReq, options: IPaginationOptions): Promise<Pagination<Session>>{
+  async getUserSessions(
+    user: GetAllUsersSessionsReq,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Session>> {
     const { userId } = user;
-    let foundUser ;
-    //let foundUser
+    let foundUser;
 
     try {
-      foundUser = await this.userRepo.createQueryBuilder('User').leftJoinAndSelect('User.parent','parent.session');
-      
+      foundUser = this.userRepo
+        .createQueryBuilder('User')
+        .leftJoinAndSelect('User.parent', 'parent.session');
     } catch (exp) {
       Logger.error(adminErrors.checkingUser + exp);
 
@@ -97,7 +97,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    console.log(foundUser)
+    console.log(foundUser);
     if (!foundUser) {
       Logger.error(adminErrors.userNotFoundWithId);
 
@@ -133,12 +133,11 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return paginate<Session>(foundUser, options)
-      //success: true,
-      
+    return paginate<Session>(foundUser, options);
+    //success: true,
+
     // };
   }
-
 
   async endUserSessions(user: UsersSessionsReq) {
     const { sessionId } = user;
@@ -276,12 +275,10 @@ export class AdminService {
   ): Promise<Pagination<Student>> {
     let results, total;
     try {
-      results = await this.studentRepo.createQueryBuilder('Student');
-      if(parentId != null)
-      {
+      results = this.studentRepo.createQueryBuilder('Student');
+      if (parentId != null) {
         results.where('Student.parentId = :parentId', { parentId });
       }
-      
     } catch (exp) {
       throw new HttpException(
         {
@@ -445,7 +442,6 @@ export class AdminService {
       createdCustomerCare = await this.userRepo.save({
         firstName,
         lastName,
-        profilePicture: '',
         type: UserTypes.CUSTOMERCARE,
         customerCare: createdParent,
       });
@@ -469,7 +465,9 @@ export class AdminService {
     const { phoneNumber, email, password, countryId } = params;
     let createdCustomerCare: CustomerCare;
 
-    const country: Country = await this.utilityService.getCountry(countryId);
+    const country: CountryList = await this.utilityService.getCountryList(
+      countryId,
+    );
 
     try {
       createdCustomerCare = await this.customerCareRepo.save({
@@ -555,10 +553,14 @@ export class AdminService {
     }
   }
 
-  async getCustomers( options: IPaginationOptions): Promise<Pagination<CustomerCare>>  {
+  async getCustomers(
+    options: IPaginationOptions,
+  ): Promise<Pagination<CustomerCare>> {
     let foundCustomers;
     try {
-      foundCustomers = await this.customerCareRepo.createQueryBuilder('CustomerCare');
+      foundCustomers = await this.customerCareRepo.createQueryBuilder(
+        'CustomerCare',
+      );
     } catch (exp) {
       throw new HttpException(
         {
@@ -671,7 +673,6 @@ export class AdminService {
         firstName,
         lastName,
         gender,
-        profilePicture: '',
         type: UserTypes.ADMIN,
         admin: createdAdmin,
       });
@@ -693,7 +694,7 @@ export class AdminService {
     };
   }
 
-  async getAdmin(options: IPaginationOptions): Promise<Pagination<Admin>>  {
+  async getAdmin(options: IPaginationOptions): Promise<Pagination<Admin>> {
     let foundAdmin;
 
     try {
@@ -768,11 +769,11 @@ export class AdminService {
     options: IPaginationOptions,
   ): Promise<Pagination<User>> {
     let results, total;
+
     try {
-      console.log(userId)
+      console.log(userId);
       results = await this.userRepo.createQueryBuilder('User');
-      if(userId != null)
-      {
+      if (userId != null) {
         results.where('Id = :userId', { userId });
       }
     } catch (exp) {
@@ -784,6 +785,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
+
     return paginate<User>(results, options);
   }
 }

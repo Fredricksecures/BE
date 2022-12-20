@@ -1,15 +1,13 @@
+import { PackageTypes } from 'src/enums';
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { Student } from './student.entity';
 import { Subject } from './subject.entity';
-import { Subscription } from './subscription.entity';
 
 @Entity('learning-packages')
 export class LearningPackage {
@@ -28,16 +26,17 @@ export class LearningPackage {
   name?: string;
 
   @Column({ type: 'varchar' })
+  price?: string;
+
+  @Column({
+    type: 'enum',
+    enum: PackageTypes,
+    default: PackageTypes.PRIMARY_SCHOOL,
+  })
   type?: string;
 
-  @ManyToOne(
-    () => Subscription,
-    (Subscription) => Subscription.learningPackages,
-  )
-  subscription?: Subscription;
-
   @OneToMany(() => Subject, (Subject) => Subject.learningPackage)
-  subjects?: Subject[];
+  subjects?: Array<Subject>;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

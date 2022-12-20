@@ -65,7 +65,7 @@ export class SubscriptionService {
     };
   }
 
-  async getSubscriptionHistory(subscriptionId: string) {
+  async getSubscriptionInvoices(subscriptionId: string) {
     let foundInvoices: Array<Invoice>;
 
     try {

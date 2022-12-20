@@ -1,3 +1,4 @@
+import { SubscriptionStates } from 'src/enums';
 import {
   Column,
   Entity,
@@ -5,9 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  OneToMany,
 } from 'typeorm';
-import { LearningPackage } from './learningPackage.entity';
 import { Student } from './student.entity';
 
 @Entity('subscription')
@@ -26,14 +25,21 @@ export class Subscription {
   @Column({ type: 'varchar' })
   price?: string;
 
-  @OneToMany(
-    () => LearningPackage,
-    (LearningPackage) => LearningPackage.subscription,
-  )
-  learningPackages?: LearningPackage[];
+  @Column({ type: 'varchar', array: true })
+  learningPackages?: Array<string>;
+
+  @Column({
+    type: 'enum',
+    enum: SubscriptionStates,
+    default: SubscriptionStates.ACTIVE,
+  })
+  state?: SubscriptionStates;
 
   @OneToOne(() => Student)
   student?: Student;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  dueDate?: Date;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

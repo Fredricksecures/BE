@@ -9,7 +9,7 @@ import {
 
 import { Student } from './student.entity';
   
-  @Entity('leader-boards')
+  @Entity('leaderboard')
   export class Leaderboard {
     constructor(data?: Leaderboard) {
       if (typeof data === 'object') {

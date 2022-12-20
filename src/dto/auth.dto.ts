@@ -8,8 +8,9 @@ import {
   ValidateIf,
   IsNotEmpty,
   IsMobilePhone,
+  IsArray,
 } from 'class-validator';
-import { Country } from 'src/entities/country.entity';
+import { CountryList } from 'src/entities/countryList.entity';
 import { Device } from 'src/entities/device.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Session } from 'src/entities/session.entity';
@@ -19,7 +20,7 @@ import { Match } from 'src/utils/decorators';
 
 export class MockAuthSeedDTO {
   mockDevice: Device;
-  mockCountry: Country;
+  mockCountryList: CountryList;
   mockSession: Session;
 }
 
@@ -53,9 +54,6 @@ export class RegisterUserReq {
   @IsNotEmpty()
   @Match('password')
   confirmPassword: string;
-
-  @IsNotEmpty()
-  deviceId: string;
 
   @IsNotEmpty()
   countryId: string;
@@ -111,14 +109,20 @@ class StudentReqObj {
   @IsNotEmpty()
   @IsString()
   dateOfBirth: string;
+
+  packages: Array<string>;
 }
 
 export class CreateStudentReq {
-  @IsNotEmpty()
-  @IsString()
-  parentId: string;
+  user: User;
 
+  @IsArray()
   children: Array<StudentReqObj>;
+}
+
+export class CreateStudentRes {
+  success: boolean;
+  createdStudents: Array<Student>;
 }
 
 export class GetStudentReq {
@@ -145,8 +149,8 @@ export class LoginReq {
   @IsNotEmpty()
   password: string;
 
-  @IsString()
-  deviceId: string;
+  @IsNotEmpty()
+  device: Device;
 }
 
 export class LoginRes {

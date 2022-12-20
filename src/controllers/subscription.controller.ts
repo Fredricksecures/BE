@@ -46,13 +46,13 @@ export class SubscriptionController {
     }
   }
 
-  @Get('history/:subscriptionId')
-  async getSubscriptionHistory(
+  @Get('invoice/:subscriptionId')
+  async getSubscriptionInvoices(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Param('subscriptionId') subscriptionId,
   ) {
-    const { success, history } = await this.authService.getSubscriptionHistory(
+    const { success, history } = await this.authService.getSubscriptionInvoices(
       subscriptionId,
     );
 
