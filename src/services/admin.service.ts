@@ -76,15 +76,16 @@ export class AdminService {
     return user;
   }
 
-  async getUserSessions(user: GetAllUsersSessionsReq) {
+  
+
+  async getUserSessions(user: GetAllUsersSessionsReq, options: IPaginationOptions): Promise<Pagination<Session>>{
     const { userId } = user;
-    let foundUser: User;
+    let foundUser ;
+    //let foundUser
 
     try {
-      foundUser = await this.userRepo.findOne({
-        where: { id: userId },
-        relations: ['parent', 'parent.sessions'],
-      });
+      foundUser = await this.userRepo.createQueryBuilder('User').leftJoinAndSelect('User.parent','parent.session');
+      
     } catch (exp) {
       Logger.error(adminErrors.checkingUser + exp);
 
@@ -96,7 +97,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
+    console.log(foundUser)
     if (!foundUser) {
       Logger.error(adminErrors.userNotFoundWithId);
 
@@ -132,11 +133,12 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return {
-      success: true,
-      sessions: foundUser.parent.sessions,
-    };
+    return paginate<Session>(foundUser, options)
+      //success: true,
+      
+    // };
   }
+
 
   async endUserSessions(user: UsersSessionsReq) {
     const { sessionId } = user;

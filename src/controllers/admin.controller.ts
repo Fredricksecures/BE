@@ -42,16 +42,21 @@ import {
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
+  
+
   @Get('user-sessions')
   async getUserSessions(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query() query: GetAllUsersSessionsReq,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query() query,
   ) {
-    const { success, sessions }: GetAllUsersSessionsRes =
-      await this.adminService.getUserSessions(query);
+    const options: IPaginationOptions = { limit, page };
+    const  sessions  =
+      await this.adminService.getUserSessions(query,options);
 
-    if (success) {
+    if (sessions) {
       resp.json({
         status: HttpStatus.OK,
         message: adminMessages.fetchSessionSuccess,
@@ -67,6 +72,7 @@ export class AdminController {
       );
     }
   }
+
 
   @Get('end-user-sessions')
   async endUserSessions(
