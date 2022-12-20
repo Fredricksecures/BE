@@ -326,6 +326,7 @@ export const adminMessages = {
   updatedCustomerSuccess: 'Customer profile updated successfully',
   addAdminCreateSuccess: 'Admin created successfully',
   adminFetchSuccess: 'Admin fetched successfully',
+  userFetchSuccess: 'Users Fetched successfully',
 };
 
 export const adminErrors = {
@@ -359,6 +360,7 @@ export const adminErrors = {
   checkingAdmin: 'Error querying for finding admin --------- ',
   adminNotFound: 'could not find admin with id provided ---------',
   updatingAdmin: 'Error querying for updating admin --------- ',
+  failedToFetchUsers: 'error while fetching users. --------- ',
 };
 
 //* SEEDS____________________________________________
