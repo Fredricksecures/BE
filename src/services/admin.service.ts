@@ -1,10 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-var moment = require("moment");
+var moment = require('moment');
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
+//import { FilterOperator, Paginate, PaginateQuery, paginate, Paginated } from 'nestjs-paginate'
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 import {
   GetAllUsersSessionsReq,
   UsersSessionsReq,
@@ -27,6 +33,7 @@ import * as bcrypt from 'bcrypt';
 import { UserTypes } from 'src/enums';
 import { UtilityService } from './utility.service';
 import { Country } from 'src/entities/country.entity';
+//import { Pagination, PaginationOptionsInterface } from 'src/paginate';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -261,16 +268,18 @@ export class AdminService {
     }
   }
 
-  async getStudents(parentId: string) {
-    let foundStudents: Array<Student>;
+  async getStudents(
+    parentId: string,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Student>> {
+    let results, total;
     try {
-      foundStudents = await this.studentRepo.find({
-        where: {
-          parent: {
-            id: parentId,
-          },
-        },
-      });
+      results = await this.studentRepo.createQueryBuilder('Student');
+      if(parentId != null)
+      {
+        results.where('Student.parentId = :parentId', { parentId });
+      }
+      
     } catch (exp) {
       throw new HttpException(
         {
@@ -280,7 +289,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundStudents;
+    return paginate<Student>(results, options);
   }
 
   async suspendUser(params: SuspendUserReq) {
@@ -492,7 +501,7 @@ export class AdminService {
       gender,
       profilePicture,
     } = updateCustomerReq;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
 
     let foundUser: User, updatedCustomer: CustomerCare;
 
@@ -526,7 +535,7 @@ export class AdminService {
         ...foundUser.customerCare,
         email: email ?? foundUser.customerCare.email,
         phoneNumber: phoneNumber ?? foundUser.customerCare.phoneNumber,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -544,10 +553,10 @@ export class AdminService {
     }
   }
 
-  async getCustomers() {
-    let foundCustomers: Array<Student>;
+  async getCustomers( options: IPaginationOptions): Promise<Pagination<CustomerCare>>  {
+    let foundCustomers;
     try {
-      foundCustomers = await this.customerCareRepo.find({});
+      foundCustomers = await this.customerCareRepo.createQueryBuilder('CustomerCare');
     } catch (exp) {
       throw new HttpException(
         {
@@ -557,7 +566,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundCustomers;
+    return paginate<CustomerCare>(foundCustomers, options);
   }
 
   async createAdmin(createAdminReq: createAdminReq) {
@@ -682,11 +691,11 @@ export class AdminService {
     };
   }
 
-  async getAdmin() {
-    let foundAdmin: Array<Admin>;
+  async getAdmin(options: IPaginationOptions): Promise<Pagination<Admin>>  {
+    let foundAdmin;
 
     try {
-      foundAdmin = await this.adminRepo.find({});
+      foundAdmin = await this.adminRepo.createQueryBuilder('Admin');
     } catch (exp) {
       throw new HttpException(
         {
@@ -696,14 +705,14 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundAdmin;
+    return paginate<Admin>(foundAdmin, options);
   }
 
   async updateAdminProfile(id: string, updateAdminReq: updateAdminReq) {
     const { email, phoneNumber, isSuper } = updateAdminReq;
 
     let foundUser, updatedAdmin: Admin;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     try {
       foundUser = await this.adminRepo.findOne({
         where: { id },
@@ -734,7 +743,7 @@ export class AdminService {
         email: email ?? foundUser.email,
         phoneNumber: phoneNumber ?? foundUser.phoneNumber,
         isSuper: isSuper ?? foundUser.isSuper,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -750,5 +759,29 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
+  }
+
+  async getUsers(
+    userId: string,
+    options: IPaginationOptions,
+  ): Promise<Pagination<User>> {
+    let results, total;
+    try {
+      console.log(userId)
+      results = await this.userRepo.createQueryBuilder('User');
+      if(userId != null)
+      {
+        results.where('Id = :userId', { userId });
+      }
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchUsers + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return paginate<User>(results, options);
   }
 }

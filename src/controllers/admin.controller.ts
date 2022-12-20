@@ -10,6 +10,8 @@ import {
   Body,
   Param,
   HttpException,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   GetAllUsersSessionsReq,
@@ -29,6 +31,12 @@ import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/enums';
 import { Request, Response } from 'express';
 import { adminErrors, adminMessages } from 'src/constants';
+import { Student } from 'src/entities/student.entity';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Controller('admin')
 export class AdminController {
@@ -111,16 +119,21 @@ export class AdminController {
   }
 
   @Get('students')
-  async getUsers(
+  async getStudents(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
     @Query() params,
   ) {
-    const users = await this.adminService.getStudents(params.parentId);
+    const options: IPaginationOptions = { limit, page };
+    const users = await this.adminService.getStudents(params.parentId, options);
+
     resp.json({
       status: HttpStatus.OK,
       message: adminMessages.studentFetchSuccess,
-      users,
+      users: users.items,
+      meta: users.meta,
     });
   }
 
@@ -211,12 +224,16 @@ export class AdminController {
   async getCustomers(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const users = await this.adminService.getCustomers();
+    const options: IPaginationOptions = { limit, page };
+    const users = await this.adminService.getCustomers(options);
     resp.json({
       status: HttpStatus.OK,
       message: adminMessages.customerFetchSuccess,
-      users,
+      users: users.items,
+      meta: users.meta,
     });
   }
 
@@ -251,12 +268,16 @@ export class AdminController {
   async getAdmin(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const users = await this.adminService.getAdmin();
+    const options: IPaginationOptions = { limit, page };
+    const users = await this.adminService.getAdmin(options);
     resp.json({
       status: HttpStatus.OK,
       message: adminMessages.adminFetchSuccess,
-      users,
+      users: users.items,
+      meta: users.meta,
     });
   }
 
@@ -293,4 +314,24 @@ export class AdminController {
       );
     }
   }
+
+  @Get('users')
+  async getUsers(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query() params,
+  ) {
+    const options: IPaginationOptions = { limit, page };
+    const users = await this.adminService.getUsers(params.userId, options);
+
+    resp.json({
+      status: HttpStatus.OK,
+      message: adminMessages.userFetchSuccess,
+      users: users.items,
+      meta: users.meta,
+    });
+  }
+
 }
