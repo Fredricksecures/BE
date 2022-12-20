@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+var moment = require("moment");
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -492,6 +493,7 @@ export class AdminService {
       gender,
       profilePicture,
     } = updateCustomerReq;
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
 
     let foundUser: User, updatedCustomer: CustomerCare;
 
@@ -525,6 +527,7 @@ export class AdminService {
         ...foundUser.customerCare,
         email: email ?? foundUser.customerCare.email,
         phoneNumber: phoneNumber ?? foundUser.customerCare.phoneNumber,
+        updatedAt:date
       });
 
       return {
@@ -700,7 +703,7 @@ export class AdminService {
     const { email, phoneNumber, isSuper } = updateAdminReq;
 
     let foundUser, updatedAdmin: Admin;
-
+    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
     try {
       foundUser = await this.adminRepo.findOne({
         where: { id },
@@ -731,6 +734,7 @@ export class AdminService {
         email: email ?? foundUser.email,
         phoneNumber: phoneNumber ?? foundUser.phoneNumber,
         isSuper: isSuper ?? foundUser.isSuper,
+        updatedAt:date
       });
 
       return {

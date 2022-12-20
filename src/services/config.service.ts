@@ -34,6 +34,7 @@ class ConfigService {
               },
             }
           : {},
+      autoLoadEntities: true,
     };
   }
 }
