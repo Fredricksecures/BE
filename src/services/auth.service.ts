@@ -96,10 +96,10 @@ export class AuthService {
         },
       };
 
-    this.createStudentProfile({
-      children,
-      user,
-    });
+    // this.createStudentProfile({
+    //   children,
+    //   user,
+    // });
   }
 
   async generateToken(user: User): Promise<string> {
@@ -707,8 +707,8 @@ export class AuthService {
   }
 
   async createStudentProfile(
-    createStudentReq,
-    // : CreateStudentReq,
+    createStudentReq
+    : CreateStudentReq,
   ): Promise<CreateStudentRes> {
     const { user, children } = createStudentReq;
 

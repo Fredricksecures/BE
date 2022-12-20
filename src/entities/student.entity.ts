@@ -14,7 +14,7 @@ import { Parent } from './parent.entity';
 import { Subscription } from './subscription.entity';
 import { User } from './user.entity';
 import { ReportCard } from './reportCard.entity';
-import { Leaderboard } from './leaderBoard.entity';
+import { Leaderboard } from './leaderboard.entity';
 
 @Entity('students')
 export class Student {
