@@ -14,8 +14,6 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import {
-  GetAllUsersSessionsReq,
-  GetAllUsersSessionsRes,
   UsersSessionsReq,
   UsersSessionsRes,
   SuspendUserReq,
@@ -31,18 +29,11 @@ import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/enums';
 import { Request, Response } from 'express';
 import { adminErrors, adminMessages } from 'src/constants';
-import { Student } from 'src/entities/student.entity';
-import {
-  IPaginationOptions,
-  paginate,
-  Pagination,
-} from 'nestjs-typeorm-paginate';
+import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
-
-  
 
   @Get('user-sessions')
   async getUserSessions(
@@ -53,8 +44,7 @@ export class AdminController {
     @Query() query,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const  sessions  =
-      await this.adminService.getUserSessions(query,options);
+    const sessions = await this.adminService.getUserSessions(query, options);
 
     if (sessions) {
       resp.json({
@@ -73,9 +63,8 @@ export class AdminController {
     }
   }
 
-
-  @Get('end-user-sessions')
-  async endUserSessions(
+  @Get('end-user-session')
+  async endUserSession(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query() query: UsersSessionsReq,
@@ -99,8 +88,8 @@ export class AdminController {
     }
   }
 
-  @Get('recover-user-sessions')
-  async recoverUserSessions(
+  @Get('recover-user-session')
+  async recoverUserSession(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query() query: UsersSessionsReq,
@@ -339,5 +328,4 @@ export class AdminController {
       meta: users.meta,
     });
   }
-
 }

@@ -1,3 +1,4 @@
+import { PackageTypes } from 'src/enums';
 import {
   Column,
   Entity,
@@ -27,7 +28,11 @@ export class LearningPackage {
   @Column({ type: 'varchar' })
   price?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({
+    type: 'enum',
+    enum: PackageTypes,
+    default: PackageTypes.PRIMARY_SCHOOL,
+  })
   type?: string;
 
   @OneToMany(() => Subject, (Subject) => Subject.learningPackage)

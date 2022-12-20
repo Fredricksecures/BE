@@ -10,7 +10,7 @@ import {
 import { Student } from './student.entity';
 import { Parent } from './parent.entity';
 import { CustomerCare } from './customerCare.entity';
-import { Genders } from 'src/enums';
+import { Genders, UserTypes } from 'src/enums';
 import { Admin } from './admin.entity';
 
 @Entity('users')
@@ -32,7 +32,7 @@ export class User {
   @Column({ type: 'varchar' })
   lastName?: string;
 
-  @Column({ type: 'varchar', default: Genders.MALE })
+  @Column({ type: 'enum', enum: Genders, default: Genders.MALE })
   gender?: string;
 
   @Column({ type: 'varchar', nullable: true })
@@ -41,7 +41,7 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   dateOfBirth?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'enum', enum: UserTypes, default: UserTypes.PARENT })
   type?: string;
 
   @Column({ type: 'boolean', default: false })

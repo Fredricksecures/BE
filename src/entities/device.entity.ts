@@ -28,10 +28,10 @@ export class Device {
   @Column({ type: 'varchar', nullable: true })
   ip?: string;
 
-  @Column({ type: 'varchar', default: BrowserTypes.CHROME })
+  @Column({ type: 'enum', enum: BrowserTypes, default: BrowserTypes.CHROME })
   client?: string;
 
-  @Column({ type: 'varchar', default: OSTypes.UNKNOWN })
+  @Column({ type: 'enum', enum: OSTypes, default: OSTypes.UNKNOWN })
   OS?: string;
 
   @OneToOne(() => Session)

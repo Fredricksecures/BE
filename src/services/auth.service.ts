@@ -30,7 +30,7 @@ import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Device } from 'src/entities/device.entity';
 import { generateRandomHash, isEmpty } from 'src/utils/helpers';
-import { authErrors } from 'src/constants';
+import { authErrors, subscriptionError } from 'src/constants';
 import Logger from 'src/utils/logger';
 import * as bcrypt from 'bcrypt';
 import { Session } from 'src/entities/session.entity';
@@ -707,8 +707,7 @@ export class AuthService {
   }
 
   async createStudentProfile(
-    createStudentReq
-    : CreateStudentReq,
+    createStudentReq: CreateStudentReq,
   ): Promise<CreateStudentRes> {
     const { user, children } = createStudentReq;
 
@@ -731,7 +730,7 @@ export class AuthService {
             }),
           }),
       ),
-    ).then((res) => res);
+    ).then((res: Array<User>) => res);
 
     return { success: true, createdStudents };
   }

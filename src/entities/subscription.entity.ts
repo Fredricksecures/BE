@@ -1,3 +1,4 @@
+import { SubscriptionStates } from 'src/enums';
 import {
   Column,
   Entity,
@@ -27,8 +28,18 @@ export class Subscription {
   @Column({ type: 'varchar', array: true })
   learningPackages?: Array<string>;
 
+  @Column({
+    type: 'enum',
+    enum: SubscriptionStates,
+    default: SubscriptionStates.ACTIVE,
+  })
+  state?: SubscriptionStates;
+
   @OneToOne(() => Student)
   student?: Student;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  dueDate?: Date;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

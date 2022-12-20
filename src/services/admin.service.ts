@@ -81,7 +81,6 @@ export class AdminService {
   ): Promise<Pagination<Session>> {
     const { userId } = user;
     let foundUser;
-    //let foundUser
 
     try {
       foundUser = this.userRepo
@@ -276,7 +275,7 @@ export class AdminService {
   ): Promise<Pagination<Student>> {
     let results, total;
     try {
-      results = await this.studentRepo.createQueryBuilder('Student');
+      results = this.studentRepo.createQueryBuilder('Student');
       if (parentId != null) {
         results.where('Student.parentId = :parentId', { parentId });
       }
@@ -770,6 +769,7 @@ export class AdminService {
     options: IPaginationOptions,
   ): Promise<Pagination<User>> {
     let results, total;
+
     try {
       console.log(userId);
       results = await this.userRepo.createQueryBuilder('User');
@@ -785,6 +785,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
+
     return paginate<User>(results, options);
   }
 }

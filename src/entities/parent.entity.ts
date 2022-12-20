@@ -42,7 +42,11 @@ export class Parent {
   @Column({ type: 'varchar' })
   passwordResetPin?: string;
 
-  @Column({ type: 'varchar', default: OnboardingStages.STAGE_0 })
+  @Column({
+    type: 'enum',
+    enum: OnboardingStages,
+    default: OnboardingStages.STAGE_0,
+  })
   onboardingStage?: string;
 
   @OneToOne(() => CountryList)
