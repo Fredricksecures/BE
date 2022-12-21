@@ -10,6 +10,8 @@ import {
   Param,
   Patch,
   HttpException,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   GetAllUsersSessionsReq,
@@ -40,6 +42,7 @@ import {
   contentErrors,
 } from 'src/constants';
 import { ContentService } from 'src/services/content.service';
+import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 @Controller('content')
 export class ContentController {
@@ -74,12 +77,16 @@ export class ContentController {
   async getChapters(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const chapters = await this.contentService.getChapters();
+    const options: IPaginationOptions = { limit, page };
+    const chapters = await this.contentService.getChapters(options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.chaptersFetchSuccess,
-      chapters,
+      chapters: chapters.items,
+      meta: chapters.meta
     });
   }
 
@@ -87,12 +94,16 @@ export class ContentController {
   async getLessons(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const lessons = await this.contentService.getLessons();
+    const options: IPaginationOptions = { limit, page };
+    const lessons = await this.contentService.getLessons(options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.lessonsFetchSuccess,
-      lessons,
+      lessons: lessons.items,
+      meta: lessons.meta
     });
   }
 
@@ -271,12 +282,16 @@ export class ContentController {
   async getSubjects(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const subjects = await this.contentService.getSubjects();
+    const options: IPaginationOptions = { limit, page };
+    const subjects = await this.contentService.getSubjects(options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.subjectFetchSuccess,
-      subjects,
+      subjects: subjects.items,
+      meta: subjects.meta
     });
   }
 
@@ -341,12 +356,16 @@ export class ContentController {
   async getTests(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const tests = await this.contentService.getTests();
+    const options: IPaginationOptions = { limit, page };
+    const tests = await this.contentService.getTests(options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.testFetchSuccess,
-      tests,
+      tests: tests.items ,
+      meta: tests.meta
     });
   }
 
@@ -410,12 +429,16 @@ export class ContentController {
   async getReportCards(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const tests = await this.contentService.getReportCard();
+    const options: IPaginationOptions = { limit, page };
+    const tests = await this.contentService.getReportCard(options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.reportCardFetchSuccess,
-      tests,
+      tests: tests.items,
+      meta: tests.meta
     });
   }
 
@@ -453,12 +476,16 @@ export class ContentController {
   async getLeaderboards(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const tests = await this.contentService.getLeaderboard();
+    const options: IPaginationOptions = { limit, page };
+    const tests = await this.contentService.getLeaderboard(options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.leaderboardFetchSuccess,
-      tests,
+      tests: tests.items,
+      meta: tests.meta
     });
   }
 
@@ -523,12 +550,16 @@ export class ContentController {
   async getBadges(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const tests = await this.contentService.getBadge();
+    const options: IPaginationOptions = { limit, page };
+    const badges = await this.contentService.getBadge(options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.badgeFetchSuccess,
-      tests,
+      badges: badges.items,
+      meta: badges.meta
     });
   }
 
@@ -592,12 +623,16 @@ export class ContentController {
   async getMockTests(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const tests = await this.contentService.getMockTest();
+    const options: IPaginationOptions = { limit, page };
+    const mockTests = await this.contentService.getMockTest(options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.mockTestFetchSuccess,
-      tests,
+      mockTests: mockTests.items,
+      meta: mockTests.meta
     });
   }
 
@@ -605,12 +640,16 @@ export class ContentController {
   async getUpcomingClasses(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const tests = await this.contentService.getUpcomingClasses();
+    const options: IPaginationOptions = { limit, page };
+    const upcomingClasses = await this.contentService.getUpcomingClasses(options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.upcomingClassesFetchSuccess,
-      tests,
+      upcomingClasses: upcomingClasses.items,
+      meta: upcomingClasses.meta
     });
   }
 }

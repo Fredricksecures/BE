@@ -10,12 +10,20 @@ import {
   HttpException,
   Param,
   Post,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 
 import { SubscriptionService } from '../services/subscription.service';
 import { Request, Response } from 'express';
 import { subscriptionError, subscriptionMessages } from 'src/constants';
 import { CreateSubscriptionReq } from 'src/dto/subscription.dto';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
+
 
 @Controller('subscription')
 export class SubscriptionController {
@@ -50,17 +58,22 @@ export class SubscriptionController {
   async getSubscriptionInvoices(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query() filters,
     @Param('subscriptionId') subscriptionId,
   ) {
-    const { success, history } = await this.authService.getSubscriptionInvoices(
-      subscriptionId,
+    const options: IPaginationOptions = { limit, page };
+    const  history = await this.authService.getSubscriptionHistory(
+      subscriptionId,options,filters.details,filters.date
     );
 
-    if (success) {
+    if (history) {
       resp.json({
         status: HttpStatus.OK,
         message: subscriptionMessages.fetchInvoiceHistorySuccess,
-        history,
+        history: history.items,
+        meta: history.meta
       });
     } else {
       throw new HttpException(
@@ -98,4 +111,5 @@ export class SubscriptionController {
       );
     }
   }
+ 
 }

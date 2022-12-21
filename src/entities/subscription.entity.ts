@@ -23,6 +23,15 @@ export class Subscription {
   id?: string;
 
   @Column({ type: 'varchar' })
+  account?: string;
+
+  @Column({ type: 'varchar' })
+  details?: string; 
+
+  @Column({ type: 'varchar' })
+  duration?: string;
+  
+  @Column({ type: 'varchar' })
   price?: string;
 
   @Column({ type: 'varchar', array: true })
