@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { utilityErrors } from 'src/constants';
+import { utilityErrors } from 'src/utils/messages';
 import { CountryList } from 'src/entities/countryList.entity';
 import { Device } from 'src/entities/device.entity';
 import { Repository } from 'typeorm';

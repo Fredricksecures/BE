@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { COUNTRY_SEED, learningPackages, utilityErrors } from '../constants';
+import { utilityErrors } from '../utils/messages';
+import { COUNTRY_SEED, learningPackages } from '../utils/constants';
 import { CountryList } from 'src/entities/countryList.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 

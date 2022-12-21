@@ -34,12 +34,7 @@ import {
   updateMockTestReq,
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
-import {
-  adminErrors,
-  adminMessages,
-  contentMessages,
-  contentErrors,
-} from 'src/constants';
+import { contentErrors } from 'src/utils/messages';
 import { Chapter } from 'src/entities/chapter.entity';
 import { Subject } from 'src/entities/subject.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
@@ -49,8 +44,6 @@ import { Leaderboard } from 'src/entities/leaderboard.entity';
 import { Badge } from 'src/entities/badges.entity';
 import { MockTest } from 'src/entities/mockTest.entity';
 import { Class } from 'src/entities/class.entity';
-config();
-const { BCRYPT_SALT } = process.env;
 
 @Injectable()
 export class ContentService {
@@ -69,90 +62,9 @@ export class ContentService {
     private leaderboardRepo: Repository<Leaderboard>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
     @InjectRepository(MockTest) private mockTestRepo: Repository<MockTest>,
-    @InjectRepository(Class) private classRepo: Repository<Class>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
-  ) // @InjectRepository(User) private userRepo: Repository<User>,
-  // @InjectRepository(Session) private sessionRepo: Repository<Session>,
-  // @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Class) private classRepo: Repository<Class>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>, // @InjectRepository(User) private userRepo: Repository<User>, // @InjectRepository(Session) private sessionRepo: Repository<Session>, // @InjectRepository(Student) private studentRepo: Repository<Student>,
+  ) {}
 
-  {}
-
-  // async formatPayload(user: any, type: string) {
-  //   switch (type) {
-  //     case UserTypes.DEFAULT:
-  //       delete user?.createdAt;
-  //       delete user?.updatedAt;
-  //       delete user?.parent?.id;
-  //       delete user?.parent?.createdAt;
-  //       delete user?.parent?.updatedAt;
-  //       delete user?.parent?.password;
-  //       delete user?.parent?.passwordResetPin;
-  //       break;
-  //     case UserTypes.CUSTOMERCARE:
-  //       delete user?.password;
-  //       delete user?.passwordResetPin;
-  //       delete user?.onboardingStage;
-  //       break;
-
-  //     default:
-  //       break;
-  //   }
-
-  //   return user;
-  // }
-
-  //async getChapters(user: GetAllUsersSessionsReq) {
-  // const { userId } = user;
-  // let foundUser: User;
-  // try {
-  //   foundUser = await this.userRepo.findOne({
-  //     where: { id: userId },
-  //     relations: ['parent', 'parent.sessions'],
-  //   });
-  // } catch (exp) {
-  //   Logger.error(adminErrors.checkingUser + exp);
-  //   throw new HttpException(
-  //     {
-  //       status: HttpStatus.NOT_IMPLEMENTED,
-  //       error: adminErrors.checkingUser + exp,
-  //     },
-  //     HttpStatus.NOT_IMPLEMENTED,
-  //   );
-  // }
-  // if (!foundUser) {
-  //   Logger.error(adminErrors.userNotFoundWithId);
-  //   throw new HttpException(
-  //     {
-  //       status: HttpStatus.NOT_IMPLEMENTED,
-  //       error: adminErrors.userNotFoundWithId,
-  //     },
-  //     HttpStatus.NOT_IMPLEMENTED,
-  //   );
-  // }
-  // if (!foundUser.parent) {
-  //   Logger.error(adminErrors.noParentFound);
-  //   throw new HttpException(
-  //     {
-  //       status: HttpStatus.NOT_IMPLEMENTED,
-  //       error: adminErrors.noParentFound,
-  //     },
-  //     HttpStatus.NOT_IMPLEMENTED,
-  //   );
-  // }
-  // if (!foundUser.parent.sessions) {
-  //   Logger.error(adminErrors.sessionNotFoundWithId);
-  //   throw new HttpException(
-  //     {
-  //       status: HttpStatus.NOT_IMPLEMENTED,
-  //       error: adminErrors.sessionNotFoundWithId,
-  //     },
-  //     HttpStatus.NOT_IMPLEMENTED,
-  //   );
-  // }
-  // return {
-  //   success: true,
-  //   sessions: foundUser.parent.sessions,
-  // };
-  //}
   async getChapters(options: IPaginationOptions): Promise<Pagination<Chapter>> {
     let foundChapters;
     try {
@@ -168,6 +80,7 @@ export class ContentService {
     }
     return paginate<Chapter>(foundChapters, options);
   }
+
   async getLessons(options: IPaginationOptions): Promise<Pagination<Lesson>> {
     let foundLessons;
     try {
@@ -183,6 +96,8 @@ export class ContentService {
     }
     return paginate<Lesson>(foundLessons, options);
   }
+
+  //!:GANESH for admin module
   async createLesson(createLessonReq: createLessonReq) {
     const { type, chapterId } = createLessonReq;
     let lessonCreated: Lesson, foundChapterId: Chapter;
@@ -231,6 +146,7 @@ export class ContentService {
     };
   }
 
+  //!:GANESH for admin module
   async createChapter(createChapterReq: createChapterReq) {
     const { type, subjectId } = createChapterReq;
     let chapterCreated: Chapter, foundSubjectId: Subject;
@@ -331,10 +247,11 @@ export class ContentService {
     }
   }
 
+  //!:GANESH "update lesson". for admin module
   async updateLessonProfile(id: string, updateLessonReq: updateLessonReq) {
     const { type } = updateLessonReq;
     var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-    let foundLesson, updatedLesson: Lesson;
+    let foundLesson: Lesson, updatedLesson: Lesson;
 
     try {
       foundLesson = await this.lessonRepo.findOne({
@@ -380,6 +297,7 @@ export class ContentService {
       );
     }
   }
+
   async createSubject(createSubjectReq: createSubjectReq) {
     const { type, learningPackageId } = createSubjectReq;
     let subjectCreated: Subject, foundLearningPackageId: LearningPackage;
@@ -428,6 +346,7 @@ export class ContentService {
     };
   }
 
+  //!:GANESH "updateSubject". for admin module
   async updateSubjectProfile(id: string, updateSubjectReq: updateSubjectReq) {
     const { type } = updateSubjectReq;
     var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
@@ -479,7 +398,7 @@ export class ContentService {
     }
   }
 
-  async getSubjects(options: IPaginationOptions) : Promise<Pagination<Subject>> {
+  async getSubjects(options: IPaginationOptions): Promise<Pagination<Subject>> {
     let foundSubjects;
     try {
       foundSubjects = await this.subjectRepo.createQueryBuilder('Subject');
@@ -495,6 +414,7 @@ export class ContentService {
     return paginate<Subject>(foundSubjects, options);
   }
 
+  //!:GANESH for admin module
   async createTest(createTestReq: createTestReq) {
     const { topic, lessonId } = createTestReq;
     let testCreated: Test, foundLessonId: Lesson;
@@ -543,6 +463,7 @@ export class ContentService {
     };
   }
 
+  //!:GANESH "update test". for admin module
   async updateTestProfile(id: string, updateTestReq: updateTestReq) {
     const { topic } = updateTestReq;
     var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
@@ -594,7 +515,7 @@ export class ContentService {
     }
   }
 
-  async getTests(options: IPaginationOptions) : Promise<Pagination<Test>> {
+  async getTests(options: IPaginationOptions): Promise<Pagination<Test>> {
     let foundTests;
     try {
       foundTests = await this.testRepo.createQueryBuilder('Test');
@@ -610,6 +531,7 @@ export class ContentService {
     return paginate<Test>(foundTests, options);
   }
 
+  //!:GANESH for admin module
   async createReportCard(createReportCardReq: createReportCardReq) {
     const { remark, lessonId, subjectId, studentId, testId } =
       createReportCardReq;
@@ -738,6 +660,7 @@ export class ContentService {
     };
   }
 
+  //!:GANESH "update report card". for admin module
   async updateReportCardProfile(
     id: string,
     updateReportCardReq: updateReportCardReq,
@@ -792,10 +715,14 @@ export class ContentService {
     }
   }
 
-  async getReportCard(options: IPaginationOptions): Promise<Pagination<ReportCard>> {
+  async getReportCard(
+    options: IPaginationOptions,
+  ): Promise<Pagination<ReportCard>> {
     let foundReportCards;
     try {
-      foundReportCards = await this.reportCardRepo.createQueryBuilder('ReportCard');
+      foundReportCards = await this.reportCardRepo.createQueryBuilder(
+        'ReportCard',
+      );
     } catch (exp) {
       throw new HttpException(
         {
@@ -862,10 +789,14 @@ export class ContentService {
     }
   }
 
-  async getLeaderboard(options: IPaginationOptions): Promise<Pagination<Leaderboard>> {
+  async getLeaderboard(
+    options: IPaginationOptions,
+  ): Promise<Pagination<Leaderboard>> {
     let foundLeaderboards;
     try {
-      foundLeaderboards = await this.leaderboardRepo.createQueryBuilder('Leaderboard');
+      foundLeaderboards = await this.leaderboardRepo.createQueryBuilder(
+        'Leaderboard',
+      );
     } catch (exp) {
       throw new HttpException(
         {
@@ -878,6 +809,7 @@ export class ContentService {
     return paginate<Leaderboard>(foundLeaderboards, options);
   }
 
+  //!:GANESH for admin module
   async createBadge(createBadgeReq: createBadgeReq) {
     const { badgeName } = createBadgeReq;
     let badgeCreated: Badge;
@@ -953,7 +885,7 @@ export class ContentService {
     }
   }
 
-  async getBadge(options: IPaginationOptions) : Promise<Pagination<Badge>>{
+  async getBadge(options: IPaginationOptions): Promise<Pagination<Badge>> {
     let foundBadges;
     try {
       foundBadges = await this.badgeRepo.createQueryBuilder('Badge');
@@ -966,9 +898,10 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return paginate<Badge>(foundBadges, options);;
+    return paginate<Badge>(foundBadges, options);
   }
 
+  //!:GANESH for admin module
   async createMockTest(createMockTestReq: createMockTestReq) {
     const { mockTestName } = createMockTestReq;
     let mockTestCreated: MockTest;
@@ -993,6 +926,7 @@ export class ContentService {
     };
   }
 
+  //!:GANESH "update mock". for admin module
   async updateMockTestProfile(
     id: string,
     updateMockTestReq: updateMockTestReq,
@@ -1047,7 +981,9 @@ export class ContentService {
     }
   }
 
-  async getMockTest(options: IPaginationOptions): Promise<Pagination<MockTest>> {
+  async getMockTest(
+    options: IPaginationOptions,
+  ): Promise<Pagination<MockTest>> {
     let foundMockTests;
     try {
       foundMockTests = await this.mockTestRepo.createQueryBuilder('MockTest');
@@ -1063,7 +999,10 @@ export class ContentService {
     return paginate<MockTest>(foundMockTests, options);
   }
 
-  async getUpcomingClasses(options: IPaginationOptions): Promise<Pagination<Class>>{
+  //!:GANESH for classroom module
+  async getUpcomingClasses(
+    options: IPaginationOptions,
+  ): Promise<Pagination<Class>> {
     let foundUpcomingClasses;
     try {
       foundUpcomingClasses = await this.classRepo.createQueryBuilder('Classes');

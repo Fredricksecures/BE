@@ -1,4 +1,4 @@
-import { MaterialTypes } from 'src/enums';
+import { MaterialTypes } from 'src/utils/enums';
 import {
   Column,
   Entity,

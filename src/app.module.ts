@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GET_ALL_ENTITIES } from './constants';
+import { GET_ALL_ENTITIES } from './utils/constants';
 import { AuthModule } from './modules/auth.module';
 import { AdminModule } from './modules/admin.module';
 import { SubscriptionModule } from './modules/subscription.module';

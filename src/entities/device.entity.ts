@@ -1,4 +1,4 @@
-import { BrowserTypes, OSTypes } from 'src/enums';
+import { BrowserTypes, OSTypes } from 'src/utils/enums';
 import {
   Column,
   Entity,

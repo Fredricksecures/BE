@@ -40,7 +40,7 @@ import {
   adminMessages,
   contentMessages,
   contentErrors,
-} from 'src/constants';
+} from 'src/utils/messages';
 import { ContentService } from 'src/services/content.service';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
@@ -86,7 +86,7 @@ export class ContentController {
       status: HttpStatus.OK,
       message: contentMessages.chaptersFetchSuccess,
       chapters: chapters.items,
-      meta: chapters.meta
+      meta: chapters.meta,
     });
   }
 
@@ -103,7 +103,7 @@ export class ContentController {
       status: HttpStatus.OK,
       message: contentMessages.lessonsFetchSuccess,
       lessons: lessons.items,
-      meta: lessons.meta
+      meta: lessons.meta,
     });
   }
 
@@ -291,7 +291,7 @@ export class ContentController {
       status: HttpStatus.OK,
       message: contentMessages.subjectFetchSuccess,
       subjects: subjects.items,
-      meta: subjects.meta
+      meta: subjects.meta,
     });
   }
 
@@ -364,8 +364,8 @@ export class ContentController {
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.testFetchSuccess,
-      tests: tests.items ,
-      meta: tests.meta
+      tests: tests.items,
+      meta: tests.meta,
     });
   }
 
@@ -438,7 +438,7 @@ export class ContentController {
       status: HttpStatus.OK,
       message: contentMessages.reportCardFetchSuccess,
       tests: tests.items,
-      meta: tests.meta
+      meta: tests.meta,
     });
   }
 
@@ -485,7 +485,7 @@ export class ContentController {
       status: HttpStatus.OK,
       message: contentMessages.leaderboardFetchSuccess,
       tests: tests.items,
-      meta: tests.meta
+      meta: tests.meta,
     });
   }
 
@@ -559,7 +559,7 @@ export class ContentController {
       status: HttpStatus.OK,
       message: contentMessages.badgeFetchSuccess,
       badges: badges.items,
-      meta: badges.meta
+      meta: badges.meta,
     });
   }
 
@@ -632,7 +632,7 @@ export class ContentController {
       status: HttpStatus.OK,
       message: contentMessages.mockTestFetchSuccess,
       mockTests: mockTests.items,
-      meta: mockTests.meta
+      meta: mockTests.meta,
     });
   }
 
@@ -644,12 +644,14 @@ export class ContentController {
     @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const upcomingClasses = await this.contentService.getUpcomingClasses(options);
+    const upcomingClasses = await this.contentService.getUpcomingClasses(
+      options,
+    );
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.upcomingClassesFetchSuccess,
       upcomingClasses: upcomingClasses.items,
-      meta: upcomingClasses.meta
+      meta: upcomingClasses.meta,
     });
   }
 }

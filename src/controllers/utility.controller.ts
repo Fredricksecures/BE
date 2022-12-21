@@ -12,7 +12,7 @@ import { UtilitySeeder } from 'src/seeders/utlity.seeder';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CountryList } from 'src/entities/countryList.entity';
 import { Repository } from 'typeorm';
-import { utlityMessages } from 'src/constants';
+import { utlityMessages } from 'src/utils/messages';
 import { Device } from 'src/entities/device.entity';
 import { Response, Request } from 'express';
 import { LearningPackage } from './../entities/learningPackage.entity';

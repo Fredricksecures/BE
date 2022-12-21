@@ -21,7 +21,7 @@ import {
   createAdminReq,
   updateAdminReq,
 } from 'src/dto/admin.dto';
-import { adminMessages, adminErrors } from 'src/constants';
+import { adminMessages, adminErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Student } from 'src/entities/student.entity';
@@ -30,7 +30,7 @@ import { Admin } from 'src/entities/admin.entity';
 import { CustomerCare } from 'src/entities/customerCare.entity';
 import { isEmpty } from 'src/utils/helpers';
 import * as bcrypt from 'bcrypt';
-import { UserTypes } from 'src/enums';
+import { UserTypes } from 'src/utils/enums';
 import { UtilityService } from './utility.service';
 import { CountryList } from 'src/entities/countryList.entity';
 

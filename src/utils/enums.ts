@@ -10,6 +10,7 @@ export enum UserTypes {
 export enum SubscriptionStates {
   ACTIVE = 'ACTIVE',
   DEACTIVATED = 'DEACTIVATED',
+  INACTIVE = 'INACTIVE',
 }
 
 export enum DeviceTypes {
@@ -61,19 +62,6 @@ export enum OnboardingStages {
   STAGE_2 = 'STAGE_2',
   STAGE_3 = 'STAGE_3',
 }
-
-// export enum SessionStartTypes {
-//   LOGIN = 'LOGIN',
-//   REGISTRATION = 'REGISTRATION',
-// }
-
-// export enum SessionResumeTypes {}
-
-// export enum SessionEndTypes {
-//   LOGOUT = 'LOGOUT',
-//   EXPIRED_TOKEN = 'EXPIRED_TOKEN',
-//   CLOSED_TAB = 'CLOSED_TAB',
-// }
 
 export enum institutionTypes {
   NURSERY = 'NURSERY',
