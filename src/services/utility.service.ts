@@ -6,6 +6,11 @@ import { Device } from 'src/entities/device.entity';
 import { Repository } from 'typeorm';
 import Logger from 'src/utils/logger';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class UtilityService {
@@ -44,24 +49,56 @@ export class UtilityService {
     return country;
   }
 
+  // async getLearningPackages(
+  //   packageId: string,
+  // ): Promise<Device | Array<Device>> {
+  //   let foundPackages: Device | Array<Device>;
+
+  //   console.log(packageId);
+
+  //   try {
+  //     foundPackages =
+  //       packageId == undefined
+  //         ?await this.lPLRepo.find({})
+  //         : await this.lPLRepo.findOne({
+  //           where: {
+  //             id: packageId,
+  //           },
+  //         });
+
+  //     return foundPackages;
+  //   } catch (exp) {
+  //     Logger.error(utilityErrors.getPackageList + exp);
+
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: utilityErrors.getPackageList + exp,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
+  // }
   async getLearningPackages(
-    packageId: string,
-  ): Promise<Device | Array<Device>> {
-    let foundPackages: Device | Array<Device>;
+    packageId: string,options: IPaginationOptions
+  ): Promise<Pagination<LearningPackage>> {
+    let foundPackages;
 
     console.log(packageId);
 
     try {
-      foundPackages =
-        packageId == undefined
-          ? await this.lPLRepo.findOne({
-              where: {
-                id: packageId,
-              },
-            })
-          : await this.lPLRepo.find({});
 
-      return foundPackages;
+      foundPackages = await this.lPLRepo.createQueryBuilder('LearningPackage');
+      if (packageId != null) {
+        foundPackages.where('Id = :packageId', { packageId });
+      }
+
+      // foundPackages =
+      //   packageId == undefined
+      //     ?await this.lPLRepo.createQueryBuilder('LearningPackage')
+      //     : await this.lPLRepo.createQueryBuilder('LearningPackage').where('LearningPackage.id = :packageId', { packageId });
+
+          return paginate<LearningPackage>(foundPackages, options);
     } catch (exp) {
       Logger.error(utilityErrors.getPackageList + exp);
 

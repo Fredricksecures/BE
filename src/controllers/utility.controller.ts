@@ -6,6 +6,8 @@ import {
   Query,
   Req,
   Res,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UtilityService } from '../services/utility.service';
 import { UtilitySeeder } from 'src/seeders/utlity.seeder';
@@ -16,6 +18,12 @@ import { utlityMessages } from 'src/utils/messages';
 import { Device } from 'src/entities/device.entity';
 import { Response, Request } from 'express';
 import { LearningPackage } from './../entities/learningPackage.entity';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
+
 
 @Controller('utility')
 export class UtilityController {
@@ -69,17 +77,20 @@ export class UtilityController {
   }
 
   @Get('learning-packages')
-  async getLPackages(@Req() req: Request, @Res() resp: Response) {
+  async getLPackages(@Req() req: Request, @Res() resp: Response,
+   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+   @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1, ){
     const id = req.query.id;
-
+    const options: IPaginationOptions = { limit, page };
     const learningPackages = await this.utilityService.getLearningPackages(
-      `${id}`,
+      `${id}`,options
     );
 
     resp.json({
       status: HttpStatus.FOUND,
       message: utlityMessages.learningPackages,
-      [`package${id ? '' : 's'}`]: learningPackages,
+      [`package${id ? '' : 's'}`]: learningPackages.items,
+      meta: learningPackages.meta
     });
   }
 }
