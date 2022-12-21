@@ -711,7 +711,7 @@ export class AuthService {
   ): Promise<CreateStudentRes> {
     const { user, children } = createStudentReq;
 
-    const createdStudents: any = Promise.all(
+    return Promise.all(
       children.map(
         async (child: any) =>
           await this.userRepo.save({
@@ -730,9 +730,8 @@ export class AuthService {
             }),
           }),
       ),
-    ).then((res: Array<User>) => res);
+    ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
 
-    return { success: true, createdStudents };
   }
 
   async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
