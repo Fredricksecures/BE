@@ -160,7 +160,6 @@ export const learningPackages = {
 };
 
 //* SEEDS____________________________________________
-
 export const USER_SEED: Array<{}> = [
   {
     firstName: 'Russell',
