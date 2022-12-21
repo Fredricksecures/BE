@@ -33,15 +33,19 @@ export class SubscriptionController {
   async getSubscriptions(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
-    const { success, subscriptions } =
-      await this.authService.getSubscriptions();
-
-    if (success) {
+    const options: IPaginationOptions = { limit, page };
+    const  subscriptions =
+      await this.authService.getSubscriptions(options);
+    console.log(subscriptions.items)
+    if (subscriptions) {
       resp.json({
         status: HttpStatus.OK,
         message: subscriptionMessages.fetchSubscriptionSuccess,
-        subscriptions,
+        subscriptions: subscriptions.items,
+        meta:subscriptions.meta
       });
     } else {
       throw new HttpException(

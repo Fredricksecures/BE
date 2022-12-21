@@ -38,13 +38,13 @@ export class SubscriptionService {
     return;
   }
 
-  async getSubscriptions() {
-    let foundSubscriptions: Array<Subscription>;
+  async getSubscriptions(options: IPaginationOptions) : Promise<Pagination<Subscription>>{
+    let foundSubscriptions;
 
     try {
-      foundSubscriptions = await this.subscriptionRepo.find({
-        relations: ['learningPackages'],
-      });
+      foundSubscriptions = await this.subscriptionRepo.createQueryBuilder('Subscription')
+        // .relation('learningPackages');
+      
     } catch (exp) {
       throw new HttpException(
         {
@@ -64,10 +64,7 @@ export class SubscriptionService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return {
-      success: true,
-      subscriptions: foundSubscriptions,
-    };
+    return paginate<Subscription>(foundSubscriptions, options);
   }
 
   async getSubscriptionHistory(subscriptionId: string, options: IPaginationOptions, deatils: string, date: Date): Promise<Pagination<Invoice>> {
