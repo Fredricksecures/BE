@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { SubscriptionService } from '../services/subscription.service';
 import { SubscriptionController } from '../controllers/subscription.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { jwtConfig, ModuleConfigs } from 'src/constants';
+import { jwtConfig, ModuleConfigs } from 'src/utils/constants';
 
 @Module({
   imports: [

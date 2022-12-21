@@ -30,9 +30,9 @@ import {
   ResetPasswordRes,
   CreateStudentReq,
 } from 'src/dto/auth.dto';
-import { authErrors, authMessages, profileMessages } from 'src/constants';
+import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
-import { UserTypes } from 'src/enums';
+import { UserTypes } from 'src/utils/enums';
 
 @Controller('auth')
 export class AuthController {

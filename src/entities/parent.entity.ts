@@ -1,4 +1,4 @@
-import { OnboardingStages } from 'src/enums';
+import { OnboardingStages } from 'src/utils/enums';
 import {
   Entity,
   PrimaryGeneratedColumn,

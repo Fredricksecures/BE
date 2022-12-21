@@ -30,11 +30,11 @@ import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Device } from 'src/entities/device.entity';
 import { generateRandomHash, isEmpty } from 'src/utils/helpers';
-import { authErrors, subscriptionError } from 'src/constants';
+import { authErrors, subscriptionError } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 import * as bcrypt from 'bcrypt';
 import { Session } from 'src/entities/session.entity';
-import { UserTypes, Genders } from 'src/enums';
+import { UserTypes, Genders } from 'src/utils/enums';
 import { UtilityService } from './utility.service';
 import { CountryList } from 'src/entities/countryList.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
@@ -731,7 +731,6 @@ export class AuthService {
           }),
       ),
     ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
-
   }
 
   async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { subscriptionMessages, subscriptionError } from 'src/constants';
+import { subscriptionMessages, subscriptionError } from 'src/utils/messages';
 import { Subscription } from 'src/entities/subscription.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Invoice } from 'src/entities/invoice.entity';
@@ -33,7 +33,7 @@ export class SubscriptionService {
   ): Promise<CreateSubscriptionRes> {
     return;
   }
-  
+
   async getSubscription(subscriptionId: string): Promise<Subscription> {
     return;
   }
@@ -70,11 +70,19 @@ export class SubscriptionService {
     };
   }
 
-  async getSubscriptionHistory(subscriptionId: string, options: IPaginationOptions, deatils: string, date: Date): Promise<Pagination<Invoice>> {
+  //!: GANESH change "getsubscriptionhistory" to "getinvoices". for admin module
+  async getSubscriptionHistory(
+    subscriptionId: string,
+    options: IPaginationOptions,
+    details: string,
+    date: Date,
+  ): Promise<Pagination<Invoice>> {
     let foundInvoices;
 
     try {
-      foundInvoices = await this.invoicesRepo.createQueryBuilder('Invoice').where('Invoice.subscriptionId = :subscriptionId', { subscriptionId })
+      foundInvoices = await this.invoicesRepo
+        .createQueryBuilder('Invoice')
+        .where('Invoice.subscriptionId = :subscriptionId', { subscriptionId });
       // foundInvoices = await this.invoicesRepo.find({
       //   where: {
       //     subscription: {
@@ -101,7 +109,6 @@ export class SubscriptionService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return  paginate<Invoice>(foundInvoices, options)
-    
+    return paginate<Invoice>(foundInvoices, options);
   }
 }

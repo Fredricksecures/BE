@@ -10,7 +10,7 @@ import {
 import { Student } from './student.entity';
 import { Parent } from './parent.entity';
 import { CustomerCare } from './customerCare.entity';
-import { Genders, UserTypes } from 'src/enums';
+import { Genders, UserTypes } from 'src/utils/enums';
 import { Admin } from './admin.entity';
 
 @Entity('users')

@@ -1,4 +1,4 @@
-import { PackageTypes } from 'src/enums';
+import { PackageTypes } from 'src/utils/enums';
 import {
   Column,
   Entity,

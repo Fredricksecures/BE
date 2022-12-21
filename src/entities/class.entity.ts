@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { ClassStates } from 'src/enums';
+import { ClassStates } from 'src/utils/enums';
 import { Student } from './student.entity';
 
 @Entity('classes')
