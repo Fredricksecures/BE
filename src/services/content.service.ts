@@ -9,6 +9,11 @@ import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 var moment = require('moment');
 
 import {
@@ -148,10 +153,10 @@ export class ContentService {
   //   sessions: foundUser.parent.sessions,
   // };
   //}
-  async getChapters() {
-    let foundChapters: Array<Chapter>;
+  async getChapters(options: IPaginationOptions): Promise<Pagination<Chapter>> {
+    let foundChapters;
     try {
-      foundChapters = await this.chapterRepo.find({});
+      foundChapters = await this.chapterRepo.createQueryBuilder('Chapter');
     } catch (exp) {
       throw new HttpException(
         {
@@ -161,12 +166,12 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundChapters;
+    return paginate<Chapter>(foundChapters, options);
   }
-  async getLessons() {
-    let foundLessons: Array<Lesson>;
+  async getLessons(options: IPaginationOptions): Promise<Pagination<Lesson>> {
+    let foundLessons;
     try {
-      foundLessons = await this.lessonRepo.find({});
+      foundLessons = await this.lessonRepo.createQueryBuilder('Lesson');
     } catch (exp) {
       throw new HttpException(
         {
@@ -176,7 +181,7 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundLessons;
+    return paginate<Lesson>(foundLessons, options);
   }
   async createLesson(createLessonReq: createLessonReq) {
     const { type, chapterId } = createLessonReq;
@@ -474,10 +479,10 @@ export class ContentService {
     }
   }
 
-  async getSubjects() {
-    let foundSubjects: Array<Subject>;
+  async getSubjects(options: IPaginationOptions) : Promise<Pagination<Subject>> {
+    let foundSubjects;
     try {
-      foundSubjects = await this.subjectRepo.find({});
+      foundSubjects = await this.subjectRepo.createQueryBuilder('Subject');
     } catch (exp) {
       throw new HttpException(
         {
@@ -487,7 +492,7 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundSubjects;
+    return paginate<Subject>(foundSubjects, options);
   }
 
   async createTest(createTestReq: createTestReq) {
@@ -589,10 +594,10 @@ export class ContentService {
     }
   }
 
-  async getTests() {
-    let foundTests: Array<Test>;
+  async getTests(options: IPaginationOptions) : Promise<Pagination<Test>> {
+    let foundTests;
     try {
-      foundTests = await this.testRepo.find({});
+      foundTests = await this.testRepo.createQueryBuilder('Test');
     } catch (exp) {
       throw new HttpException(
         {
@@ -602,7 +607,7 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundTests;
+    return paginate<Test>(foundTests, options);
   }
 
   async createReportCard(createReportCardReq: createReportCardReq) {
@@ -787,10 +792,10 @@ export class ContentService {
     }
   }
 
-  async getReportCard() {
-    let foundReportCards: Array<ReportCard>;
+  async getReportCard(options: IPaginationOptions): Promise<Pagination<ReportCard>> {
+    let foundReportCards;
     try {
-      foundReportCards = await this.reportCardRepo.find({});
+      foundReportCards = await this.reportCardRepo.createQueryBuilder('ReportCard');
     } catch (exp) {
       throw new HttpException(
         {
@@ -800,7 +805,7 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundReportCards;
+    return paginate<ReportCard>(foundReportCards, options);
   }
 
   async updateLeaderboardProfile(
@@ -857,10 +862,10 @@ export class ContentService {
     }
   }
 
-  async getLeaderboard() {
-    let foundLeaderboards: Array<Leaderboard>;
+  async getLeaderboard(options: IPaginationOptions): Promise<Pagination<Leaderboard>> {
+    let foundLeaderboards;
     try {
-      foundLeaderboards = await this.leaderboardRepo.find({});
+      foundLeaderboards = await this.leaderboardRepo.createQueryBuilder('Leaderboard');
     } catch (exp) {
       throw new HttpException(
         {
@@ -870,7 +875,7 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundLeaderboards;
+    return paginate<Leaderboard>(foundLeaderboards, options);
   }
 
   async createBadge(createBadgeReq: createBadgeReq) {
@@ -948,10 +953,10 @@ export class ContentService {
     }
   }
 
-  async getBadge() {
-    let foundBadges: Array<Badge>;
+  async getBadge(options: IPaginationOptions) : Promise<Pagination<Badge>>{
+    let foundBadges;
     try {
-      foundBadges = await this.badgeRepo.find({});
+      foundBadges = await this.badgeRepo.createQueryBuilder('Badge');
     } catch (exp) {
       throw new HttpException(
         {
@@ -961,7 +966,7 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundBadges;
+    return paginate<Badge>(foundBadges, options);;
   }
 
   async createMockTest(createMockTestReq: createMockTestReq) {
@@ -1042,10 +1047,10 @@ export class ContentService {
     }
   }
 
-  async getMockTest() {
-    let foundMockTests: Array<MockTest>;
+  async getMockTest(options: IPaginationOptions): Promise<Pagination<MockTest>> {
+    let foundMockTests;
     try {
-      foundMockTests = await this.mockTestRepo.find({});
+      foundMockTests = await this.mockTestRepo.createQueryBuilder('MockTest');
     } catch (exp) {
       throw new HttpException(
         {
@@ -1055,13 +1060,13 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundMockTests;
+    return paginate<MockTest>(foundMockTests, options);
   }
 
-  async getUpcomingClasses() {
-    let foundUpcomingClasses: Array<MockTest>;
+  async getUpcomingClasses(options: IPaginationOptions): Promise<Pagination<Class>>{
+    let foundUpcomingClasses;
     try {
-      foundUpcomingClasses = await this.classRepo.find({});
+      foundUpcomingClasses = await this.classRepo.createQueryBuilder('Classes');
     } catch (exp) {
       throw new HttpException(
         {
@@ -1071,6 +1076,6 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return foundUpcomingClasses;
+    return paginate<Class>(foundUpcomingClasses, options);
   }
 }
