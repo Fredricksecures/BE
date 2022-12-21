@@ -56,6 +56,32 @@ export class SubscriptionController {
       );
     }
   }
+  // @Get('all')
+  // async getSubscriptions(
+  //   @Req() req: Request,
+  //   @Res({ passthrough: true }) resp: Response,
+    
+  // ) {
+    
+  //   const  {Success,subscriptions} =
+  //     await this.authService.getSubscriptions();
+   
+  //   if (Success) {
+  //     resp.json({
+  //       status: HttpStatus.OK,
+  //       message: subscriptionMessages.fetchSubscriptionSuccess,
+  //       subscriptions
+  //     });
+  //   } else {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_FOUND,
+  //         error: subscriptionError.fetchSubscriptionFailed,
+  //       },
+  //       HttpStatus.NOT_FOUND,
+  //     );
+  //   }
+  // }
 
   @Get('invoice/:subscriptionId')
   async getSubscriptionInvoices(
