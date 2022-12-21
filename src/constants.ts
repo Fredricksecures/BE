@@ -199,6 +199,7 @@ export const authMessages = {
   passwordEmailSent: 'reset email sent successfully',
   pwordReset: 'Password reset successfully',
   logout: 'Logout successfully',
+  createdStudent: 'Students Created Successfully',
 };
 export const authErrors = {
   getDevice: 'failed to fecth device info ',

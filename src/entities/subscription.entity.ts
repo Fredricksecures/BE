@@ -31,7 +31,7 @@ export class Subscription {
   @Column({
     type: 'enum',
     enum: SubscriptionStates,
-    default: SubscriptionStates.ACTIVE,
+    default: SubscriptionStates.INACTIVE,
   })
   state?: SubscriptionStates;
 

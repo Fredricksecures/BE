@@ -174,7 +174,7 @@ export class AuthController {
     }
   }
 
-  @Post('create-student')
+  @Post('create-students')
   @UseMiddleware('sessionGuard')
   async createStudent(
     @Req() req: Request,
@@ -187,7 +187,7 @@ export class AuthController {
     if (success) {
       resp.json({
         success,
-        message: profileMessages.updatedSuccess,
+        message: authMessages.createdStudent,
         status: HttpStatus.CREATED,
         students: createdStudents,
       });
