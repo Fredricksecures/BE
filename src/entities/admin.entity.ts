@@ -8,7 +8,7 @@ import {
   Column,
   JoinColumn,
 } from 'typeorm';
-import { Country } from './country.entity';
+import { CountryList } from './countryList.entity';
 import { User } from './user.entity';
 
 @Entity('admin')
@@ -33,9 +33,9 @@ export class Admin {
   @Column({ type: 'bool', default: false })
   isSuper?: boolean;
 
-  @OneToOne(() => Country)
+  @OneToOne(() => CountryList)
   @JoinColumn()
-  country?: Country;
+  country?: CountryList;
 
   @OneToOne(() => User)
   user?: User;

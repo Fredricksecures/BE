@@ -7,14 +7,14 @@ import {
   OneToOne,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import { Class } from './class.entity';
-import { LearningPackage } from './learningPackage.entity';
 import { Parent } from './parent.entity';
 import { Subscription } from './subscription.entity';
 import { User } from './user.entity';
 import { ReportCard } from './reportCard.entity';
-import { Leaderboard } from './leaderBoard.entity';
+import { Leaderboard } from './leaderboard.entity';
 
 @Entity('students')
 export class Student {
@@ -45,6 +45,7 @@ export class Student {
   leaderboard?: Leaderboard[];
 
   @ManyToOne(() => Parent, (Parent) => Parent.students)
+  @JoinColumn()
   parent?: Parent;
 
   @CreateDateColumn({ type: 'timestamp' })

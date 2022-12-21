@@ -9,8 +9,7 @@ import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
-var moment = require("moment");
-
+var moment = require('moment');
 
 import {
   createLessonReq,
@@ -27,7 +26,7 @@ import {
   createBadgeReq,
   updateBadgeReq,
   createMockTestReq,
-  updateMockTestReq
+  updateMockTestReq,
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
 import {
@@ -41,7 +40,7 @@ import { Subject } from 'src/entities/subject.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Test } from 'src/entities/test.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
-import { Leaderboard } from 'src/entities/leaderBoard.entity';
+import { Leaderboard } from 'src/entities/leaderboard.entity';
 import { Badge } from 'src/entities/badges.entity';
 import { MockTest } from 'src/entities/mockTest.entity';
 import { Class } from 'src/entities/class.entity';
@@ -54,17 +53,19 @@ export class ContentService {
     private jwtService: JwtService,
     @InjectRepository(Lesson) private lessonRepo: Repository<Lesson>,
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
-    @InjectRepository(Subject) private subjectRepo: Repository<Subject>, 
-    @InjectRepository(LearningPackage) private learningPackageRepo: Repository<LearningPackage>,
-    @InjectRepository(Test) private testRepo: Repository<Test>, 
-    @InjectRepository(Student) private studentRepo: Repository<Student>, 
-    @InjectRepository(ReportCard) private reportCardRepo: Repository<ReportCard>,
-    @InjectRepository(Leaderboard) private leaderboardRepo: Repository<Leaderboard>,
+    @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
+    @InjectRepository(LearningPackage)
+    private learningPackageRepo: Repository<LearningPackage>,
+    @InjectRepository(Test) private testRepo: Repository<Test>,
+    @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(ReportCard)
+    private reportCardRepo: Repository<ReportCard>,
+    @InjectRepository(Leaderboard)
+    private leaderboardRepo: Repository<Leaderboard>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
     @InjectRepository(MockTest) private mockTestRepo: Repository<MockTest>,
-    @InjectRepository(Class) private classRepo: Repository<Class>,
-    // @InjectRepository(User) private userRepo: Repository<User>,
-  ) // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+    @InjectRepository(Class) private classRepo: Repository<Class>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+  ) // @InjectRepository(User) private userRepo: Repository<User>,
   // @InjectRepository(Session) private sessionRepo: Repository<Session>,
   // @InjectRepository(Student) private studentRepo: Repository<Student>,
 
@@ -233,9 +234,8 @@ export class ContentService {
         where: {
           id: subjectId,
         },
-        
       });
-      console.log(foundSubjectId)
+      console.log(foundSubjectId);
     } catch (exp) {
       throw new HttpException(
         {
@@ -277,7 +277,7 @@ export class ContentService {
 
   async updateChapterProfile(id: string, updateChapterReq: updateChapterReq) {
     const { type } = updateChapterReq;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundChapter, updatedChapter: Chapter;
 
     try {
@@ -308,7 +308,7 @@ export class ContentService {
       updatedChapter = await this.chapterRepo.save({
         ...foundChapter,
         type: type ?? foundChapter.type,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -328,7 +328,7 @@ export class ContentService {
 
   async updateLessonProfile(id: string, updateLessonReq: updateLessonReq) {
     const { type } = updateLessonReq;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundLesson, updatedLesson: Lesson;
 
     try {
@@ -358,7 +358,7 @@ export class ContentService {
       updatedLesson = await this.lessonRepo.save({
         ...foundLesson,
         type: type ?? foundLesson.type,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -375,7 +375,7 @@ export class ContentService {
       );
     }
   }
-  async createSubject(  createSubjectReq: createSubjectReq) {
+  async createSubject(createSubjectReq: createSubjectReq) {
     const { type, learningPackageId } = createSubjectReq;
     let subjectCreated: Subject, foundLearningPackageId: LearningPackage;
     try {
@@ -402,7 +402,7 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    try {     
+    try {
       subjectCreated = await this.subjectRepo.save({
         type,
         learningPackage: foundLearningPackageId,
@@ -422,10 +422,10 @@ export class ContentService {
       success: true,
     };
   }
-  
+
   async updateSubjectProfile(id: string, updateSubjectReq: updateSubjectReq) {
     const { type } = updateSubjectReq;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundSubject, updatedSubject: Subject;
 
     try {
@@ -456,7 +456,7 @@ export class ContentService {
       updatedSubject = await this.subjectRepo.save({
         ...foundSubject,
         type: type ?? foundSubject.type,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -473,7 +473,7 @@ export class ContentService {
       );
     }
   }
-  
+
   async getSubjects() {
     let foundSubjects: Array<Subject>;
     try {
@@ -489,9 +489,8 @@ export class ContentService {
     }
     return foundSubjects;
   }
- 
 
-  async createTest(  createTestReq: createTestReq) {
+  async createTest(createTestReq: createTestReq) {
     const { topic, lessonId } = createTestReq;
     let testCreated: Test, foundLessonId: Lesson;
     try {
@@ -519,7 +518,6 @@ export class ContentService {
       );
     }
     try {
-      
       testCreated = await this.testRepo.save({
         topic,
         lesson: foundLessonId,
@@ -539,10 +537,10 @@ export class ContentService {
       success: true,
     };
   }
-  
+
   async updateTestProfile(id: string, updateTestReq: updateTestReq) {
     const { topic } = updateTestReq;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundTest, updatedTest: Test;
 
     try {
@@ -573,7 +571,7 @@ export class ContentService {
       updatedTest = await this.testRepo.save({
         ...foundTest,
         topic: topic ?? foundTest.topic,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -590,7 +588,7 @@ export class ContentService {
       );
     }
   }
-  
+
   async getTests() {
     let foundTests: Array<Test>;
     try {
@@ -606,10 +604,15 @@ export class ContentService {
     }
     return foundTests;
   }
-  
-  async createReportCard(  createReportCardReq: createReportCardReq) {
-    const { remark, lessonId, subjectId, studentId, testId } = createReportCardReq;
-    let reportCardCreated: Test, foundLessonId: Lesson, foundSubjectId: Subject, foundTestId: Test, foundStudentId: Student;
+
+  async createReportCard(createReportCardReq: createReportCardReq) {
+    const { remark, lessonId, subjectId, studentId, testId } =
+      createReportCardReq;
+    let reportCardCreated: Test,
+      foundLessonId: Lesson,
+      foundSubjectId: Subject,
+      foundTestId: Test,
+      foundStudentId: Student;
     try {
       foundStudentId = await this.studentRepo.findOne({
         where: {
@@ -707,14 +710,12 @@ export class ContentService {
       );
     }
     try {
-      
       reportCardCreated = await this.reportCardRepo.save({
         remark,
         lesson: foundLessonId,
         student: foundStudentId,
         test: foundTestId,
-        subject: foundSubjectId
-
+        subject: foundSubjectId,
       });
     } catch (e) {
       throw new HttpException(
@@ -731,10 +732,13 @@ export class ContentService {
       success: true,
     };
   }
-  
-  async updateReportCardProfile(id: string, updateReportCardReq: updateReportCardReq) {
+
+  async updateReportCardProfile(
+    id: string,
+    updateReportCardReq: updateReportCardReq,
+  ) {
     const { remark } = updateReportCardReq;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundReoprtCard, updatedReportCard: ReportCard;
 
     try {
@@ -765,7 +769,7 @@ export class ContentService {
       updatedReportCard = await this.reportCardRepo.save({
         ...foundReoprtCard,
         remark: remark ?? foundReoprtCard.remark,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -782,7 +786,7 @@ export class ContentService {
       );
     }
   }
-  
+
   async getReportCard() {
     let foundReportCards: Array<ReportCard>;
     try {
@@ -797,12 +801,14 @@ export class ContentService {
       );
     }
     return foundReportCards;
- 
   }
-  
-  async updateLeaderboardProfile(id: string, updateLeaderboardReq: updateLeaderboardReq) {
+
+  async updateLeaderboardProfile(
+    id: string,
+    updateLeaderboardReq: updateLeaderboardReq,
+  ) {
     const { points } = updateLeaderboardReq;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundLeaderboard, updatedLeaderboard: Leaderboard;
 
     try {
@@ -833,7 +839,7 @@ export class ContentService {
       updatedLeaderboard = await this.leaderboardRepo.save({
         ...foundLeaderboard,
         points: points ?? foundLeaderboard.points,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -850,7 +856,7 @@ export class ContentService {
       );
     }
   }
-  
+
   async getLeaderboard() {
     let foundLeaderboards: Array<Leaderboard>;
     try {
@@ -865,17 +871,15 @@ export class ContentService {
       );
     }
     return foundLeaderboards;
- 
   }
 
-  async createBadge(  createBadgeReq: createBadgeReq) {
+  async createBadge(createBadgeReq: createBadgeReq) {
     const { badgeName } = createBadgeReq;
-    let  badgeCreated: Badge;
-    
+    let badgeCreated: Badge;
+
     try {
-      
       badgeCreated = await this.badgeRepo.save({
-        badgeName
+        badgeName,
       });
     } catch (e) {
       throw new HttpException(
@@ -892,10 +896,10 @@ export class ContentService {
       success: true,
     };
   }
-  
+
   async updateBadgeProfile(id: string, updateBadgeReq: updateBadgeReq) {
     const { badgeName } = updateBadgeReq;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundBadge, updatedBadge: Badge;
 
     try {
@@ -926,7 +930,7 @@ export class ContentService {
       updatedBadge = await this.badgeRepo.save({
         ...foundBadge,
         badgeName: badgeName ?? foundBadge.badgeName,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -943,7 +947,7 @@ export class ContentService {
       );
     }
   }
-  
+
   async getBadge() {
     let foundBadges: Array<Badge>;
     try {
@@ -958,17 +962,15 @@ export class ContentService {
       );
     }
     return foundBadges;
- 
   }
-  
-  async createMockTest(  createMockTestReq: createMockTestReq) {
+
+  async createMockTest(createMockTestReq: createMockTestReq) {
     const { mockTestName } = createMockTestReq;
-    let  mockTestCreated: MockTest;
-    
+    let mockTestCreated: MockTest;
+
     try {
-      
       mockTestCreated = await this.mockTestRepo.save({
-        mockTestName
+        mockTestName,
       });
     } catch (e) {
       throw new HttpException(
@@ -985,10 +987,13 @@ export class ContentService {
       success: true,
     };
   }
-  
-  async updateMockTestProfile(id: string, updateMockTestReq: updateMockTestReq) {
+
+  async updateMockTestProfile(
+    id: string,
+    updateMockTestReq: updateMockTestReq,
+  ) {
     const { mockTestName } = updateMockTestReq;
-    var date = moment().utc().format("YYYY-MM-DD hh:mm:ss");
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundMockTest, updatedMockTest: Badge;
 
     try {
@@ -1019,7 +1024,7 @@ export class ContentService {
       updatedMockTest = await this.mockTestRepo.save({
         ...foundMockTest,
         mockTestName: mockTestName ?? foundMockTest.mockTestName,
-        updatedAt:date
+        updatedAt: date,
       });
 
       return {
@@ -1036,7 +1041,7 @@ export class ContentService {
       );
     }
   }
-  
+
   async getMockTest() {
     let foundMockTests: Array<MockTest>;
     try {
@@ -1051,9 +1056,8 @@ export class ContentService {
       );
     }
     return foundMockTests;
- 
   }
-  
+
   async getUpcomingClasses() {
     let foundUpcomingClasses: Array<MockTest>;
     try {
@@ -1068,7 +1072,5 @@ export class ContentService {
       );
     }
     return foundUpcomingClasses;
- 
   }
-  
 }

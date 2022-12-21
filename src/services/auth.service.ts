@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
 import {
@@ -24,18 +24,22 @@ import {
   ForgotPasswordRes,
   GetStudentReq,
   GetStudentRes,
+  CreateStudentRes,
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Device } from 'src/entities/device.entity';
 import { generateRandomHash, isEmpty } from 'src/utils/helpers';
-import { authErrors } from 'src/constants';
+import { authErrors, subscriptionError } from 'src/constants';
 import Logger from 'src/utils/logger';
 import * as bcrypt from 'bcrypt';
 import { Session } from 'src/entities/session.entity';
-import { UserTypes } from 'src/enums';
+import { UserTypes, Genders } from 'src/enums';
 import { UtilityService } from './utility.service';
-import { Country } from 'src/entities/country.entity';
+import { CountryList } from 'src/entities/countryList.entity';
+import { LearningPackage } from 'src/entities/learningPackage.entity';
+import { Subscription } from 'src/entities/subscription.entity';
+import { mailer } from 'src/utils/mailer';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -46,10 +50,57 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly utilityService: UtilityService,
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Device) private deviceRepo: Repository<Device>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
     @InjectRepository(Parent) private parentRepo: Repository<Parent>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
-  ) {}
+    @InjectRepository(LearningPackage)
+    private packageRepo: Repository<LearningPackage>,
+    @InjectRepository(Subscription)
+    private subscriptionRepo: Repository<Subscription>,
+  ) {
+    this.test();
+  }
+
+  async test() {
+    const children = [
+        {
+          firstName: '{{$randomFirstName}}',
+          lastName: '{{$randomLastName}}',
+          gender: 'female',
+          packages: ['7', '9', '13'],
+        },
+      ],
+      user = {
+        id: 1,
+        firstName: 'Russell',
+        lastName: 'Emekoba',
+        gender: 'MALE',
+        dateOfBirth: null,
+        type: 'PARENT',
+        suspended: false,
+        createdAt: '2022-12-19T09:43:26.988Z',
+        updatedAt: '2022-12-19T09:43:26.988Z',
+        parent: {
+          id: 1,
+          email: 'rjemekoba@gmail.com',
+          phoneNumber: '08076607130',
+          address: '',
+          password:
+            '$2b$10$XENVPQW.hSlrmkYlGqrts.KecU0B/J0hBPYpJH0oTtmpjTrSP/5gq',
+          passwordResetPin: '',
+          onboardingStage: 'STAGE_0',
+          createdAt: '2022-12-19T09:43:26.983Z',
+          updatedAt: '2022-12-19T09:43:26.983Z',
+          sessions: [],
+        },
+      };
+
+    // this.createStudentProfile({
+    //   children,
+    //   user,
+    // });
+  }
 
   async generateToken(user: User): Promise<string> {
     let token: string;
@@ -285,13 +336,13 @@ export class AuthService {
   }
 
   async registerUser(regUserReq: RegisterUserReq) {
-    //* Register Basic User Details_______________________________________________________________
+    //* Register Basic User Details
     let { firstName, lastName, phoneNumber, email, password, countryId } =
       regUserReq;
 
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
-    //* check if phone number is already taken______________________________________________________________
+    //* check if phone number is already taken
     if (!isEmpty(phoneNumber)) {
       try {
         duplicatePhoneNumber = await this.userRepo.findOne({
@@ -324,7 +375,7 @@ export class AuthService {
       }
     }
 
-    //* check if email is already taken_________________________________________________________________
+    //* check if email is already taken
     if (!isEmpty(email)) {
       try {
         duplicateEmail = await this.userRepo.findOne({
@@ -357,7 +408,7 @@ export class AuthService {
       }
     }
 
-    //* create user account______________________________________________________________________________
+    //* create user account
     try {
       password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
 
@@ -371,19 +422,9 @@ export class AuthService {
       createdUser = await this.userRepo.save({
         firstName,
         lastName,
-        profilePicture: '',
         type: UserTypes.PARENT,
         parent: createdParent,
       });
-
-      //* notify user of successful registration
-      // if (createdUser) {
-      //   this.notificationsBridge.notifyNewRegistration(
-      //     createdUser.phoneNumber,
-      //     createdUser.email,
-      //     '',
-      //   );
-      // }
     } catch (e) {
       Logger.error(authErrors.saveUser + e).console();
 
@@ -396,6 +437,10 @@ export class AuthService {
       );
     }
 
+    mailer(createdUser.parent.email, 'Registration Successful', {
+      text: `An action to change your password was successful`,
+    });
+
     return {
       createdUser,
       success: true,
@@ -403,18 +448,7 @@ export class AuthService {
   }
 
   async login(loginReq: LoginReq): Promise<LoginRes> {
-    let { phoneNumber, email, password, deviceId } = loginReq;
-
-    //* check current onboarding stage
-
-    // createdUser = await this.userRepo.findOne({
-    //   where: {
-    //     id: createdUser.id,
-    //   },
-    //   relations: ['sessions', `${createdUser.type.toLowerCase()}`],
-    // });
-
-    const device = await this.utilityService.getDevice(deviceId);
+    let { phoneNumber, email, password, device } = loginReq;
 
     let foundUser: User;
 
@@ -628,10 +662,12 @@ export class AuthService {
   }
 
   async createParentProfile(createParentReq: CreateParentReq): Promise<Parent> {
-    let { phoneNumber, email, password, countryId } = createParentReq;
+    const { phoneNumber, email, password, countryId } = createParentReq;
     let createdParent: Parent;
 
-    const country: Country = await this.utilityService.getCountry(countryId);
+    const country: CountryList = await this.utilityService.getCountryList(
+      countryId,
+    );
 
     try {
       createdParent = await this.parentRepo.save({
@@ -658,7 +694,46 @@ export class AuthService {
     return createdParent;
   }
 
-  async createStudentProfile(createStudentReq: CreateStudentReq) {}
+  async collateSubscriptionCost(packages: Array<string>): Promise<string> {
+    const foundPackages: Array<LearningPackage> = await this.packageRepo.find({
+      where: { id: In(packages) },
+    });
+
+    const cost = foundPackages.reduce((total, pkg) => {
+      return total + parseInt(pkg.price);
+    }, 0);
+
+    return cost.toString();
+  }
+
+  async createStudentProfile(
+    createStudentReq: CreateStudentReq,
+  ): Promise<CreateStudentRes> {
+    const { user, children } = createStudentReq;
+
+    const createdStudents: any = Promise.all(
+      children.map(
+        async (child: any) =>
+          await this.userRepo.save({
+            firstName: child.firstName,
+            lastName: child.lastName,
+            gender: Genders[child.gender?.toUpperCase()],
+            type: UserTypes.STUDENT,
+            student: await this.studentRepo.save({
+              subscription: await this.subscriptionRepo.save({
+                learningPackages: child.packages,
+                price: await this.collateSubscriptionCost(child.packages),
+              }),
+              parent: new Parent({
+                id: user.parent.id,
+              }),
+            }),
+          }),
+      ),
+    ).then((res: Array<User>) => res);
+
+    return { success: true, createdStudents };
+  }
 
   async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
     const { studentId, user } = getStudentReq;
@@ -894,5 +969,29 @@ export class AuthService {
         success: true,
       };
     }
+  }
+
+  async getDevice(deviceId: string) {
+    let foundDevice: Device;
+
+    try {
+      foundDevice = await this.deviceRepo.findOne({
+        where: {
+          id: deviceId,
+        },
+      });
+    } catch (exp) {
+      Logger.error(authErrors.getDevice + exp);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.getDevice + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return foundDevice;
   }
 }

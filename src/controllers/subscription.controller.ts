@@ -54,8 +54,8 @@ export class SubscriptionController {
     }
   }
 
-  @Get('history/:subscriptionId')
-  async getSubscriptionHistory(
+  @Get('invoice/:subscriptionId')
+  async getSubscriptionInvoices(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,

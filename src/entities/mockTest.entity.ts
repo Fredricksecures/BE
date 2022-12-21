@@ -8,8 +8,6 @@ import {
     OneToMany,
   } from 'typeorm';
   
-  
-  
   @Entity('mock-tests')
   export class MockTest {
     constructor(data?: MockTest) {

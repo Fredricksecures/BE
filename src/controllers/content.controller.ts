@@ -15,8 +15,8 @@ import {
   GetAllUsersSessionsReq,
   GetAllUsersSessionsRes,
 } from 'src/dto/admin.dto';
-import{ 
-  createLessonReq, 
+import {
+  createLessonReq,
   createChapterReq,
   updateChapterReq,
   updateLessonReq,
@@ -30,10 +30,15 @@ import{
   createBadgeReq,
   updateBadgeReq,
   createMockTestReq,
-  updateMockTestReq
- } from 'src/dto/content.dto';
+  updateMockTestReq,
+} from 'src/dto/content.dto';
 import { Request, Response } from 'express';
-import { adminErrors, adminMessages,contentMessages,contentErrors } from 'src/constants';
+import {
+  adminErrors,
+  adminMessages,
+  contentMessages,
+  contentErrors,
+} from 'src/constants';
 import { ContentService } from 'src/services/content.service';
 
 @Controller('content')
@@ -46,34 +51,34 @@ export class ContentController {
   //   @Res({ passthrough: true }) resp: Response,
   //   @Query() query: GetAllUsersSessionsReq,
   // ) {
-    // const { success, sessions }: GetAllUsersSessionsRes =
-    //   await this.contentService.getUserSessions(query);
-    // if (success) {
-    //   resp.json({
-    //     status: HttpStatus.OK,
-    //     message: adminMessages.fetchSessionSuccess,
-    //     sessions,
-    //   });
-    // } else {
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_FOUND,
-    //       error: adminErrors.fetchSessionFailed,
-    //     },
-    //     HttpStatus.NOT_FOUND,
-    //   );
-    // }
- // }
+  // const { success, sessions }: GetAllUsersSessionsRes =
+  //   await this.contentService.getUserSessions(query);
+  // if (success) {
+  //   resp.json({
+  //     status: HttpStatus.OK,
+  //     message: adminMessages.fetchSessionSuccess,
+  //     sessions,
+  //   });
+  // } else {
+  //   throw new HttpException(
+  //     {
+  //       status: HttpStatus.NOT_FOUND,
+  //       error: adminErrors.fetchSessionFailed,
+  //     },
+  //     HttpStatus.NOT_FOUND,
+  //   );
+  // }
+  // }
 
   @Get('chapters')
   async getChapters(
     @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response
+    @Res({ passthrough: true }) resp: Response,
   ) {
     const chapters = await this.contentService.getChapters();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.chaptersFetchSuccess, 
+      message: contentMessages.chaptersFetchSuccess,
       chapters,
     });
   }
@@ -81,25 +86,25 @@ export class ContentController {
   @Get('lessons')
   async getLessons(
     @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response
-   
+    @Res({ passthrough: true }) resp: Response,
   ) {
     const lessons = await this.contentService.getLessons();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.lessonsFetchSuccess, 
+      message: contentMessages.lessonsFetchSuccess,
       lessons,
     });
   }
-  
+
   @Post('create-lesson')
   async createLesson(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createLessonReq,
   ) {
-    const { success, lessonCreated } =
-      await this.contentService.createLesson(body);
+    const { success, lessonCreated } = await this.contentService.createLesson(
+      body,
+    );
 
     if (success) {
       resp.json({
@@ -117,14 +122,16 @@ export class ContentController {
       );
     }
   }
+
   @Post('create-subject')
   async createSubject(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createSubjectReq,
   ) {
-    const { success, subjectCreated } =
-      await this.contentService.createSubject(body);
+    const { success, subjectCreated } = await this.contentService.createSubject(
+      body,
+    );
 
     if (success) {
       resp.json({
@@ -143,16 +150,15 @@ export class ContentController {
     }
   }
 
-
   @Post('create-chapter')
   async createChapter(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createChapterReq,
   ) {
-    
-    const { success, chapterCreated } =
-      await this.contentService.createChapter(body);
+    const { success, chapterCreated } = await this.contentService.createChapter(
+      body,
+    );
 
     if (success) {
       resp.json({
@@ -178,7 +184,7 @@ export class ContentController {
     @Body() body: updateChapterReq,
     @Param('id') id,
   ) {
-    let { updatedChapter, success }=
+    let { updatedChapter, success } =
       await this.contentService.updateChapterProfile(id, {
         ...req.body,
       });
@@ -208,7 +214,7 @@ export class ContentController {
     @Body() body: updateLessonReq,
     @Param('id') id,
   ) {
-    let { updatedLesson, success }=
+    let { updatedLesson, success } =
       await this.contentService.updateLessonProfile(id, {
         ...req.body,
       });
@@ -230,6 +236,7 @@ export class ContentController {
       );
     }
   }
+
   @Patch('update-subject/:id')
   async updateSubject(
     @Req() req: Request,
@@ -237,7 +244,7 @@ export class ContentController {
     @Body() body: updateSubjectReq,
     @Param('id') id,
   ) {
-    let { updatedSubject, success }=
+    let { updatedSubject, success } =
       await this.contentService.updateSubjectProfile(id, {
         ...req.body,
       });
@@ -263,13 +270,12 @@ export class ContentController {
   @Get('subjects')
   async getSubjects(
     @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response
-   
+    @Res({ passthrough: true }) resp: Response,
   ) {
     const subjects = await this.contentService.getSubjects();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.subjectFetchSuccess, 
+      message: contentMessages.subjectFetchSuccess,
       subjects,
     });
   }
@@ -280,9 +286,7 @@ export class ContentController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createTestReq,
   ) {
-    
-    const { success, testCreated } =
-      await this.contentService.createTest(body);
+    const { success, testCreated } = await this.contentService.createTest(body);
 
     if (success) {
       resp.json({
@@ -308,10 +312,12 @@ export class ContentController {
     @Body() body: updateTestReq,
     @Param('id') id,
   ) {
-    let { updatedTest, success }=
-      await this.contentService.updateTestProfile(id, {
+    let { updatedTest, success } = await this.contentService.updateTestProfile(
+      id,
+      {
         ...req.body,
-      });
+      },
+    );
 
     if (success) {
       resp.json({
@@ -330,16 +336,16 @@ export class ContentController {
       );
     }
   }
+
   @Get('tests')
   async getTests(
     @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response
-   
+    @Res({ passthrough: true }) resp: Response,
   ) {
     const tests = await this.contentService.getTests();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.testFetchSuccess, 
+      message: contentMessages.testFetchSuccess,
       tests,
     });
   }
@@ -350,7 +356,6 @@ export class ContentController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createReportCardReq,
   ) {
-    
     const { success, reportCardCreated } =
       await this.contentService.createReportCard(body);
 
@@ -378,7 +383,7 @@ export class ContentController {
     @Body() body: updateReportCardReq,
     @Param('id') id,
   ) {
-    let { updatedReportCard, success }=
+    let { updatedReportCard, success } =
       await this.contentService.updateReportCardProfile(id, {
         ...req.body,
       });
@@ -401,20 +406,19 @@ export class ContentController {
     }
   }
 
-  @Get('reportCards')
+  @Get('report-cards')
   async getReportCards(
     @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response
-   
+    @Res({ passthrough: true }) resp: Response,
   ) {
     const tests = await this.contentService.getReportCard();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.reportCardFetchSuccess, 
+      message: contentMessages.reportCardFetchSuccess,
       tests,
     });
   }
- 
+
   @Patch('update-leaderboard/:id')
   async updateLeaderboard(
     @Req() req: Request,
@@ -422,7 +426,7 @@ export class ContentController {
     @Body() body: updateLeaderboardReq,
     @Param('id') id,
   ) {
-    let { updatedLeaderboard, success }=
+    let { updatedLeaderboard, success } =
       await this.contentService.updateLeaderboardProfile(id, {
         ...req.body,
       });
@@ -448,25 +452,25 @@ export class ContentController {
   @Get('leaderboards')
   async getLeaderboards(
     @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response
-   
+    @Res({ passthrough: true }) resp: Response,
   ) {
     const tests = await this.contentService.getLeaderboard();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.leaderboardFetchSuccess, 
+      message: contentMessages.leaderboardFetchSuccess,
       tests,
     });
   }
+
   @Post('create-badge')
   async createBadge(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createBadgeReq,
   ) {
-    
-    const { success, badgeCreated } =
-      await this.contentService.createBadge(body);
+    const { success, badgeCreated } = await this.contentService.createBadge(
+      body,
+    );
 
     if (success) {
       resp.json({
@@ -492,7 +496,7 @@ export class ContentController {
     @Body() body: updateBadgeReq,
     @Param('id') id,
   ) {
-    let { updatedBadge, success }=
+    let { updatedBadge, success } =
       await this.contentService.updateBadgeProfile(id, {
         ...req.body,
       });
@@ -514,16 +518,16 @@ export class ContentController {
       );
     }
   }
+
   @Get('badges')
   async getBadges(
     @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response
-   
+    @Res({ passthrough: true }) resp: Response,
   ) {
     const tests = await this.contentService.getBadge();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.badgeFetchSuccess, 
+      message: contentMessages.badgeFetchSuccess,
       tests,
     });
   }
@@ -534,7 +538,6 @@ export class ContentController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createMockTestReq,
   ) {
-    
     const { success, mockTestCreated } =
       await this.contentService.createMockTest(body);
 
@@ -562,7 +565,7 @@ export class ContentController {
     @Body() body: updateMockTestReq,
     @Param('id') id,
   ) {
-    let { updatedMockTest, success }=
+    let { updatedMockTest, success } =
       await this.contentService.updateMockTestProfile(id, {
         ...req.body,
       });
@@ -584,29 +587,29 @@ export class ContentController {
       );
     }
   }
+
   @Get('mockTests')
   async getMockTests(
     @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response
-   
+    @Res({ passthrough: true }) resp: Response,
   ) {
     const tests = await this.contentService.getMockTest();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.mockTestFetchSuccess, 
+      message: contentMessages.mockTestFetchSuccess,
       tests,
     });
   }
+
   @Get('upcoming-classes')
   async getUpcomingClasses(
     @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response
-   
+    @Res({ passthrough: true }) resp: Response,
   ) {
     const tests = await this.contentService.getUpcomingClasses();
     resp.json({
       status: HttpStatus.OK,
-      message: contentMessages.upcomingClassesFetchSuccess, 
+      message: contentMessages.upcomingClassesFetchSuccess,
       tests,
     });
   }

@@ -10,7 +10,7 @@ import {
 import { UtilityService } from '../services/utility.service';
 import { UtilitySeeder } from 'src/seeders/utlity.seeder';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Country } from 'src/entities/country.entity';
+import { CountryList } from 'src/entities/countryList.entity';
 import { Repository } from 'typeorm';
 import { utlityMessages } from 'src/constants';
 import { Device } from 'src/entities/device.entity';
@@ -22,7 +22,7 @@ export class UtilityController {
   constructor(
     private readonly utilitySeeder: UtilitySeeder,
     private readonly utilityService: UtilityService,
-    @InjectRepository(Country) private countryRepo: Repository<Country>,
+    @InjectRepository(CountryList) private countryRepo: Repository<CountryList>,
     @InjectRepository(Device) private deviceRepo: Repository<Device>,
     @InjectRepository(LearningPackage)
     private lPRepo: Repository<LearningPackage>,
@@ -70,12 +70,16 @@ export class UtilityController {
 
   @Get('learning-packages')
   async getLPackages(@Req() req: Request, @Res() resp: Response) {
-    const learningPackages: Array<LearningPackage> = await this.lPRepo.find({});
+    const id = req.query.id;
+
+    const learningPackages = await this.utilityService.getLearningPackages(
+      `${id}`,
+    );
 
     resp.json({
       status: HttpStatus.FOUND,
       message: utlityMessages.learningPackages,
-      packages: learningPackages,
+      [`package${id ? '' : 's'}`]: learningPackages,
     });
   }
 }

@@ -9,7 +9,7 @@ import {
   Column,
   JoinColumn,
 } from 'typeorm';
-import { Country } from './country.entity';
+import { CountryList } from './countryList.entity';
 import { Session } from './session.entity';
 import { Student } from './student.entity';
 import { User } from './user.entity';
@@ -42,12 +42,16 @@ export class Parent {
   @Column({ type: 'varchar' })
   passwordResetPin?: string;
 
-  @Column({ type: 'varchar', default: OnboardingStages.STAGE_0 })
+  @Column({
+    type: 'enum',
+    enum: OnboardingStages,
+    default: OnboardingStages.STAGE_0,
+  })
   onboardingStage?: string;
 
-  @OneToOne(() => Country)
+  @OneToOne(() => CountryList)
   @JoinColumn()
-  country?: Country;
+  country?: CountryList;
 
   @OneToOne(() => User)
   user?: User;
