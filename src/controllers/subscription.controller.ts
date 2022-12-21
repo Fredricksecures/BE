@@ -16,14 +16,13 @@ import {
 
 import { SubscriptionService } from '../services/subscription.service';
 import { Request, Response } from 'express';
-import { subscriptionError, subscriptionMessages } from 'src/constants';
+import { subscriptionError, subscriptionMessages } from 'src/utils/messages';
 import { CreateSubscriptionReq } from 'src/dto/subscription.dto';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-
 
 @Controller('subscription')
 export class SubscriptionController {
@@ -68,8 +67,11 @@ export class SubscriptionController {
     @Param('subscriptionId') subscriptionId,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const  history = await this.authService.getSubscriptionHistory(
-      subscriptionId,options,filters.details,filters.date
+    const history = await this.authService.getSubscriptionHistory(
+      subscriptionId,
+      options,
+      filters.details,
+      filters.date,
     );
 
     if (history) {
@@ -77,7 +79,7 @@ export class SubscriptionController {
         status: HttpStatus.OK,
         message: subscriptionMessages.fetchInvoiceHistorySuccess,
         history: history.items,
-        meta: history.meta
+        meta: history.meta,
       });
     } else {
       throw new HttpException(
@@ -115,5 +117,4 @@ export class SubscriptionController {
       );
     }
   }
- 
 }

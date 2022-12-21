@@ -1,4 +1,4 @@
-import { SubscriptionStates } from 'src/enums';
+import { SubscriptionStates } from 'src/utils/enums';
 import {
   Column,
   Entity,
@@ -26,11 +26,11 @@ export class Subscription {
   account?: string;
 
   @Column({ type: 'varchar' })
-  details?: string; 
+  details?: string;
 
   @Column({ type: 'varchar' })
   duration?: string;
-  
+
   @Column({ type: 'varchar' })
   price?: string;
 
@@ -40,7 +40,7 @@ export class Subscription {
   @Column({
     type: 'enum',
     enum: SubscriptionStates,
-    default: SubscriptionStates.ACTIVE,
+    default: SubscriptionStates.INACTIVE,
   })
   state?: SubscriptionStates;
 

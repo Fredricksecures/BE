@@ -30,9 +30,9 @@ import {
   ResetPasswordRes,
   CreateStudentReq,
 } from 'src/dto/auth.dto';
-import { authErrors, authMessages, profileMessages } from 'src/constants';
+import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
-import { UserTypes } from 'src/enums';
+import { UserTypes } from 'src/utils/enums';
 
 @Controller('auth')
 export class AuthController {
@@ -174,7 +174,7 @@ export class AuthController {
     }
   }
 
-  @Post('create-student')
+  @Post('create-students')
   @UseMiddleware('sessionGuard')
   async createStudent(
     @Req() req: Request,
@@ -187,7 +187,7 @@ export class AuthController {
     if (success) {
       resp.json({
         success,
-        message: profileMessages.updatedSuccess,
+        message: authMessages.createdStudent,
         status: HttpStatus.CREATED,
         students: createdStudents,
       });

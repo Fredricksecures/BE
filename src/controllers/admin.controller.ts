@@ -26,9 +26,9 @@ import {
   BasicRegRes,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
-import { UserTypes } from 'src/enums';
+import { UserTypes } from 'src/utils/enums';
 import { Request, Response } from 'express';
-import { adminErrors, adminMessages } from 'src/constants';
+import { adminErrors, adminMessages } from 'src/utils/messages';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 @Controller('admin')
