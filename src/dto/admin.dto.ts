@@ -175,6 +175,109 @@ export class BasicRegRes {
   createdUser?: User | undefined;
   success?: boolean;
 }
+
+export class createLessonReq {
+  @IsNotEmpty()
+  @IsString()
+  type: string;
+
+  @IsNotEmpty()
+  @IsString()
+  chapterId: string;
+
+}
+
+export class createChapterReq {
+  @IsNotEmpty()
+  @IsString()
+  type: string;
+
+  @IsNotEmpty()
+  @IsString()
+  subjectId: string;
+
+}
+export class updateLessonReq {
+  @IsNotEmpty()
+  @IsString()
+  type: string;
+}
+
+export class updateSubjectReq {
+  @IsNotEmpty()
+  @IsString()
+  type: string;
+}
+export class createTestReq {
+  @IsNotEmpty()
+  @IsString()
+  topic: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lessonId: string;
+
+}
+
+export class updateTestReq {
+  @IsNotEmpty()
+  @IsString()
+  topic: string;
+ 
+}
+export class createMockTestReq {
+  @IsNotEmpty()
+  @IsString()
+  mockTestName: string;
+ 
+}
+export class updateMockTestReq {
+  @IsNotEmpty()
+  @IsString()
+  mockTestName: string;
+ 
+}
+export class createBadgeReq {
+  @IsNotEmpty()
+  @IsString()
+  badgeName: string;
+ 
+}
+export class updateBadgeReq {
+  @IsNotEmpty()
+  @IsString()
+  badgeName: string;
+ 
+}
+export class createReportCardReq {
+  @IsNotEmpty()
+  @IsString()
+  remark: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lessonId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  subjectId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  studentId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  testId: string;
+}
+export class updateReportCardReq {
+  @IsNotEmpty()
+  @IsString()
+  remark: string;
+}
+
+
+
 // export class createdAdminRes {
 //   createAdmin?: User | undefined;
 //   success?: boolean;
