@@ -87,6 +87,13 @@ export const ModuleConfigs = {
       CountryList,
       Admin,
       LearningPackage,
+      Chapter,
+      Lesson,
+      Subject,
+      Test,
+      ReportCard,
+      Badge,
+      MockTest,
     ],
   },
   subscription: {

@@ -9,6 +9,9 @@ import {
   Param,
   HttpException,
   Patch,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Query
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -33,6 +36,11 @@ import {
 import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/utils/enums';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Controller('auth')
 export class AuthController {
@@ -229,6 +237,42 @@ export class AuthController {
     }
   }
 
+  // @Get('get-students')
+  // @UseMiddleware('sessionGuard')
+  // async getStudents(
+  //   @Req() req: Request,
+  //   @Res({ passthrough: true }) resp: Response,
+  //   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+  //   @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+  // ) {
+  //   const {
+  //     query: { id },
+  //     body: { user },
+  //   } = req;
+  //   const options: IPaginationOptions = { limit, page };
+  //   const  students = await this.authService.getStudents({
+  //     studentId: `${id}`,
+  //     user,
+  //   },options);
+
+  //   if (students) {
+  //     resp.json({
+  //       message: authMessages.logout,
+  //       status: HttpStatus.OK,
+  //       [`student${id ? 's' : ''}`]: students.items,
+  //       meta:students.meta
+  //     });
+  //   } else {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_FOUND,
+  //         error: authErrors.getStudentsFailed,
+  //       },
+  //       HttpStatus.NOT_FOUND,
+  //     );
+  //   }
+  // }
+
   @Get('get-students')
   @UseMiddleware('sessionGuard')
   async getStudents(
@@ -239,18 +283,17 @@ export class AuthController {
       query: { id },
       body: { user },
     } = req;
-
-    const { success, students } = await this.authService.getStudents({
+    
+    const  students = await this.authService.getStudents({
       studentId: `${id}`,
       user,
     });
 
-    if (success) {
+    if (students) {
       resp.json({
-        success,
         message: authMessages.logout,
         status: HttpStatus.OK,
-        [`student${id ? 's' : ''}`]: students,
+        [`student${id ? 's' : ''}`]: students
       });
     } else {
       throw new HttpException(
@@ -262,6 +305,7 @@ export class AuthController {
       );
     }
   }
+
 
   @Post('logout/:all?')
   async logout(
