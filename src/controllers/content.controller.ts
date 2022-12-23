@@ -36,31 +36,6 @@ import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
-  // @Get('subjects')
-  // async getSubjects(
-  //   @Req() req: Request,
-  //   @Res({ passthrough: true }) resp: Response,
-  //   @Query() query: GetAllUsersSessionsReq,
-  // ) {
-  // const { success, sessions }: GetAllUsersSessionsRes =
-  //   await this.contentService.getUserSessions(query);
-  // if (success) {
-  //   resp.json({
-  //     status: HttpStatus.OK,
-  //     message: adminMessages.fetchSessionSuccess,
-  //     sessions,
-  //   });
-  // } else {
-  //   throw new HttpException(
-  //     {
-  //       status: HttpStatus.NOT_FOUND,
-  //       error: adminErrors.fetchSessionFailed,
-  //     },
-  //     HttpStatus.NOT_FOUND,
-  //   );
-  // }
-  // }
-
   @Get('chapters')
   async getChapters(
     @Req() req: Request,
@@ -243,7 +218,7 @@ export class ContentController {
     }
   }
 
-  @Get('leaderboards')
+  @Get('leaderboard')
   async getLeaderboards(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
