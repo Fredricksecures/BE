@@ -229,7 +229,7 @@ export class AuthController {
     }
   }
 
-  @Get('get-students')
+  @Get('students')
   @UseMiddleware('sessionGuard')
   async getStudents(
     @Req() req: Request,

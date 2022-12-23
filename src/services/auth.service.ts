@@ -335,6 +335,8 @@ export class AuthService {
     return foundParent;
   }
 
+  async googleLogin() {}
+
   async registerUser(regUserReq: RegisterUserReq) {
     //* Register Basic User Details
     let { firstName, lastName, phoneNumber, email, password, countryId } =
