@@ -11,6 +11,11 @@ import { In, Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
 import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
+import {
   RegisterUserReq,
   CreateParentReq,
   CreateStudentReq,
@@ -759,6 +764,28 @@ export class AuthService {
       students: foundStudents,
     };
   }
+  // async getStudents(getStudentReq: GetStudentReq,options: IPaginationOptions): Promise<Pagination<Student>>{
+  //   const { studentId, user } = getStudentReq;
+
+  //   let foundStudents;
+
+  //   let parent = await this.getParentDetails(user.id, ['students']);
+
+  //   if (!foundStudents) {
+  //     Logger.error(authErrors.studentsNotFound).console();
+
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: authErrors.studentsNotFound,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
+
+  //   return paginate<Student>(foundStudents, options);
+    
+  // }
 
   async updateParentProfile(updateParentReq: UpdateParentReq) {
     const { user, email, phoneNumber, address } = updateParentReq;

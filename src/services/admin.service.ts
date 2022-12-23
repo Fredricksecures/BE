@@ -20,19 +20,39 @@ import {
   UpdateCustomerIdReq,
   createAdminReq,
   updateAdminReq,
+  createLessonReq,
+  updateLessonReq,
+  createChapterReq,
+  updateSubjectReq,
+  createTestReq,
+  updateTestReq,
+  createMockTestReq,
+  updateMockTestReq,
+  createBadgeReq,
+  updateBadgeReq,
+  updateReportCardReq,
+  createReportCardReq
 } from 'src/dto/admin.dto';
 import { adminMessages, adminErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
+import { Lesson } from 'src/entities/lesson.entity';
+import { Chapter } from 'src/entities/chapter.entity';
+import { Subject } from 'src/entities/subject.entity';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Admin } from 'src/entities/admin.entity';
 import { CustomerCare } from 'src/entities/customerCare.entity';
+import { Test } from 'src/entities/test.entity';
+import { MockTest } from 'src/entities/mockTest.entity';
+import { Badge } from 'src/entities/badges.entity';
 import { isEmpty } from 'src/utils/helpers';
 import * as bcrypt from 'bcrypt';
 import { UserTypes } from 'src/utils/enums';
 import { UtilityService } from './utility.service';
 import { CountryList } from 'src/entities/countryList.entity';
+import { Class } from 'src/entities/class.entity';
+import { ReportCard } from 'src/entities/reportCard.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -46,9 +66,17 @@ export class AdminService {
     @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Lesson) private lessonRepo: Repository<Lesson>,
+    @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
+    @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
+    @InjectRepository(Test) private testRepo: Repository<Test>,
+    @InjectRepository(MockTest) private mockTestRepo: Repository<MockTest>,
+    @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
+    @InjectRepository(Class) private classRepo: Repository<Class>,
+    @InjectRepository(ReportCard)private reportCardRepo: Repository<ReportCard>,
     @InjectRepository(CustomerCare)
     private customerCareRepo: Repository<CustomerCare>,
-    @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+   // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
   async formatPayload(user: any, type: string) {
@@ -788,4 +816,662 @@ export class AdminService {
 
     return paginate<User>(results, options);
   }
+
+  async createLesson(createLessonReq: createLessonReq) {
+    const { type, chapterId } = createLessonReq;
+    let lessonCreated: Lesson, foundChapterId: Chapter;
+    try {
+      foundChapterId = await this.chapterRepo.findOne({
+        where: {
+          id: chapterId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingChapter + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundChapterId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchSubjectById,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      lessonCreated = await this.lessonRepo.save({
+        type,
+        chapter: foundChapterId,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveLesson + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      lessonCreated,
+      success: true,
+    };
+  }
+
+  async createChapter(createChapterReq: createChapterReq) {
+    const { type, subjectId } = createChapterReq;
+    let chapterCreated: Chapter, foundSubjectId: Subject;
+    try {
+      foundSubjectId = await this.subjectRepo.findOne({
+        where: {
+          id: subjectId,
+        },
+      });
+      console.log(foundSubjectId);
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingSubject + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundSubjectId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchSubjectById,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      chapterCreated = await this.chapterRepo.save({
+        type,
+        subject: foundSubjectId,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveChapter + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      chapterCreated,
+      success: true,
+    };
+  }
+
+  async updateLessonProfile(id: string, updateLessonReq: updateLessonReq) {
+    const { type } = updateLessonReq;
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+    let foundLesson: Lesson, updatedLesson: Lesson;
+
+    try {
+      foundLesson = await this.lessonRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingLesson + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundLesson) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.lessonNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      updatedLesson = await this.lessonRepo.save({
+        ...foundLesson,
+        type: type ?? foundLesson.type,
+        updatedAt: date,
+      });
+
+      return {
+        success: true,
+        updatedLesson,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingLesson,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async updateSubjectProfile(id: string, updateSubjectReq: updateSubjectReq) {
+    const { type } = updateSubjectReq;
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+    let foundSubject, updatedSubject: Subject;
+
+    try {
+      foundSubject = await this.subjectRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingSubject + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundSubject) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.subjectNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedSubject = await this.subjectRepo.save({
+        ...foundSubject,
+        type: type ?? foundSubject.type,
+        updatedAt: date,
+      });
+
+      return {
+        success: true,
+        updatedSubject,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingSubject,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+   //!:GANESH for admin module
+   async createTest(createTestReq: createTestReq) {
+    const { topic, lessonId } = createTestReq;
+    let testCreated: Test, foundLessonId: Lesson;
+    try {
+      foundLessonId = await this.lessonRepo.findOne({
+        where: {
+          id: lessonId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingLesson + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundLessonId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchLessons,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      testCreated = await this.testRepo.save({
+        topic,
+        lesson: foundLessonId,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveTest + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      testCreated,
+      success: true,
+    };
+  }
+
+  //!:GANESH "update test". for admin module
+  async updateTestProfile(id: string, updateTestReq: updateTestReq) {
+    const { topic } = updateTestReq;
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+    let foundTest, updatedTest: Test;
+
+    try {
+      foundTest = await this.testRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundTest) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.testNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedTest = await this.testRepo.save({
+        ...foundTest,
+        topic: topic ?? foundTest.topic,
+        updatedAt: date,
+      });
+
+      return {
+        success: true,
+        updatedTest,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingTest,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async createMockTest(createMockTestReq: createMockTestReq) {
+    const { mockTestName } = createMockTestReq;
+    let mockTestCreated: MockTest;
+
+    try {
+      mockTestCreated = await this.mockTestRepo.save({
+        mockTestName,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveMockTest + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      mockTestCreated,
+      success: true,
+    };
+  }
+
+  //!:GANESH "update mock". for admin module
+  async updateMockTestProfile(
+    id: string,
+    updateMockTestReq: updateMockTestReq,
+  ) {
+    const { mockTestName } = updateMockTestReq;
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+    let foundMockTest, updatedMockTest: Badge;
+
+    try {
+      foundMockTest = await this.mockTestRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingMockTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundMockTest) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.mockTestNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedMockTest = await this.mockTestRepo.save({
+        ...foundMockTest,
+        mockTestName: mockTestName ?? foundMockTest.mockTestName,
+        updatedAt: date,
+      });
+
+      return {
+        success: true,
+        updatedMockTest,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingMockTest,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async createBadge(createBadgeReq: createBadgeReq) {
+    const { badgeName } = createBadgeReq;
+    let badgeCreated: Badge;
+
+    try {
+      badgeCreated = await this.badgeRepo.save({
+        badgeName,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveBadge + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      badgeCreated,
+      success: true,
+    };
+  }
+
+  async updateBadgeProfile(id: string, updateBadgeReq: updateBadgeReq) {
+    const { badgeName } = updateBadgeReq;
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+    let foundBadge, updatedBadge: Badge;
+
+    try {
+      foundBadge = await this.badgeRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingBadge + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundBadge) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.badgeNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedBadge = await this.badgeRepo.save({
+        ...foundBadge,
+        badgeName: badgeName ?? foundBadge.badgeName,
+        updatedAt: date,
+      });
+
+      return {
+        success: true,
+        updatedBadge,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingBadge,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }    
+  }
+
+//!:GANESH for classroom module
+async getUpcomingClasses(
+  options: IPaginationOptions,
+): Promise<Pagination<Class>> {
+  let foundUpcomingClasses;
+  try {
+    foundUpcomingClasses = await this.classRepo.createQueryBuilder('Classes');
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.failedToFetchUpcomingClasses + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  return paginate<Class>(foundUpcomingClasses, options);
+}
+
+//!:GANESH for admin module
+async createReportCard(createReportCardReq: createReportCardReq) {
+  const { remark, lessonId, subjectId, studentId, testId } =
+    createReportCardReq;
+  let reportCardCreated: Test,
+    foundLessonId: Lesson,
+    foundSubjectId: Subject,
+    foundTestId: Test,
+    foundStudentId: Student;
+  try {
+    foundStudentId = await this.studentRepo.findOne({
+      where: {
+        id: studentId,
+      },
+    });
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.failedToFetchStudents + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  if (!foundStudentId) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.failedToStudent,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  try {
+    foundTestId = await this.testRepo.findOne({
+      where: {
+        id: testId,
+      },
+    });
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.checkingTest + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  if (!foundTestId) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.failedToFetchTest,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  try {
+    foundLessonId = await this.lessonRepo.findOne({
+      where: {
+        id: lessonId,
+      },
+    });
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.checkingLesson + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  if (!foundLessonId) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.failedToFetchLesson,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  try {
+    foundSubjectId = await this.subjectRepo.findOne({
+      where: {
+        id: subjectId,
+      },
+    });
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.checkingSubject + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  if (!foundSubjectId) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.failedToFetchSubjectById,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  try {
+    reportCardCreated = await this.reportCardRepo.save({
+      remark,
+      lesson: foundLessonId,
+      student: foundStudentId,
+      test: foundTestId,
+      subject: foundSubjectId,
+    });
+  } catch (e) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.saveReportCard + e,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+
+  return {
+    reportCardCreated,
+    success: true,
+  };
+}
+
+//!:GANESH "update report card". for admin module
+async updateReportCardProfile(
+  id: string,
+  updateReportCardReq: updateReportCardReq,
+) {
+  const { remark } = updateReportCardReq;
+  var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+  let foundReoprtCard, updatedReportCard: ReportCard;
+
+  try {
+    foundReoprtCard = await this.reportCardRepo.findOne({
+      where: { id },
+    });
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.checkingReportCard + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+
+  if (!foundReoprtCard) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.reportCardNotFound,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+
+  try {
+    updatedReportCard = await this.reportCardRepo.save({
+      ...foundReoprtCard,
+      remark: remark ?? foundReoprtCard.remark,
+      updatedAt: date,
+    });
+
+    return {
+      success: true,
+      updatedReportCard,
+    };
+  } catch (e) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.updatingReportCard,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+}
+
+
 }

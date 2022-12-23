@@ -17,24 +17,13 @@ import {
 var moment = require('moment');
 
 import {
-  createLessonReq,
-  createChapterReq,
   createSubjectReq,
   updateChapterReq,
-  updateLessonReq,
-  updateSubjectReq,
-  createTestReq,
-  updateTestReq,
-  createReportCardReq,
-  updateReportCardReq,
+  
   updateLeaderboardReq,
-  createBadgeReq,
-  updateBadgeReq,
-  createMockTestReq,
-  updateMockTestReq,
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
-import { contentErrors } from 'src/utils/messages';
+import { contentErrors,adminErrors } from 'src/utils/messages';
 import { Chapter } from 'src/entities/chapter.entity';
 import { Subject } from 'src/entities/subject.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
@@ -56,8 +45,7 @@ export class ContentService {
     private learningPackageRepo: Repository<LearningPackage>,
     @InjectRepository(Test) private testRepo: Repository<Test>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
-    @InjectRepository(ReportCard)
-    private reportCardRepo: Repository<ReportCard>,
+    @InjectRepository(ReportCard)private reportCardRepo: Repository<ReportCard>,
     @InjectRepository(Leaderboard)
     private leaderboardRepo: Repository<Leaderboard>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
@@ -89,7 +77,7 @@ export class ContentService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchLessons + exp,
+          error: adminErrors.failedToFetchLessons + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -97,105 +85,7 @@ export class ContentService {
     return paginate<Lesson>(foundLessons, options);
   }
 
-  //!:GANESH for admin module
-  async createLesson(createLessonReq: createLessonReq) {
-    const { type, chapterId } = createLessonReq;
-    let lessonCreated: Lesson, foundChapterId: Chapter;
-    try {
-      foundChapterId = await this.chapterRepo.findOne({
-        where: {
-          id: chapterId,
-        },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingChapter + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundChapterId) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchSubjectById,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    try {
-      lessonCreated = await this.lessonRepo.save({
-        type,
-        chapter: foundChapterId,
-      });
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.saveLesson + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    return {
-      lessonCreated,
-      success: true,
-    };
-  }
-
-  //!:GANESH for admin module
-  async createChapter(createChapterReq: createChapterReq) {
-    const { type, subjectId } = createChapterReq;
-    let chapterCreated: Chapter, foundSubjectId: Subject;
-    try {
-      foundSubjectId = await this.subjectRepo.findOne({
-        where: {
-          id: subjectId,
-        },
-      });
-      console.log(foundSubjectId);
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingSubject + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundSubjectId) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchSubjectById,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    try {
-      chapterCreated = await this.chapterRepo.save({
-        type,
-        subject: foundSubjectId,
-      });
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.saveChapter + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    return {
-      chapterCreated,
-      success: true,
-    };
-  }
-
+  
   async updateChapterProfile(id: string, updateChapterReq: updateChapterReq) {
     const { type } = updateChapterReq;
     var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
@@ -247,56 +137,7 @@ export class ContentService {
     }
   }
 
-  //!:GANESH "update lesson". for admin module
-  async updateLessonProfile(id: string, updateLessonReq: updateLessonReq) {
-    const { type } = updateLessonReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-    let foundLesson: Lesson, updatedLesson: Lesson;
-
-    try {
-      foundLesson = await this.lessonRepo.findOne({
-        where: { id },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingLesson + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    if (!foundLesson) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.lessonNotFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    try {
-      updatedLesson = await this.lessonRepo.save({
-        ...foundLesson,
-        type: type ?? foundLesson.type,
-        updatedAt: date,
-      });
-
-      return {
-        success: true,
-        updatedLesson,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.updatingLesson,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
+ 
 
   async createSubject(createSubjectReq: createSubjectReq) {
     const { type, learningPackageId } = createSubjectReq;
@@ -346,58 +187,7 @@ export class ContentService {
     };
   }
 
-  //!:GANESH "updateSubject". for admin module
-  async updateSubjectProfile(id: string, updateSubjectReq: updateSubjectReq) {
-    const { type } = updateSubjectReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-    let foundSubject, updatedSubject: Subject;
-
-    try {
-      foundSubject = await this.subjectRepo.findOne({
-        where: { id },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingSubject + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    if (!foundSubject) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.subjectNotFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    try {
-      updatedSubject = await this.subjectRepo.save({
-        ...foundSubject,
-        type: type ?? foundSubject.type,
-        updatedAt: date,
-      });
-
-      return {
-        success: true,
-        updatedSubject,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.updatingSubject,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
-
+  
   async getSubjects(options: IPaginationOptions): Promise<Pagination<Subject>> {
     let foundSubjects;
     try {
@@ -414,106 +204,7 @@ export class ContentService {
     return paginate<Subject>(foundSubjects, options);
   }
 
-  //!:GANESH for admin module
-  async createTest(createTestReq: createTestReq) {
-    const { topic, lessonId } = createTestReq;
-    let testCreated: Test, foundLessonId: Lesson;
-    try {
-      foundLessonId = await this.lessonRepo.findOne({
-        where: {
-          id: lessonId,
-        },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingLesson + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundLessonId) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchLesson,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    try {
-      testCreated = await this.testRepo.save({
-        topic,
-        lesson: foundLessonId,
-      });
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.saveTest + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    return {
-      testCreated,
-      success: true,
-    };
-  }
-
-  //!:GANESH "update test". for admin module
-  async updateTestProfile(id: string, updateTestReq: updateTestReq) {
-    const { topic } = updateTestReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-    let foundTest, updatedTest: Test;
-
-    try {
-      foundTest = await this.testRepo.findOne({
-        where: { id },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingTest + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    if (!foundTest) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.testNotFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    try {
-      updatedTest = await this.testRepo.save({
-        ...foundTest,
-        topic: topic ?? foundTest.topic,
-        updatedAt: date,
-      });
-
-      return {
-        success: true,
-        updatedTest,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.updatingTest,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
+  
 
   async getTests(options: IPaginationOptions): Promise<Pagination<Test>> {
     let foundTests;
@@ -531,190 +222,7 @@ export class ContentService {
     return paginate<Test>(foundTests, options);
   }
 
-  //!:GANESH for admin module
-  async createReportCard(createReportCardReq: createReportCardReq) {
-    const { remark, lessonId, subjectId, studentId, testId } =
-      createReportCardReq;
-    let reportCardCreated: Test,
-      foundLessonId: Lesson,
-      foundSubjectId: Subject,
-      foundTestId: Test,
-      foundStudentId: Student;
-    try {
-      foundStudentId = await this.studentRepo.findOne({
-        where: {
-          id: studentId,
-        },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchStudents + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundStudentId) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToStudent,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    try {
-      foundTestId = await this.testRepo.findOne({
-        where: {
-          id: testId,
-        },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingTest + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundTestId) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchTest,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    try {
-      foundLessonId = await this.lessonRepo.findOne({
-        where: {
-          id: lessonId,
-        },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingLesson + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundLessonId) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchLesson,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    try {
-      foundSubjectId = await this.subjectRepo.findOne({
-        where: {
-          id: subjectId,
-        },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingSubject + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundSubjectId) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchSubjectById,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    try {
-      reportCardCreated = await this.reportCardRepo.save({
-        remark,
-        lesson: foundLessonId,
-        student: foundStudentId,
-        test: foundTestId,
-        subject: foundSubjectId,
-      });
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.saveReportCard + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    return {
-      reportCardCreated,
-      success: true,
-    };
-  }
-
-  //!:GANESH "update report card". for admin module
-  async updateReportCardProfile(
-    id: string,
-    updateReportCardReq: updateReportCardReq,
-  ) {
-    const { remark } = updateReportCardReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-    let foundReoprtCard, updatedReportCard: ReportCard;
-
-    try {
-      foundReoprtCard = await this.reportCardRepo.findOne({
-        where: { id },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingReportCard + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    if (!foundReoprtCard) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.reportCardNotFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    try {
-      updatedReportCard = await this.reportCardRepo.save({
-        ...foundReoprtCard,
-        remark: remark ?? foundReoprtCard.remark,
-        updatedAt: date,
-      });
-
-      return {
-        success: true,
-        updatedReportCard,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.updatingReportCard,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
-
+  
   async getReportCard(
     options: IPaginationOptions,
   ): Promise<Pagination<ReportCard>> {
@@ -809,82 +317,8 @@ export class ContentService {
     return paginate<Leaderboard>(foundLeaderboards, options);
   }
 
-  //!:GANESH for admin module
-  async createBadge(createBadgeReq: createBadgeReq) {
-    const { badgeName } = createBadgeReq;
-    let badgeCreated: Badge;
-
-    try {
-      badgeCreated = await this.badgeRepo.save({
-        badgeName,
-      });
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.saveBadge + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    return {
-      badgeCreated,
-      success: true,
-    };
-  }
-
-  async updateBadgeProfile(id: string, updateBadgeReq: updateBadgeReq) {
-    const { badgeName } = updateBadgeReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-    let foundBadge, updatedBadge: Badge;
-
-    try {
-      foundBadge = await this.badgeRepo.findOne({
-        where: { id },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingBadge + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    if (!foundBadge) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.badgeNotFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    try {
-      updatedBadge = await this.badgeRepo.save({
-        ...foundBadge,
-        badgeName: badgeName ?? foundBadge.badgeName,
-        updatedAt: date,
-      });
-
-      return {
-        success: true,
-        updatedBadge,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.updatingBadge,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
-
+  
+ 
   async getBadge(options: IPaginationOptions): Promise<Pagination<Badge>> {
     let foundBadges;
     try {
@@ -901,86 +335,7 @@ export class ContentService {
     return paginate<Badge>(foundBadges, options);
   }
 
-  //!:GANESH for admin module
-  async createMockTest(createMockTestReq: createMockTestReq) {
-    const { mockTestName } = createMockTestReq;
-    let mockTestCreated: MockTest;
-
-    try {
-      mockTestCreated = await this.mockTestRepo.save({
-        mockTestName,
-      });
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.saveMockTest + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    return {
-      mockTestCreated,
-      success: true,
-    };
-  }
-
-  //!:GANESH "update mock". for admin module
-  async updateMockTestProfile(
-    id: string,
-    updateMockTestReq: updateMockTestReq,
-  ) {
-    const { mockTestName } = updateMockTestReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-    let foundMockTest, updatedMockTest: Badge;
-
-    try {
-      foundMockTest = await this.mockTestRepo.findOne({
-        where: { id },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingMockTest + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    if (!foundMockTest) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.mockTestNotFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    try {
-      updatedMockTest = await this.mockTestRepo.save({
-        ...foundMockTest,
-        mockTestName: mockTestName ?? foundMockTest.mockTestName,
-        updatedAt: date,
-      });
-
-      return {
-        success: true,
-        updatedMockTest,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.updatingBadge,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
-
+  
   async getMockTest(
     options: IPaginationOptions,
   ): Promise<Pagination<MockTest>> {
@@ -999,22 +354,5 @@ export class ContentService {
     return paginate<MockTest>(foundMockTests, options);
   }
 
-  //!:GANESH for classroom module
-  async getUpcomingClasses(
-    options: IPaginationOptions,
-  ): Promise<Pagination<Class>> {
-    let foundUpcomingClasses;
-    try {
-      foundUpcomingClasses = await this.classRepo.createQueryBuilder('Classes');
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchUpcomingClasses + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    return paginate<Class>(foundUpcomingClasses, options);
-  }
+  
 }

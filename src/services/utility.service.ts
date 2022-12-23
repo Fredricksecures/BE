@@ -80,25 +80,19 @@ export class UtilityService {
   //   }
   // }
   async getLearningPackages(
-    packageId: string,options: IPaginationOptions
+    packageId: string,
+    options: IPaginationOptions,
   ): Promise<Pagination<LearningPackage>> {
     let foundPackages;
-
-    console.log(packageId);
-
     try {
+      foundPackages =
+        packageId == 'undefined'
+          ? await this.lPLRepo.createQueryBuilder('LearningPackage')
+          : await this.lPLRepo
+              .createQueryBuilder('LearningPackage')
+              .where('LearningPackage.id = :packageId', { packageId });
 
-      foundPackages = await this.lPLRepo.createQueryBuilder('LearningPackage');
-      if (packageId != null) {
-        foundPackages.where('Id = :packageId', { packageId });
-      }
-
-      // foundPackages =
-      //   packageId == undefined
-      //     ?await this.lPLRepo.createQueryBuilder('LearningPackage')
-      //     : await this.lPLRepo.createQueryBuilder('LearningPackage').where('LearningPackage.id = :packageId', { packageId });
-
-          return paginate<LearningPackage>(foundPackages, options);
+      return paginate<LearningPackage>(foundPackages, options);
     } catch (exp) {
       Logger.error(utilityErrors.getPackageList + exp);
 

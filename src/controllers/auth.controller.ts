@@ -9,6 +9,9 @@ import {
   Param,
   HttpException,
   Patch,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -33,6 +36,11 @@ import {
 import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/utils/enums';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Controller('auth')
 export class AuthController {
@@ -240,14 +248,13 @@ export class AuthController {
       body: { user },
     } = req;
 
-    const { success, students } = await this.authService.getStudents({
+    const students = await this.authService.getStudents({
       studentId: `${id}`,
       user,
     });
 
-    if (success) {
+    if (students) {
       resp.json({
-        success,
         message: authMessages.logout,
         status: HttpStatus.OK,
         [`student${id ? 's' : ''}`]: students,
