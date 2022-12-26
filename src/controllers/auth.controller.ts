@@ -11,7 +11,7 @@ import {
   Patch,
   DefaultValuePipe,
   ParseIntPipe,
-  Query
+  Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -237,43 +237,7 @@ export class AuthController {
     }
   }
 
-  // @Get('get-students')
-  // @UseMiddleware('sessionGuard')
-  // async getStudents(
-  //   @Req() req: Request,
-  //   @Res({ passthrough: true }) resp: Response,
-  //   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-  //   @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
-  // ) {
-  //   const {
-  //     query: { id },
-  //     body: { user },
-  //   } = req;
-  //   const options: IPaginationOptions = { limit, page };
-  //   const  students = await this.authService.getStudents({
-  //     studentId: `${id}`,
-  //     user,
-  //   },options);
-
-  //   if (students) {
-  //     resp.json({
-  //       message: authMessages.logout,
-  //       status: HttpStatus.OK,
-  //       [`student${id ? 's' : ''}`]: students.items,
-  //       meta:students.meta
-  //     });
-  //   } else {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.NOT_FOUND,
-  //         error: authErrors.getStudentsFailed,
-  //       },
-  //       HttpStatus.NOT_FOUND,
-  //     );
-  //   }
-  // }
-
-  @Get('get-students')
+  @Get('students')
   @UseMiddleware('sessionGuard')
   async getStudents(
     @Req() req: Request,
@@ -283,8 +247,8 @@ export class AuthController {
       query: { id },
       body: { user },
     } = req;
-    
-    const  students = await this.authService.getStudents({
+
+    const students = await this.authService.getStudents({
       studentId: `${id}`,
       user,
     });
@@ -293,7 +257,7 @@ export class AuthController {
       resp.json({
         message: authMessages.logout,
         status: HttpStatus.OK,
-        [`student${id ? 's' : ''}`]: students
+        [`student${id ? 's' : ''}`]: students,
       });
     } else {
       throw new HttpException(
@@ -305,7 +269,6 @@ export class AuthController {
       );
     }
   }
-
 
   @Post('logout/:all?')
   async logout(

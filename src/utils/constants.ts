@@ -177,7 +177,6 @@ export const learningPackages = {
 };
 
 //* SEEDS____________________________________________
-
 export const USER_SEED: Array<{}> = [
   {
     firstName: 'Russell',
@@ -188,6 +187,18 @@ export const USER_SEED: Array<{}> = [
     type: UserTypes.PARENT,
     phoneNumber: '08076607130',
     deviceId: '2',
+    dateOfBirth: '00/01/22',
+  },
+  {
+    firstName: 'Akram',
+    lastName: 'Mukasa',
+    gender: Genders.MALE,
+    email: 'akram.teesas@gmail.com',
+    password: 'Password1$',
+    type: UserTypes.PARENT,
+    phoneNumber: '08076607130',
+    deviceId: '2',
+    dateOfBirth: '00/01/22',
   },
 ];
 
