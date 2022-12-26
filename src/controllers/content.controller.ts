@@ -18,14 +18,11 @@ import {
   GetAllUsersSessionsRes,
 } from 'src/dto/admin.dto';
 import {
-  updateChapterReq,
-  createSubjectReq,
   updateLeaderboardReq,
+  addReviewReq
 } from 'src/dto/content.dto';
 import { Request, Response } from 'express';
 import {
-  adminErrors,
-  adminMessages,
   contentMessages,
   contentErrors,
 } from 'src/utils/messages';
@@ -95,70 +92,6 @@ export class ContentController {
     });
   }
 
-  
-  @Post('create-subject')
-  async createSubject(
-    @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response,
-    @Body() body: createSubjectReq,
-  ) {
-    const { success, subjectCreated } = await this.contentService.createSubject(
-      body,
-    );
-
-    if (success) {
-      resp.json({
-        status: HttpStatus.OK,
-        message: contentMessages.subjectCreateSuccess,
-        subjectCreated,
-      });
-    } else {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: contentMessages.failToCreateSubject,
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-  }
-
-  
-
-  @Patch('update-chapter/:id')
-  async updateChapter(
-    @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response,
-    @Body() body: updateChapterReq,
-    @Param('id') id,
-  ) {
-    let { updatedChapter, success } =
-      await this.contentService.updateChapterProfile(id, {
-        ...req.body,
-      });
-
-    if (success) {
-      resp.json({
-        success,
-        message: contentMessages.updatedChapterSuccess,
-        status: HttpStatus.OK,
-        updatedChapter,
-      });
-    } else {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: contentErrors.updatingChapterFail,
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-  }
-
-  
-
- 
-
   @Get('subjects')
   async getSubjects(
     @Req() req: Request,
@@ -193,9 +126,7 @@ export class ContentController {
       meta: tests.meta,
     });
   }
-
-  
-  
+ 
   @Get('report-cards')
   async getReportCards(
     @Req() req: Request,
@@ -249,9 +180,10 @@ export class ContentController {
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('id') id,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const tests = await this.contentService.getLeaderboard(options);
+    const tests = await this.contentService.getLeaderboard(id,options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.leaderboardFetchSuccess,
@@ -260,18 +192,16 @@ export class ContentController {
     });
   }
 
-  
- 
-
   @Get('badges')
   async getBadges(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('id') id,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const badges = await this.contentService.getBadge(options);
+    const badges = await this.contentService.getBadge(id,options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.badgeFetchSuccess,
@@ -279,9 +209,6 @@ export class ContentController {
       meta: badges.meta,
     });
   }
-
-  
-  
 
   @Get('mockTests')
   async getMockTests(
@@ -300,4 +227,47 @@ export class ContentController {
     });
   }
 
+  @Post('add-review')
+  async addReview(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: addReviewReq,
+  ) {
+    const { success, reviewCreated } = await this.contentService.addReview(
+      body,
+    );
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: contentMessages.addReviewSuccess,
+        reviewCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.failToaddReview,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Get('reviews')
+  async getReviews(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('id') id,
+  ) {
+    const options: IPaginationOptions = { limit, page };
+    const reviews = await this.contentService.getReviews(id,options);
+    resp.json({
+      status: HttpStatus.OK,
+      message: contentMessages.reviewsFetchSuccess,
+      reviews: reviews.items,
+      meta: reviews.meta,
+    });
+  }
 }

@@ -31,7 +31,9 @@ import {
   createBadgeReq,
   updateBadgeReq,
   updateReportCardReq,
-  createReportCardReq
+  createReportCardReq,
+  createSubjectReq,
+  updateChapterReq,
 } from 'src/dto/admin.dto';
 import { adminMessages, adminErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
@@ -53,6 +55,7 @@ import { UtilityService } from './utility.service';
 import { CountryList } from 'src/entities/countryList.entity';
 import { Class } from 'src/entities/class.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
+import { LearningPackage } from 'src/entities/learningPackage.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -76,6 +79,7 @@ export class AdminService {
     @InjectRepository(ReportCard)private reportCardRepo: Repository<ReportCard>,
     @InjectRepository(CustomerCare)
     private customerCareRepo: Repository<CustomerCare>,
+    @InjectRepository(LearningPackage)private learningPackageRepo: Repository<LearningPackage>,
    // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
@@ -1270,24 +1274,6 @@ export class AdminService {
     }    
   }
 
-//!:GANESH for classroom module
-async getUpcomingClasses(
-  options: IPaginationOptions,
-): Promise<Pagination<Class>> {
-  let foundUpcomingClasses;
-  try {
-    foundUpcomingClasses = await this.classRepo.createQueryBuilder('Classes');
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.failedToFetchUpcomingClasses + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  return paginate<Class>(foundUpcomingClasses, options);
-}
 
 //!:GANESH for admin module
 async createReportCard(createReportCardReq: createReportCardReq) {
@@ -1467,6 +1453,104 @@ async updateReportCardProfile(
       {
         status: HttpStatus.NOT_IMPLEMENTED,
         error: adminErrors.updatingReportCard,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+}
+async createSubject(createSubjectReq: createSubjectReq) {
+  const { type, learningPackageId } = createSubjectReq;
+  let subjectCreated: Subject, foundLearningPackageId: LearningPackage;
+  try {
+    foundLearningPackageId = await this.learningPackageRepo.findOne({
+      where: {
+        id: learningPackageId,
+      },
+    });
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.checkingLearningPackage + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  if (!foundLearningPackageId) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.failedToFetchLearningPackage,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+  try {
+    subjectCreated = await this.subjectRepo.save({
+      type,
+      learningPackage: foundLearningPackageId,
+    });
+  } catch (e) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.saveSubject + e,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+
+  return {
+    subjectCreated,
+    success: true,
+  };
+}
+
+async updateChapterProfile(id: string, updateChapterReq: updateChapterReq) {
+  const { type } = updateChapterReq;
+  var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+  let foundChapter, updatedChapter: Chapter;
+
+  try {
+    foundChapter = await this.chapterRepo.findOne({
+      where: { id },
+    });
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.checkingChapter + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+
+  if (!foundChapter) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.chapterNotFound,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+
+  try {
+    updatedChapter = await this.chapterRepo.save({
+      ...foundChapter,
+      type: type ?? foundChapter.type,
+      updatedAt: date,
+    });
+
+    return {
+      success: true,
+      updatedChapter,
+    };
+  } catch (e) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.updatingChapter,
       },
       HttpStatus.NOT_IMPLEMENTED,
     );

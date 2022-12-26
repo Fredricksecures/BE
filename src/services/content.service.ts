@@ -17,10 +17,8 @@ import {
 var moment = require('moment');
 
 import {
-  createSubjectReq,
-  updateChapterReq,
-  
   updateLeaderboardReq,
+  addReviewReq
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
 import { contentErrors,adminErrors } from 'src/utils/messages';
@@ -33,6 +31,7 @@ import { Leaderboard } from 'src/entities/leaderboard.entity';
 import { Badge } from 'src/entities/badges.entity';
 import { MockTest } from 'src/entities/mockTest.entity';
 import { Class } from 'src/entities/class.entity';
+import { Review } from 'src/entities/review.entity';
 
 @Injectable()
 export class ContentService {
@@ -41,16 +40,13 @@ export class ContentService {
     @InjectRepository(Lesson) private lessonRepo: Repository<Lesson>,
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
-    @InjectRepository(LearningPackage)
-    private learningPackageRepo: Repository<LearningPackage>,
     @InjectRepository(Test) private testRepo: Repository<Test>,
-    @InjectRepository(Student) private studentRepo: Repository<Student>,
     @InjectRepository(ReportCard)private reportCardRepo: Repository<ReportCard>,
-    @InjectRepository(Leaderboard)
-    private leaderboardRepo: Repository<Leaderboard>,
+    @InjectRepository(Leaderboard)private leaderboardRepo: Repository<Leaderboard>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
     @InjectRepository(MockTest) private mockTestRepo: Repository<MockTest>,
-    @InjectRepository(Class) private classRepo: Repository<Class>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>, // @InjectRepository(User) private userRepo: Repository<User>, // @InjectRepository(Session) private sessionRepo: Repository<Session>, // @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Review) private reviewRepo: Repository<Review>,
+    // @InjectRepository(Parent) private parentRepo: Repository<Parent>, // @InjectRepository(User) private userRepo: Repository<User>, // @InjectRepository(Session) private sessionRepo: Repository<Session>, // @InjectRepository(Student) private studentRepo: Repository<Student>,
   ) {}
 
   async getChapters(options: IPaginationOptions): Promise<Pagination<Chapter>> {
@@ -85,109 +81,6 @@ export class ContentService {
     return paginate<Lesson>(foundLessons, options);
   }
 
-  
-  async updateChapterProfile(id: string, updateChapterReq: updateChapterReq) {
-    const { type } = updateChapterReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-    let foundChapter, updatedChapter: Chapter;
-
-    try {
-      foundChapter = await this.chapterRepo.findOne({
-        where: { id },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingChapter + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    if (!foundChapter) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.chapterNotFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    try {
-      updatedChapter = await this.chapterRepo.save({
-        ...foundChapter,
-        type: type ?? foundChapter.type,
-        updatedAt: date,
-      });
-
-      return {
-        success: true,
-        updatedChapter,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.updatingChapter,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
-
- 
-
-  async createSubject(createSubjectReq: createSubjectReq) {
-    const { type, learningPackageId } = createSubjectReq;
-    let subjectCreated: Subject, foundLearningPackageId: LearningPackage;
-    try {
-      foundLearningPackageId = await this.learningPackageRepo.findOne({
-        where: {
-          id: learningPackageId,
-        },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.checkingLearningPackage + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundLearningPackageId) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchLearningPackage,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    try {
-      subjectCreated = await this.subjectRepo.save({
-        type,
-        learningPackage: foundLearningPackageId,
-      });
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.saveSubject + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    return {
-      subjectCreated,
-      success: true,
-    };
-  }
-
-  
   async getSubjects(options: IPaginationOptions): Promise<Pagination<Subject>> {
     let foundSubjects;
     try {
@@ -204,8 +97,6 @@ export class ContentService {
     return paginate<Subject>(foundSubjects, options);
   }
 
-  
-
   async getTests(options: IPaginationOptions): Promise<Pagination<Test>> {
     let foundTests;
     try {
@@ -221,7 +112,6 @@ export class ContentService {
     }
     return paginate<Test>(foundTests, options);
   }
-
   
   async getReportCard(
     options: IPaginationOptions,
@@ -298,13 +188,16 @@ export class ContentService {
   }
 
   async getLeaderboard(
+    id: string,
     options: IPaginationOptions,
   ): Promise<Pagination<Leaderboard>> {
     let foundLeaderboards;
     try {
-      foundLeaderboards = await this.leaderboardRepo.createQueryBuilder(
-        'Leaderboard',
-      );
+      foundLeaderboards = 
+      id == undefined
+      ? await this.leaderboardRepo.createQueryBuilder('Leaderboard')
+      : await this.badgeRepo.createQueryBuilder('Leaderboard')
+        .where('Leaderboard.id = :id', { id });
     } catch (exp) {
       throw new HttpException(
         {
@@ -317,12 +210,15 @@ export class ContentService {
     return paginate<Leaderboard>(foundLeaderboards, options);
   }
 
-  
- 
-  async getBadge(options: IPaginationOptions): Promise<Pagination<Badge>> {
+  async getBadge(id:string, options: IPaginationOptions): Promise<Pagination<Badge>> {
     let foundBadges;
+    console.log(id)
     try {
-      foundBadges = await this.badgeRepo.createQueryBuilder('Badge');
+      foundBadges = 
+      id == undefined
+          ? await this.badgeRepo.createQueryBuilder('Badge')
+          : await this.badgeRepo.createQueryBuilder('Badge')
+            .where('Badge.id = :id', { id });
     } catch (exp) {
       throw new HttpException(
         {
@@ -334,8 +230,7 @@ export class ContentService {
     }
     return paginate<Badge>(foundBadges, options);
   }
-
-  
+ 
   async getMockTest(
     options: IPaginationOptions,
   ): Promise<Pagination<MockTest>> {
@@ -353,6 +248,74 @@ export class ContentService {
     }
     return paginate<MockTest>(foundMockTests, options);
   }
-
   
+  async addReview(addReviewReq: addReviewReq) {
+    const { lessonReview, lessonId } = addReviewReq;
+    let reviewCreated: Review, foundLessonId: Lesson;
+    try {
+      foundLessonId = await this.lessonRepo.findOne({
+        where: {
+          id: lessonId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.checkingLesson + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundLessonId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchLesson,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      reviewCreated = await this.reviewRepo.save({
+        lessonReview,
+        lesson: foundLessonId,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.saveReview + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  
+    return {
+      reviewCreated,
+      success: true,
+    };
+  }
+   
+  async getReviews(id:string, options: IPaginationOptions): Promise<Pagination<Badge>> {
+    let foundReviews;
+    console.log(id)
+    try {
+      foundReviews = 
+      id == undefined
+          ? await this.reviewRepo.createQueryBuilder('Review')
+          : await this.reviewRepo.createQueryBuilder('Review')
+            .where('Review.id = :id', { id });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchReview + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return paginate<Badge>(foundReviews, options);
+  }
+ 
 }
