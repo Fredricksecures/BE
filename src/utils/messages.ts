@@ -161,7 +161,7 @@ export const adminMessages = {
   reportCardCreateSuccess: 'Report card created successfully',
   updatedReportCardSuccess: 'Report card updated successfully',
   updatedChapterSuccess: 'Chapter updated successfully',
-  
+  updatedSettingSuccess: 'Setting updated successfully',
 };
 
 export const adminErrors = {
@@ -245,6 +245,10 @@ export const adminErrors = {
   updatingChapterFail: 'Failed to update chapter sessions -------',
   chapterNotFound: 'could not find chapter with id provided ---------',
   updatingChapter: 'Error querying for updating chapter --------- ',
+  updatingSettingFail: 'Failed to update settings -------',
+  checkingSetting: 'error while fetching setting. --------- ',
+  settingNotFound: 'could not find setting with id provided ---------',
+  updatingSetting: 'Error querying for updating setting --------- ',
 };
 export const classroomMessages = {
   upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',

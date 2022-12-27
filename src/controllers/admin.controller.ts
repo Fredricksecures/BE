@@ -38,6 +38,7 @@ import {
   updateReportCardReq,
   createSubjectReq,
   updateChapterReq,
+  updateSettingReq
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
@@ -731,6 +732,35 @@ export class AdminController {
         {
           status: HttpStatus.NOT_FOUND,
           error: adminErrors.updatingChapterFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Patch('update-setting/:id')
+  async updateSetting(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateSettingReq,
+    @Param('id') id,
+  ) {
+    let { updatedSetting, success } =
+      await this.adminService.updateSetting(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      resp.json({
+        success,
+        message: adminMessages.updatedSettingSuccess,
+        status: HttpStatus.OK,
+        updatedSetting,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.updatingSettingFail,
         },
         HttpStatus.NOT_FOUND,
       );

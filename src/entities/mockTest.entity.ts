@@ -7,7 +7,7 @@ import {
     ManyToOne,
     OneToMany,
   } from 'typeorm';
-  
+  import { Subjects } from 'src/utils/enums';
   @Entity('mock-tests')
   export class MockTest {
     constructor(data?: MockTest) {
@@ -17,6 +17,7 @@ import {
         });
       }
     }
+
   
     @PrimaryGeneratedColumn()
     id?: string;
@@ -24,6 +25,9 @@ import {
     @Column({ type: 'varchar' })
     mockTestName?: string;
   
+    @Column({ type: 'enum', enum: Subjects, default: Subjects.ENGLISH })
+    subject?: string;
+
     @CreateDateColumn({ type: 'timestamp' })
     createdAt?: Date;
   

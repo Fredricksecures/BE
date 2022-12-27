@@ -290,7 +290,11 @@ export class updateChapterReq {
   type: string;
 }
 
-
+export class updateSettingReq {
+  @IsNotEmpty()
+  @IsString()
+  type: string;
+}
 
 // export class createdAdminRes {
 //   createAdmin?: User | undefined;

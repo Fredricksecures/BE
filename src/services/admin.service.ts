@@ -34,6 +34,7 @@ import {
   createReportCardReq,
   createSubjectReq,
   updateChapterReq,
+  updateSettingReq
 } from 'src/dto/admin.dto';
 import { adminMessages, adminErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
@@ -56,6 +57,7 @@ import { CountryList } from 'src/entities/countryList.entity';
 import { Class } from 'src/entities/class.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
+import { Settings } from 'src/entities/settings.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -80,6 +82,7 @@ export class AdminService {
     @InjectRepository(CustomerCare)
     private customerCareRepo: Repository<CustomerCare>,
     @InjectRepository(LearningPackage)private learningPackageRepo: Repository<LearningPackage>,
+    @InjectRepository(Settings) private settingRepo: Repository<Settings>,
    // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
@@ -1557,5 +1560,54 @@ async updateChapterProfile(id: string, updateChapterReq: updateChapterReq) {
   }
 }
 
+async updateSetting(id: string, updateSettingReq: updateSettingReq) {
+  const { type } = updateSettingReq;
+  var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+  let foundSetting, updatedSetting: Settings;
 
+  try {
+    foundSetting = await this.settingRepo.findOne({
+      where: { id },
+    });
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.checkingSetting + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+
+  if (!foundSetting) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.settingNotFound,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+
+  try {
+    updatedSetting = await this.settingRepo.save({
+      ...foundSetting,
+      type: type ?? foundSetting.type,
+      updatedAt: date,
+    });
+
+    return {
+      success: true,
+      updatedSetting,
+    };
+  } catch (e) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.updatingSetting,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+}
 }
