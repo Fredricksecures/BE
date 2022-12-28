@@ -73,3 +73,9 @@ export enum ClassStates {
   ENDED = 'ENDED',
   ONGOING = 'ONGOING',
 }
+
+export enum Subjects {
+  ENGLISH = 'ENGLISH',
+  SCIENCE = 'SCIENCE',
+  MATHEMATICS = 'MATHEMATICS',
+}

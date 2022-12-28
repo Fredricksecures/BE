@@ -35,7 +35,10 @@ import {
   createBadgeReq,
   updateBadgeReq,
   createReportCardReq,
-  updateReportCardReq
+  updateReportCardReq,
+  createSubjectReq,
+  updateChapterReq,
+  updateSettingReq
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
@@ -623,24 +626,7 @@ export class AdminController {
       );
     }
   }
-  @Get('upcoming-classes')
-  async getUpcomingClasses(
-    @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
-  ) {
-    const options: IPaginationOptions = { limit, page };
-    const upcomingClasses = await this.adminService.getUpcomingClasses(
-      options,
-    );
-    resp.json({
-      status: HttpStatus.OK,
-      message: adminMessages.upcomingClassesFetchSuccess,
-      upcomingClasses: upcomingClasses.items,
-      meta: upcomingClasses.meta,
-    });
-  }
+  
   @Post('create-report-card')
   async createReportCard(
     @Req() req: Request,
@@ -690,6 +676,91 @@ export class AdminController {
         {
           status: HttpStatus.NOT_FOUND,
           error: adminErrors.updatingReportCardFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Post('create-subject')
+  async createSubject(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createSubjectReq,
+  ) {
+    const { success, subjectCreated } = await this.adminService.createSubject(
+      body,
+    );
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminErrors.subjectCreateSuccess,
+        subjectCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.failToCreateSubject,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Patch('update-chapter/:id')
+  async updateChapter(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateChapterReq,
+    @Param('id') id,
+  ) {
+    let { updatedChapter, success } =
+      await this.adminService.updateChapterProfile(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      resp.json({
+        success,
+        message: adminMessages.updatedChapterSuccess,
+        status: HttpStatus.OK,
+        updatedChapter,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.updatingChapterFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Patch('update-setting/:id')
+  async updateSetting(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateSettingReq,
+    @Param('id') id,
+  ) {
+    let { updatedSetting, success } =
+      await this.adminService.updateSetting(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      resp.json({
+        success,
+        message: adminMessages.updatedSettingSuccess,
+        status: HttpStatus.OK,
+        updatedSetting,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.updatingSettingFail,
         },
         HttpStatus.NOT_FOUND,
       );

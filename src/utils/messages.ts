@@ -97,39 +97,22 @@ export const authErrors = {
 export const contentMessages = {
   lessonsFetchSuccess: 'Lessons fetch successfully',
   chaptersFetchSuccess: 'Chapters fetch successfully',
-  updatedChapterSuccess: 'Chapter updated successfully',
-  subjectCreateSuccess: 'Subject created successfully',
-  failToCreateSubject: 'Error while creating subject',
   subjectFetchSuccess: 'Subjects fetch successfully',
   testFetchSuccess: 'Test fetch successfully',
- 
- 
-  
   reportCardFetchSuccess: 'Report card fetch successfully',
   leaderboardFetchSuccess: 'Leaderboard fetch successfully',
   updatedLeaderboardSuccess: 'Leaderboard updated successfully',
   badgeFetchSuccess: 'Badge fetch successfully',
   mockTestFetchSuccess: 'Mock test fetch successfully',
+  addReviewSuccess:'Review added successfully',
+  reviewsFetchSuccess: 'Reviews fetch successfully',
 };
 export const contentErrors = {
   failedToFetchChapter: 'Failed to fetch chapter with this id --------- ',
-  updatingChapter: 'Error querying for updating chapter --------- ',
-  checkingChapter: 'error while fetching chapter. --------- ',
-  chapterNotFound: 'could not find chapter with id provided ---------',
-  updatingChapterFail: 'Failed to update chapter sessions -------',
-  failedToFetchLearningPackage:
-    'Failed to fetch learning package with this id ---------',
-  checkingLearningPackage: 'error while fetching learning package --------- ',
-  saveSubject: 'could not save new subject --------- ',
   failedToFetchsubject: 'Failed to fetch subject---------',
   failedToFetchLesson: 'Failed to fetch lesson---------',
   failedToFetchTest: 'Failed to fetch test---------',
   failedToStudent: 'Failed to fetch student---------',
- 
- 
- 
-  
- 
   failedToFetchReportCard: 'Failed to fetch report card---------',
   updatingLeaderboardFail: 'Failed to update leaderboard sessions -------',
   checkingLeaderboard: 'error while fetching leaderboard. ---------',
@@ -139,6 +122,10 @@ export const contentErrors = {
   failedToFetchBadge: 'Failed to fetch badge---------',
   failedToFetchMockTest: 'Failed to fetch mock test---------',
   failedToFetchStudents: 'error while fetching students. --------- ',
+  failToaddReview: 'Failed to add review -------',
+  checkingLesson: 'error while fetching lesson --------- ',
+  saveReview: 'could not save new review --------- ',
+  failedToFetchReview: 'Failed to fetch review---------',
 };
 
 export const profileMessages = {
@@ -171,9 +158,10 @@ export const adminMessages = {
   updatedMockTestSuccess: 'Mock test updated successfully',
   badgeCreateSuccess: 'Badge created successfully',
   updatedBadgeSuccess: 'Badge updated successfully',
-  upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',
   reportCardCreateSuccess: 'Report card created successfully',
   updatedReportCardSuccess: 'Report card updated successfully',
+  updatedChapterSuccess: 'Chapter updated successfully',
+  updatedSettingSuccess: 'Setting updated successfully',
 };
 
 export const adminErrors = {
@@ -239,7 +227,6 @@ export const adminErrors = {
   checkingBadge: 'error while fetching badge. ---------',
   badgeNotFound: 'could not find badge with id provided ---------',
   updatingBadge: 'Error querying for updating badge ---------',
-  failedToFetchUpcomingClasses: 'Failed to fetch upcoming classes---------',
   failToCreateReportCard: 'Error while creating report card',
   updatingReportCardFail: 'Failed to update report card sessions -------',
   failedToFetchReportCard: 'error while fetching report card. --------- ',
@@ -250,4 +237,22 @@ export const adminErrors = {
   checkingReportCard: 'error while fetching report card. ---------',
   reportCardNotFound: 'could not find report card with id provided ---------',
   updatingReportCard: 'Error querying for updating report card ---------',
+  checkingLearningPackage: 'error while fetching learning package --------- ',
+  failedToFetchLearningPackage:'Failed to fetch learning package with this id ---------',
+  saveSubject: 'could not save new subject --------- ',
+  subjectCreateSuccess: 'Subject created successfully',
+  failToCreateSubject: 'Error while creating subject',
+  updatingChapterFail: 'Failed to update chapter sessions -------',
+  chapterNotFound: 'could not find chapter with id provided ---------',
+  updatingChapter: 'Error querying for updating chapter --------- ',
+  updatingSettingFail: 'Failed to update settings -------',
+  checkingSetting: 'error while fetching setting. --------- ',
+  settingNotFound: 'could not find setting with id provided ---------',
+  updatingSetting: 'Error querying for updating setting --------- ',
+};
+export const classroomMessages = {
+  upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',
+};
+export const classroomErrors = {
+  failedToFetchUpcomingClasses: 'Failed to fetch upcoming classes---------',
 };

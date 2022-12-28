@@ -22,6 +22,7 @@ import { ReportCard } from '../entities/reportCard.entity';
 import { Leaderboard } from '../entities/leaderboard.entity';
 import { Badge } from '../entities/badges.entity';
 import { MockTest } from '../entities/mockTest.entity';
+import { Review } from 'src/entities/review.entity';
 
 config();
 
@@ -59,6 +60,7 @@ export const ModuleConfigs = {
       Leaderboard,
       Badge,
       MockTest,
+      Review
     ],
   },
   utility: {
@@ -94,7 +96,7 @@ export const ModuleConfigs = {
       ReportCard,
       Badge,
       MockTest,
-      Class,
+      Class
     ],
   },
   subscription: {
@@ -113,6 +115,13 @@ export const ModuleConfigs = {
       Badge,
       MockTest,
       Class,
+      Review
+    ],
+  },
+  classroom: {
+    entities: [
+      Class,
+      
     ],
   },
 };

@@ -275,8 +275,26 @@ export class updateReportCardReq {
   @IsString()
   remark: string;
 }
+export class createSubjectReq {
+  @IsNotEmpty()
+  @IsString()
+  type: string;
 
+  @IsNotEmpty()
+  @IsString()
+  learningPackageId: string;
+}
+export class updateChapterReq {
+  @IsNotEmpty()
+  @IsString()
+  type: string;
+}
 
+export class updateSettingReq {
+  @IsNotEmpty()
+  @IsString()
+  type: string;
+}
 
 // export class createdAdminRes {
 //   createAdmin?: User | undefined;
