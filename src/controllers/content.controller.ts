@@ -16,6 +16,7 @@ import {
 import {
   GetAllUsersSessionsReq,
   GetAllUsersSessionsRes,
+  updateMockTestReq
 } from 'src/dto/admin.dto';
 import {
   updateLeaderboardReq,
@@ -245,6 +246,34 @@ export class ContentController {
       meta: reviews.meta,
     });
   }
+  @Patch('update-mockTest/:id')
+  async updateMockTest(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateMockTestReq,
+    @Param('id') id,
+  ) {
+    let { updatedMockTest, success } =
+      await this.contentService.updateMockTest(id, {
+        ...req.body,
+      });
 
+    if (success) {
+      resp.json({
+        success,
+        message: contentMessages.updatedMockTestSuccess,
+        status: HttpStatus.OK,
+        updatedMockTest,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.updatingMockTestFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
  
 }

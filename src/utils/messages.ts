@@ -106,6 +106,7 @@ export const contentMessages = {
   mockTestFetchSuccess: 'Mock test fetch successfully',
   addReviewSuccess:'Review added successfully',
   reviewsFetchSuccess: 'Reviews fetch successfully',
+  updatedMockTestSuccess: 'Mock test updated successfully',
 };
 export const contentErrors = {
   failedToFetchChapter: 'Failed to fetch chapter with this id --------- ',
@@ -126,6 +127,9 @@ export const contentErrors = {
   checkingLesson: 'error while fetching lesson --------- ',
   saveReview: 'could not save new review --------- ',
   failedToFetchReview: 'Failed to fetch review---------',
+  updatingMockTestFail: 'Failed to update mock test -------',
+  checkingMockTest: 'error while fetching mock test. ---------',
+  mockTestNotFound: 'could not find mock test with id provided ---------',
 };
 
 export const profileMessages = {
@@ -162,6 +166,7 @@ export const adminMessages = {
   updatedReportCardSuccess: 'Report card updated successfully',
   updatedChapterSuccess: 'Chapter updated successfully',
   updatedSettingSuccess: 'Setting updated successfully',
+  userSettingFetchSuccess: 'User setting Fetched successfully',
 };
 
 export const adminErrors = {
@@ -249,6 +254,7 @@ export const adminErrors = {
   checkingSetting: 'error while fetching setting. --------- ',
   settingNotFound: 'could not find setting with id provided ---------',
   updatingSetting: 'Error querying for updating setting --------- ',
+  failedToFetchSetting: 'error while fetching setting. --------- ',
 };
 export const classroomMessages = {
   upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',

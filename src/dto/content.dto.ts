@@ -15,3 +15,12 @@ export class addReviewReq {
   @IsString()
   lessonId: string;
 }
+export class updateMockTestReq {
+  @IsNotEmpty()
+  @IsString()
+  mockTestName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  subject: string;
+}

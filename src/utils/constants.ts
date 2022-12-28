@@ -23,6 +23,7 @@ import { Leaderboard } from '../entities/leaderboard.entity';
 import { Badge } from '../entities/badges.entity';
 import { MockTest } from '../entities/mockTest.entity';
 import { Review } from 'src/entities/review.entity';
+import { Settings } from 'src/entities/settings.entity';
 
 config();
 
@@ -60,7 +61,8 @@ export const ModuleConfigs = {
       Leaderboard,
       Badge,
       MockTest,
-      Review
+      Review,
+      Settings
     ],
   },
   utility: {
@@ -76,6 +78,7 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
+      Settings
     ],
   },
   admin: {
@@ -96,7 +99,8 @@ export const ModuleConfigs = {
       ReportCard,
       Badge,
       MockTest,
-      Class
+      Class,
+      Settings
     ],
   },
   subscription: {

@@ -18,7 +18,8 @@ var moment = require('moment');
 
 import {
   updateLeaderboardReq,
-  addReviewReq
+  addReviewReq,
+  updateMockTestReq
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
 import { contentErrors,adminErrors } from 'src/utils/messages';
@@ -317,5 +318,61 @@ export class ContentService {
     }
     return paginate<Badge>(foundReviews, options);
   }
+  
+  async updateMockTest(
+    id: string,
+    updateMockTestReq: updateMockTestReq,
+  ) {
+    const { mockTestName,subject } = updateMockTestReq;
+    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+    let foundMockTest, updatedMockTest: MockTest;
+
+    try {
+      foundMockTest = await this.mockTestRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.checkingMockTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundMockTest) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.mockTestNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedMockTest = await this.leaderboardRepo.save({
+        ...foundMockTest,
+        mockTestName: mockTestName ?? foundMockTest.mockTestName,
+        subject: subject ?? foundMockTest.subject,
+        updatedAt: date,
+      });
+
+      return {
+        success: true,
+        updatedMockTest,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.updatingLeaderboard,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
  
 }
