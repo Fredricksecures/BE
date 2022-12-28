@@ -1610,4 +1610,30 @@ async updateSetting(id: string, updateSettingReq: updateSettingReq) {
     );
   }
 }
+
+async getUserSetting(
+  id: string,
+  options: IPaginationOptions,
+): Promise<Pagination<Settings>> {
+  let results, total;
+
+  try {
+    
+    results = await this.settingRepo.createQueryBuilder('Setting');
+    if (id != null) {
+      results.where('id = :id', { id });
+    }
+  } catch (exp) {
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_IMPLEMENTED,
+        error: adminErrors.failedToFetchSetting + exp,
+      },
+      HttpStatus.NOT_IMPLEMENTED,
+    );
+  }
+
+  return paginate<Settings>(results, options);
+}
+
 }

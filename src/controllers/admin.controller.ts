@@ -766,4 +766,23 @@ export class AdminController {
       );
     }
   }
+  @Get('user-setting')
+  async getUserSetting(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query() params,
+  ) {
+    const options: IPaginationOptions = { limit, page };
+    const users = await this.adminService.getUserSetting(params.id, options);
+
+    resp.json({
+      status: HttpStatus.OK,
+      message: adminMessages.userSettingFetchSuccess,
+      users: users.items,
+      meta: users.meta,
+    });
+  }
+
 }
