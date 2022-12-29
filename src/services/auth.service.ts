@@ -371,7 +371,7 @@ export class AuthService {
         );
       }
 
-      if (duplicatePhoneNumber && duplicatePhoneNumber.parent.email != email) {
+      if (duplicatePhoneNumber && duplicatePhoneNumber.parent.phoneNumber != phoneNumber) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
@@ -404,7 +404,7 @@ export class AuthService {
         );
       }
 
-      if (duplicateEmail && duplicateEmail.parent.phoneNumber != phoneNumber) {
+      if (duplicateEmail && duplicateEmail.parent.email != email) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
@@ -417,15 +417,17 @@ export class AuthService {
 
     //* create user account
     try {
+     
       password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
-
+     
       const createdParent = await this.createParentProfile({
         email,
         phoneNumber,
         password,
         countryId,
       });
-
+    //  console.log("3")
+    //  console.log(createdParent)
       createdUser = await this.userRepo.save({
         firstName,
         lastName,
@@ -545,20 +547,20 @@ export class AuthService {
 
       throw new HttpException(
         {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.checkingEmail + exp,
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.checkingEmail ,
         },
-        HttpStatus.NOT_IMPLEMENTED,
+        HttpStatus.NOT_FOUND,
       );
     }
 
     if (!foundParent) {
       throw new HttpException(
         {
-          status: HttpStatus.NOT_IMPLEMENTED,
+          status: HttpStatus.NOT_FOUND,
           error: authErrors.emailNotFound,
         },
-        HttpStatus.NOT_IMPLEMENTED,
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -609,10 +611,10 @@ export class AuthService {
 
       throw new HttpException(
         {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.queryById + e,
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.queryById ,
         },
-        HttpStatus.NOT_IMPLEMENTED,
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -675,7 +677,7 @@ export class AuthService {
     const country: CountryList = await this.utilityService.getCountryList(
       countryId,
     );
-
+  
     try {
       createdParent = await this.parentRepo.save({
         phoneNumber,
@@ -697,7 +699,7 @@ export class AuthService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
+  
     return createdParent;
   }
 

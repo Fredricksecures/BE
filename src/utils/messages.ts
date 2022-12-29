@@ -1,7 +1,7 @@
 export const utlityMessages = {
   learningPackages: 'learning packages fetched successfully',
-  devices: 'Fetched devices successfully',
-  countries: 'Fetched countries successfully',
+  devices: 'Devcies successfully fetched',
+  countries: 'Countries successfully fetched',
 };
 export const utilityErrors = {
   getPackageList: 'failed to fetch pakcage list',
@@ -37,6 +37,7 @@ export const authMessages = {
   pwordReset: 'Password reset successfully',
   logout: 'Logout successfully',
   createdStudent: 'Students Created Successfully',
+  studentsFetchSuccess: 'Students Fetched successfully',
 };
 export const authErrors = {
   getDevice: 'failed to fecth device info ',
@@ -67,7 +68,7 @@ export const authErrors = {
   dupEmailQuery: 'query for duplicate email failed ',
   tokenCreate: 'could not create token ',
   userTokenUpdate: 'could not update user token ',
-  checkingEmail: 'Error querying for matching emails ',
+  checkingEmail: 'User(user email) does not exist ',
   checkingPassword: 'Error querying for matching passwords ',
   emailNotFound: 'user with specified email not found ',
   invalidPassword: 'your password is incorrect',

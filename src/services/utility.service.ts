@@ -105,4 +105,32 @@ export class UtilityService {
       );
     }
   }
+
+  async getCountries(
+    supported: boolean,
+    options: IPaginationOptions,
+  ): Promise<Pagination<CountryList>> {
+    let foundCountries;
+    try {
+      foundCountries =
+      supported == undefined
+          ? await this.countryLRepo.createQueryBuilder('CountryList')
+          : await this.countryLRepo
+              .createQueryBuilder('CountryList')
+              .where('CountryList.supported = true');
+
+      return paginate<CountryList>(foundCountries, options);
+    } catch (exp) {
+      Logger.error(utilityErrors.getCountryList + exp);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: utilityErrors.getCountryList + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
 }

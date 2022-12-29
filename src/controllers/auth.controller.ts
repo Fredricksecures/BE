@@ -101,6 +101,7 @@ export class AuthController {
       resp.cookie('jwt', user.parent.session.token, { httpOnly: true });
 
       resp.json({
+        success,
         status: HttpStatus.CREATED,
         message: authMessages.login,
         user,
@@ -255,7 +256,7 @@ export class AuthController {
 
     if (students) {
       resp.json({
-        message: authMessages.logout,
+        message: authMessages.studentsFetchSuccess,
         status: HttpStatus.OK,
         [`student${id ? 's' : ''}`]: students,
       });

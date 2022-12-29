@@ -51,17 +51,21 @@ export class UtilityController {
   }
 
   @Get('countries')
-  async getCountries(@Req() req: Request, @Res() resp: Response) {
-    const { supported } = req.query;
-
-    const countries = await this.countryRepo.find({
-      ...(supported === 'true' ? { where: { supported: true } } : {}),
-    });
-
+  async getCountries(
+    @Req() req: Request, 
+    @Res() resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('supported') supported) {
+    
+    const options: IPaginationOptions = { limit, page };
+    const countries = await this.utilityService.getCountries(supported,options);
+   
     resp.json({
       status: HttpStatus.FOUND,
       message: utlityMessages.countries,
-      countries,
+      countries: countries.items,
+      meta: countries.meta
     });
   }
 
@@ -70,7 +74,7 @@ export class UtilityController {
     const devices = await this.deviceRepo.find({});
 
     resp.json({
-      status: HttpStatus.FOUND,
+      status: HttpStatus.OK,
       message: utlityMessages.devices,
       devices,
     });
