@@ -128,6 +128,19 @@ export const ModuleConfigs = {
       
     ],
   },
+  user: {
+    entities: [
+      User,
+      Student,
+      Parent,
+      Device,
+      CountryList,
+      Session,
+      LearningPackage,
+      Subscription,
+      Settings
+    ],
+  },
 };
 
 export const GET_ALL_ENTITIES = () => [
