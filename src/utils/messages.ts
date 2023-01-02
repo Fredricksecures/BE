@@ -1,7 +1,7 @@
 export const utlityMessages = {
   learningPackages: 'learning packages fetched successfully',
-  devices: 'Fetched devices successfully',
-  countries: 'Fetched countries successfully',
+  devices: 'Devcies successfully fetched',
+  countries: 'Countries successfully fetched',
 };
 export const utilityErrors = {
   getPackageList: 'failed to fetch pakcage list',
@@ -37,6 +37,7 @@ export const authMessages = {
   pwordReset: 'Password reset successfully',
   logout: 'Logout successfully',
   createdStudent: 'Students Created Successfully',
+  studentsFetchSuccess: 'Students Fetched successfully',
 };
 export const authErrors = {
   getDevice: 'failed to fecth device info ',
@@ -45,7 +46,7 @@ export const authErrors = {
     'your session has expired. Login again to get a new session and token',
   studentsNotFound: 'could not find students',
   queryingParent: 'could not find parent with user id provided',
-  getStudentsFailed: 'failed to fetch students',
+ 
   createSession: 'could not create a new session for user ',
   noMockCountryList: 'could not find mock country for seeder ',
   saveUser: 'could not save new user ',
@@ -67,7 +68,7 @@ export const authErrors = {
   dupEmailQuery: 'query for duplicate email failed ',
   tokenCreate: 'could not create token ',
   userTokenUpdate: 'could not update user token ',
-  checkingEmail: 'Error querying for matching emails ',
+  checkingEmail: 'User(user email) does not exist ',
   checkingPassword: 'Error querying for matching passwords ',
   emailNotFound: 'user with specified email not found ',
   invalidPassword: 'your password is incorrect',
@@ -170,6 +171,7 @@ export const adminMessages = {
 };
 
 export const adminErrors = {
+  updateFailed: 'login failed ',
   fetchSessionFailed: 'Failed to fetch user sessions ',
   fetchUserFailed: 'Failed to fetch user ',
   endSessionFailed: 'Failed to end user sessions ',
@@ -192,7 +194,6 @@ export const adminErrors = {
   updatingCustomer: 'Error querying for updating customer ',
   checkingCustomer: 'Error querying for finding customer ',
   failedToFetchCustomers: 'error while fetching customers. ',
-  updateFailed: 'login failed ',
   customerNotFound: 'could not find customer with id provided ',
   failToCreateAdmin: 'Error while creating admin',
   adminCreateFailed: 'Failed to create new admin  ---------',
@@ -262,3 +263,32 @@ export const classroomMessages = {
 export const classroomErrors = {
   failedToFetchUpcomingClasses: 'Failed to fetch upcoming classes---------',
 };
+export const userMessages = {
+  createdStudent: 'Students Created Successfully',
+  studentsFetchSuccess: 'Students Fetched successfully',
+  countries: 'all countries retrieved successfully',
+  endpoints: 'authentication endpoints retrieved successfully',
+  userCreated: 'user created successfully',
+  teacherCreated: 'Teacher profile created successfully',
+  profileUpdateSuccessful: 'profile updated successfully',
+  
+};
+export const userErrors = {
+  updateFailed: 'login failed ',
+  createdStudent: 'could not create new student ',
+  updatingStudent: 'Error querying for updating student ',
+  getStudentsFailed: 'failed to fetch students',
+  noCookieTokenPassed: 'no token passed via cookies ',
+  noAuthTokenPassed: 'no authorization token passed ',
+  invalidToken: 'Invalid Token ',
+  noTokenIdMatch: 'could not match user to decoded id ',
+  sessionExpired:'your session has expired. Login again to get a new session and token',
+  createdParent: 'could not create new parent ',
+  checkingStudent: 'Error querying for student ',
+  parentNotFound: 'could not find parent with id provided ',
+  queryingParent: 'could not find parent with user id provided',
+  studentsNotFound: 'could not find students',
+  userNotFoundById: 'Could not find matching user of given id ',
+  checkingParent: 'Error querying for finding parent ',
+  updatingParent: 'Error querying for updating parent ',
+}

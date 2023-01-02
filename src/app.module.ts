@@ -10,6 +10,7 @@ import { configService } from './services/config.service';
 import { UtilityModule } from './modules/utility.module';
 import { ContentModule } from './modules/content.module';
 import { ClassroomModule } from './modules/classroom.module';
+import { UserModule } from './modules/user.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { ClassroomModule } from './modules/classroom.module';
     AdminModule,
     SubscriptionModule,
     ContentModule,
-    ClassroomModule
+    ClassroomModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],

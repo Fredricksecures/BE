@@ -17,19 +17,15 @@ import {
 } from 'nestjs-typeorm-paginate';
 import {
   RegisterUserReq,
-  CreateParentReq,
-  CreateStudentReq,
   LoginReq,
-  UpdateParentReq,
-  UpdateStudentReq,
   LoginRes,
   ResetPasswordReq,
   ResetPasswordRes,
   ForgotPasswordReq,
   ForgotPasswordRes,
-  GetStudentReq,
-  GetStudentRes,
-  CreateStudentRes,
+  CreateStudentReq,
+  CreateParentReq,
+  CreateStudentRes
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
@@ -300,45 +296,45 @@ export class AuthService {
     return user;
   }
 
-  async getParentDetails(
-    userId: string,
-    relations: Array<string>,
-  ): Promise<Parent> {
-    let foundParent: Parent;
+  // async getParentDetails(
+  //   userId: string,
+  //   relations: Array<string>,
+  // ): Promise<Parent> {
+  //   let foundParent: Parent;
 
-    try {
-      foundParent = await this.parentRepo.findOne({
-        where: {
-          user: { id: userId },
-        },
-        relations,
-      });
-    } catch (exp) {
-      Logger.error(authErrors.checkingStudent + exp).console();
+  //   try {
+  //     foundParent = await this.parentRepo.findOne({
+  //       where: {
+  //         user: { id: userId },
+  //       },
+  //       relations,
+  //     });
+  //   } catch (exp) {
+  //     Logger.error(authErrors.checkingStudent + exp).console();
 
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.queryingParent + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: authErrors.queryingParent + exp,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
 
-    if (!foundParent) {
-      Logger.error(authErrors.parentNotFound).console();
+  //   if (!foundParent) {
+  //     Logger.error(authErrors.parentNotFound).console();
 
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: authErrors.parentNotFound,
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_FOUND,
+  //         error: authErrors.parentNotFound,
+  //       },
+  //       HttpStatus.NOT_FOUND,
+  //     );
+  //   }
 
-    return foundParent;
-  }
+  //   return foundParent;
+  // }
 
   async googleLogin() {}
 
@@ -371,7 +367,7 @@ export class AuthService {
         );
       }
 
-      if (duplicatePhoneNumber && duplicatePhoneNumber.parent.email != email) {
+      if (duplicatePhoneNumber && duplicatePhoneNumber.parent.phoneNumber != phoneNumber) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
@@ -404,7 +400,7 @@ export class AuthService {
         );
       }
 
-      if (duplicateEmail && duplicateEmail.parent.phoneNumber != phoneNumber) {
+      if (duplicateEmail && duplicateEmail.parent.email != email) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
@@ -417,15 +413,17 @@ export class AuthService {
 
     //* create user account
     try {
+     
       password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
-
+     
       const createdParent = await this.createParentProfile({
         email,
         phoneNumber,
         password,
         countryId,
       });
-
+    //  console.log("3")
+    //  console.log(createdParent)
       createdUser = await this.userRepo.save({
         firstName,
         lastName,
@@ -545,20 +543,20 @@ export class AuthService {
 
       throw new HttpException(
         {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.checkingEmail + exp,
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.checkingEmail ,
         },
-        HttpStatus.NOT_IMPLEMENTED,
+        HttpStatus.NOT_FOUND,
       );
     }
 
     if (!foundParent) {
       throw new HttpException(
         {
-          status: HttpStatus.NOT_IMPLEMENTED,
+          status: HttpStatus.NOT_FOUND,
           error: authErrors.emailNotFound,
         },
-        HttpStatus.NOT_IMPLEMENTED,
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -609,10 +607,10 @@ export class AuthService {
 
       throw new HttpException(
         {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.queryById + e,
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.queryById ,
         },
-        HttpStatus.NOT_IMPLEMENTED,
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -675,7 +673,7 @@ export class AuthService {
     const country: CountryList = await this.utilityService.getCountryList(
       countryId,
     );
-
+  
     try {
       createdParent = await this.parentRepo.save({
         phoneNumber,
@@ -697,7 +695,7 @@ export class AuthService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
+  
     return createdParent;
   }
 
@@ -740,30 +738,30 @@ export class AuthService {
     ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
   }
 
-  async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
-    const { studentId, user } = getStudentReq;
+  // async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
+  //   const { studentId, user } = getStudentReq;
 
-    let foundStudents: Student | Array<Student>;
+  //   let foundStudents: Student | Array<Student>;
 
-    let parent = await this.getParentDetails(user.id, ['students']);
+  //   let parent = await this.getParentDetails(user.id, ['students']);
 
-    if (!foundStudents) {
-      Logger.error(authErrors.studentsNotFound).console();
+  //   if (!foundStudents) {
+  //     Logger.error(authErrors.studentsNotFound).console();
 
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.studentsNotFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: authErrors.studentsNotFound,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
 
-    return {
-      success: true,
-      students: foundStudents,
-    };
-  }
+  //   return {
+  //     success: true,
+  //     students: foundStudents,
+  //   };
+  // }
   // async getStudents(getStudentReq: GetStudentReq,options: IPaginationOptions): Promise<Pagination<Student>>{
   //   const { studentId, user } = getStudentReq;
 
@@ -787,111 +785,111 @@ export class AuthService {
     
   // }
 
-  async updateParentProfile(updateParentReq: UpdateParentReq) {
-    const { user, email, phoneNumber, address } = updateParentReq;
+  // async updateParentProfile(updateParentReq: UpdateParentReq) {
+  //   const { user, email, phoneNumber, address } = updateParentReq;
 
-    console.log(user);
+  //   console.log(user);
 
-    let foundUser: User, updatedParent: Parent;
+  //   let foundUser: User, updatedParent: Parent;
 
-    try {
-      foundUser = await this.userRepo.findOne({
-        where: { id: user.id },
-        relations: ['parent'],
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.checkingParent + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
+  //   try {
+  //     foundUser = await this.userRepo.findOne({
+  //       where: { id: user.id },
+  //       relations: ['parent'],
+  //     });
+  //   } catch (exp) {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: authErrors.checkingParent + exp,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
 
-    if (!foundUser) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.parentNotFound,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
+  //   if (!foundUser) {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: authErrors.parentNotFound,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
 
-    try {
-      updatedParent = await this.parentRepo.save({
-        ...foundUser.parent,
-        email: email ?? foundUser.parent.email,
-        phoneNumber: phoneNumber ?? foundUser.parent.phoneNumber,
-        address: address ?? foundUser.parent.address,
-      });
+  //   try {
+  //     updatedParent = await this.parentRepo.save({
+  //       ...foundUser.parent,
+  //       email: email ?? foundUser.parent.email,
+  //       phoneNumber: phoneNumber ?? foundUser.parent.phoneNumber,
+  //       address: address ?? foundUser.parent.address,
+  //     });
 
-      return {
-        success: true,
-        updatedParent,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.updatingParent,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
+  //     return {
+  //       success: true,
+  //       updatedParent,
+  //     };
+  //   } catch (e) {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: authErrors.updatingParent,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
+  // }
 
-  async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
-    const { id, firstName, lastName, dateOfBirth } = updateStudentReq;
+  // async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
+  //   const { id, firstName, lastName, dateOfBirth } = updateStudentReq;
 
-    let foundUser: Student;
+  //   let foundUser: Student;
 
-    try {
-      foundUser = await this.studentRepo.findOne({
-        where: {
-          id,
-        },
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.checkingStudent + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    if (!foundUser) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.userNotFoundById,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
+  //   try {
+  //     foundUser = await this.studentRepo.findOne({
+  //       where: {
+  //         id,
+  //       },
+  //     });
+  //   } catch (exp) {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: authErrors.checkingStudent + exp,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
+  //   if (!foundUser) {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: authErrors.userNotFoundById,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
 
-    try {
-      const user = await this.studentRepo.save({
-        id,
-        // dateOfBirth: dateOfBirth || foundUser.dateOfBirth,
-        // parent: foundUser.parent,
-      });
-      return {
-        success: true,
-        user,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.updatingStudent,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-  }
+  //   try {
+  //     const user = await this.studentRepo.save({
+  //       id,
+  //       // dateOfBirth: dateOfBirth || foundUser.dateOfBirth,
+  //       // parent: foundUser.parent,
+  //     });
+  //     return {
+  //       success: true,
+  //       user,
+  //     };
+  //   } catch (e) {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: authErrors.updatingStudent,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
+  // }
 
   async logout(all: any, token: string) {
     //! this is a security breach. intruders can log a user out of all their sessions

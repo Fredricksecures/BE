@@ -23,7 +23,25 @@ export class MockAuthSeedDTO {
   mockCountryList: CountryList;
   mockSession: Session;
 }
+class StudentReqObj {
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
 
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  gender: string;
+
+  @IsNotEmpty()
+  @IsString()
+  dateOfBirth: string;
+
+  packages: Array<string>;
+}
 export class RegisterUserReq {
   @IsNotEmpty()
   @IsString()
@@ -63,82 +81,6 @@ export class BasicRegRes {
   createdUser?: User | undefined;
   success?: boolean;
 }
-
-export class BasicUpdateRes {
-  updatedParent?: Parent;
-  success?: boolean;
-}
-
-export class CreateParentReq {
-  @IsOptional()
-  @IsString()
-  @IsEmail()
-  email: string;
-
-  @IsOptional()
-  @ValidateIf((o) => !o.email || o.phoneNumber)
-  phoneNumber: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(8)
-  @MaxLength(12)
-  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'password too weak',
-  })
-  password: string;
-
-  @IsNotEmpty()
-  @IsString()
-  countryId: string;
-}
-
-class StudentReqObj {
-  @IsNotEmpty()
-  @IsString()
-  firstName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  gender: string;
-
-  @IsNotEmpty()
-  @IsString()
-  dateOfBirth: string;
-
-  packages: Array<string>;
-}
-
-export class CreateStudentReq {
-  user: User;
-
-  @IsArray()
-  children: Array<StudentReqObj>;
-}
-
-export class CreateStudentRes {
-  success: boolean;
-  createdStudents: Array<Student>;
-}
-
-export class GetStudentReq {
-  @IsString()
-  studentId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  user: User;
-}
-
-export class GetStudentRes {
-  success: boolean;
-  students: Student | Array<Student>;
-}
-
 export class LoginReq {
   @IsOptional()
   email: string;
@@ -195,6 +137,35 @@ export class ResetPasswordRes {
   success: boolean;
 }
 
+export class CreateStudentReq {
+  user: User;
+
+  @IsArray()
+  children: Array<StudentReqObj>;
+}
+export class CreateParentReq {
+  @IsOptional()
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
+  @ValidateIf((o) => !o.email || o.phoneNumber)
+  phoneNumber: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(12)
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'password too weak',
+  })
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  countryId: string;
+}
 export class UpdateParentReq {
   user: User;
 
@@ -211,23 +182,8 @@ export class UpdateParentReq {
   @IsString()
   address: string;
 }
-export class UpdateStudentReq {
-  @IsString()
-  @IsNotEmpty()
-  id: string;
 
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  firstName: string;
-
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  lastName: string;
-
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  dateOfBirth: string;
+export class CreateStudentRes {
+  success: boolean;
+  createdStudents: Array<Student>;
 }

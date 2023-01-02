@@ -27,6 +27,10 @@ export class Parent {
   @PrimaryGeneratedColumn()
   id?: string;
 
+  @OneToOne(() => CountryList)
+  @JoinColumn()
+  country?: CountryList;
+
   @Column({ type: 'varchar', unique: true })
   email?: string;
 
@@ -49,9 +53,7 @@ export class Parent {
   })
   onboardingStage?: string;
 
-  @OneToOne(() => CountryList)
-  @JoinColumn()
-  country?: CountryList;
+ 
 
   @OneToOne(() => User)
   user?: User;
