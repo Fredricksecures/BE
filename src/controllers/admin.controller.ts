@@ -19,10 +19,7 @@ import {
   ValidationPipe,
   BadRequestException,
 } from '@nestjs/common';
-import {
-  CreateParentReq,
- 
-} from '../dto/auth.dto';
+import { CreateParentReq } from '../dto/auth.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { generateRandomHash, isEmpty } from 'src/utils/helpers';
 import { CountryList } from 'src/entities/countryList.entity';
@@ -69,7 +66,12 @@ import {
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
 import { Request, Response } from 'express';
-import { adminErrors, adminMessages , authErrors, authMessages} from 'src/utils/messages';
+import {
+  adminErrors,
+  adminMessages,
+  authErrors,
+  authMessages,
+} from 'src/utils/messages';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { UtilityService } from '../services/utility.service';
 //import { Multer } from 'multer';
@@ -81,10 +83,12 @@ const { BCRYPT_SALT } = process.env;
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService,
+  constructor(
+    private readonly adminService: AdminService,
     private readonly utilityService: UtilityService,
     @InjectRepository(User) private userRepo: Repository<User>,
-    @InjectRepository(Parent) private parentRepo: Repository<Parent>,) {}
+    @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+  ) {}
 
   @Get('user-sessions')
   async getUserSessions(
@@ -577,6 +581,7 @@ export class AdminController {
       );
     }
   }
+
   @Patch('update-mock-test/:id')
   async updateMockTest(
     @Req() req: Request,
@@ -606,6 +611,7 @@ export class AdminController {
       );
     }
   }
+
   @Post('create-badge')
   async createBadge(
     @Req() req: Request,
@@ -688,6 +694,7 @@ export class AdminController {
       );
     }
   }
+
   @Patch('update-report-card/:id')
   async updateReportCard(
     @Req() req: Request,
@@ -717,6 +724,7 @@ export class AdminController {
       );
     }
   }
+
   @Post('create-subject')
   async createSubject(
     @Req() req: Request,
@@ -827,29 +835,18 @@ export class AdminController {
     return 'Hello';
   }
 
-  @Post('upload')
+  @Post('bulk-upload')
   @UseInterceptors(
     FileInterceptor('file', {
-      // fileFilter: (req: any, file: any,) => {
-      //   if (!file.originalname.match(/\.(xlsx)$/)) {
-      //       throw new HttpException(
-      //           {
-      //             status: HttpStatus.NOT_FOUND,
-      //             error: adminErrors.failToGetExcel,
-      //           },
-      //           HttpStatus.NOT_FOUND,
-      //         );
-      //   }
-      // },
       storage: diskStorage({
         destination: './files',
         filename: function (req, file, cb) {
-          cb(null, Date.now() + '.xlsx'); 
+          cb(null, Date.now() + '.xlsx');
         },
       }),
     }),
   )
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async bulkUpload(@UploadedFile() file: Express.Multer.File) {
     console.log(file);
     const filepath = file.path;
     const excelData = excelToJSON({
@@ -865,125 +862,124 @@ export class AdminController {
     console.log(excelData.Data.length);
     console.log(excelData.Data[0]);
 
-    for(let i = 0 ; i<excelData.Data.length; i++)
-    {
-         let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
-         let firstName= excelData.Data[i].firstName
-         let lastName = excelData.Data[i].lastName
-         let phoneNumber = excelData.Data[i].phoneNumber;
-         let email = excelData.Data[i].email
-         let password = excelData.Data[i].password
-         let countryId = excelData.Data[i].countryId
-    //* check if phone number is already taken
-    if (!isEmpty(phoneNumber)) {
-      try {
-        duplicatePhoneNumber = await this.userRepo.findOne({
-          where: {
-            parent: {
-              phoneNumber,
+    for (let i = 0; i < excelData.Data.length; i++) {
+      let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
+      let firstName = excelData.Data[i].firstName;
+      let lastName = excelData.Data[i].lastName;
+      let phoneNumber = excelData.Data[i].phoneNumber;
+      let email = excelData.Data[i].email;
+      let password = excelData.Data[i].password;
+      let countryId = excelData.Data[i].countryId;
+      //* check if phone number is already taken
+      if (!isEmpty(phoneNumber)) {
+        try {
+          duplicatePhoneNumber = await this.userRepo.findOne({
+            where: {
+              parent: {
+                phoneNumber,
+              },
             },
-          },
+          });
+        } catch (e) {
+          Logger.error(authErrors.dupPNQuery + e).console();
+
+          throw new HttpException(
+            {
+              status: HttpStatus.CONFLICT,
+              error: authErrors.dupPNQuery + e,
+            },
+            HttpStatus.CONFLICT,
+          );
+        }
+
+        if (
+          duplicatePhoneNumber &&
+          duplicatePhoneNumber.parent.phoneNumber != phoneNumber
+        ) {
+          throw new HttpException(
+            {
+              status: HttpStatus.CONFLICT,
+              error: `phone number ( ${phoneNumber} ) is already taken`,
+            },
+            HttpStatus.CONFLICT,
+          );
+        }
+      }
+
+      //* check if email is already taken
+      if (!isEmpty(email)) {
+        try {
+          duplicateEmail = await this.userRepo.findOne({
+            where: {
+              parent: {
+                email,
+              },
+            },
+          });
+        } catch {
+          Logger.error(authErrors.dupEmailQuery).console();
+
+          throw new HttpException(
+            {
+              status: HttpStatus.CONFLICT,
+              error: authErrors.dupEmailQuery,
+            },
+            HttpStatus.CONFLICT,
+          );
+        }
+
+        if (duplicateEmail && duplicateEmail.parent.email != email) {
+          throw new HttpException(
+            {
+              status: HttpStatus.CONFLICT,
+              error: phoneNumber + ' : ' + 'email already exists',
+            },
+            HttpStatus.CONFLICT,
+          );
+        }
+      }
+
+      //* create user account
+      try {
+        password = bcrypt.hash(password, parseInt(BCRYPT_SALT));
+
+        const createdParent = await this.createParentProfile({
+          email,
+          phoneNumber,
+          password,
+          countryId,
+        });
+        //  console.log("3")
+        //  console.log(createdParent)
+        createdUser = await this.userRepo.save({
+          firstName,
+          lastName,
+          type: UserTypes.PARENT,
+          parent: createdParent,
         });
       } catch (e) {
-        Logger.error(authErrors.dupPNQuery + e).console();
+        Logger.error(authErrors.saveUser + e).console();
 
         throw new HttpException(
           {
-            status: HttpStatus.CONFLICT,
-            error: authErrors.dupPNQuery + e,
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: authErrors.saveUser + e,
           },
-          HttpStatus.CONFLICT,
+          HttpStatus.NOT_IMPLEMENTED,
         );
       }
 
-      if (duplicatePhoneNumber && duplicatePhoneNumber.parent.phoneNumber != phoneNumber) {
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: `phone number ( ${phoneNumber} ) is already taken`,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-    }
-
-    //* check if email is already taken
-    if (!isEmpty(email)) {
-      try {
-        duplicateEmail = await this.userRepo.findOne({
-          where: {
-            parent: {
-              email,
-            },
-          },
-        });
-      } catch {
-        Logger.error(authErrors.dupEmailQuery).console();
-
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: authErrors.dupEmailQuery,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-
-      if (duplicateEmail && duplicateEmail.parent.email != email) {
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: phoneNumber + ' : ' + 'email already exists',
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-    }
-
-    //* create user account
-    try {
-     
-      password =  bcrypt.hash(password, parseInt(BCRYPT_SALT));
-     
-      const createdParent =  await this.createParentProfile({
-        email,
-        phoneNumber,
-        password,
-        countryId,
+      mailer(createdUser.parent.email, 'Registration Successful', {
+        text: `An action to change your password was successful`,
       });
-    //  console.log("3")
-    //  console.log(createdParent)
-      createdUser = await this.userRepo.save({
-        firstName,
-        lastName,
-        type: UserTypes.PARENT,
-        parent: createdParent,
-      });
-    } catch (e) {
-      Logger.error(authErrors.saveUser + e).console();
 
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.saveUser + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
+      return {
+        createdUser,
+        success: true,
+      };
     }
-
-    mailer(createdUser.parent.email, 'Registration Successful', {
-      text: `An action to change your password was successful`,
-    });
-
-    return {
-      createdUser,
-      success: true,
-    };
   }
 
-
-  }
- 
   async createParentProfile(createParentReq: CreateParentReq): Promise<Parent> {
     const { phoneNumber, email, password, countryId } = createParentReq;
     let createdParent: Parent;
@@ -991,7 +987,7 @@ export class AdminController {
     const country: CountryList = await this.utilityService.getCountryList(
       countryId,
     );
-  
+
     try {
       createdParent = await this.parentRepo.save({
         phoneNumber,
@@ -1013,7 +1009,7 @@ export class AdminController {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-  
+
     return createdParent;
   }
-};
+}

@@ -25,7 +25,7 @@ import {
   ForgotPasswordRes,
   CreateStudentReq,
   CreateParentReq,
-  CreateStudentRes
+  CreateStudentRes,
 } from '../dto/auth.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
@@ -367,7 +367,10 @@ export class AuthService {
         );
       }
 
-      if (duplicatePhoneNumber && duplicatePhoneNumber.parent.phoneNumber != phoneNumber) {
+      if (
+        duplicatePhoneNumber &&
+        duplicatePhoneNumber.parent.phoneNumber != phoneNumber
+      ) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
@@ -413,17 +416,16 @@ export class AuthService {
 
     //* create user account
     try {
-     
       password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
-     
+
       const createdParent = await this.createParentProfile({
         email,
         phoneNumber,
         password,
         countryId,
       });
-    //  console.log("3")
-    //  console.log(createdParent)
+      //  console.log("3")
+      //  console.log(createdParent)
       createdUser = await this.userRepo.save({
         firstName,
         lastName,
@@ -544,7 +546,7 @@ export class AuthService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: authErrors.checkingEmail ,
+          error: authErrors.checkingEmail,
         },
         HttpStatus.NOT_FOUND,
       );
@@ -608,7 +610,7 @@ export class AuthService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: authErrors.queryById ,
+          error: authErrors.queryById,
         },
         HttpStatus.NOT_FOUND,
       );
@@ -673,7 +675,7 @@ export class AuthService {
     const country: CountryList = await this.utilityService.getCountryList(
       countryId,
     );
-  
+
     try {
       createdParent = await this.parentRepo.save({
         phoneNumber,
@@ -695,7 +697,7 @@ export class AuthService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-  
+
     return createdParent;
   }
 
@@ -782,7 +784,7 @@ export class AuthService {
   //   }
 
   //   return paginate<Student>(foundStudents, options);
-    
+
   // }
 
   // async updateParentProfile(updateParentReq: UpdateParentReq) {
