@@ -295,7 +295,13 @@ export class updateSettingReq {
   @IsString()
   type: string;
 }
-
+export class SampleDto {
+  First_Name: string;
+  Last_Name:string;
+  Age:number;
+  Phone_No:number;
+  Email:string;
+}
 // export class createdAdminRes {
 //   createAdmin?: User | undefined;
 //   success?: boolean;

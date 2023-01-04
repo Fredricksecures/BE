@@ -256,6 +256,7 @@ export const adminErrors = {
   settingNotFound: 'could not find setting with id provided ---------',
   updatingSetting: 'Error querying for updating setting --------- ',
   failedToFetchSetting: 'error while fetching setting. --------- ',
+  failToGetExcel:'Onle .xlsx file allowed'
 };
 export const classroomMessages = {
   upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',
