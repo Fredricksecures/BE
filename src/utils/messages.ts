@@ -138,6 +138,7 @@ export const profileMessages = {
 };
 
 export const adminMessages = {
+  bulk: 'bulk registration successful',
   fetchSessionSuccess: 'User sessions fetched successfully',
   endSessionSuccess: 'User sessions ended successfully',
   recoverSessionSuccess: 'User sessions recovered successfully',

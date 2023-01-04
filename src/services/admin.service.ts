@@ -1,11 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-var moment = require('moment');
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
-//import { FilterOperator, Paginate, PaginateQuery, paginate, Paginated } from 'nestjs-paginate'
 import {
   IPaginationOptions,
   paginate,
@@ -17,7 +15,6 @@ import {
   SuspendUserReq,
   CustomerCareAgentReq,
   UpdateCustomerReq,
-  UpdateCustomerIdReq,
   createAdminReq,
   updateAdminReq,
   createLessonReq,
@@ -34,7 +31,7 @@ import {
   createReportCardReq,
   createSubjectReq,
   updateChapterReq,
-  updateSettingReq
+  updateSettingReq,
 } from 'src/dto/admin.dto';
 import { adminMessages, adminErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
@@ -58,6 +55,7 @@ import { Class } from 'src/entities/class.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Settings } from 'src/entities/settings.entity';
+const excelToJSON = require('convert-excel-to-json');
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -71,6 +69,7 @@ export class AdminService {
     @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Parent) private parentRepo: Repository<Parent>,
     @InjectRepository(Lesson) private lessonRepo: Repository<Lesson>,
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
@@ -78,12 +77,13 @@ export class AdminService {
     @InjectRepository(MockTest) private mockTestRepo: Repository<MockTest>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
     @InjectRepository(Class) private classRepo: Repository<Class>,
-    @InjectRepository(ReportCard)private reportCardRepo: Repository<ReportCard>,
+    @InjectRepository(ReportCard)
+    private reportCardRepo: Repository<ReportCard>,
     @InjectRepository(CustomerCare)
     private customerCareRepo: Repository<CustomerCare>,
-    @InjectRepository(LearningPackage)private learningPackageRepo: Repository<LearningPackage>,
-    @InjectRepository(Settings) private settingRepo: Repository<Settings>,
-   // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+    @InjectRepository(LearningPackage)
+    private learningPackageRepo: Repository<LearningPackage>,
+    @InjectRepository(Settings) private settingRepo: Repository<Settings>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
   async formatPayload(user: any, type: string) {
@@ -536,7 +536,6 @@ export class AdminService {
       gender,
       profilePicture,
     } = updateCustomerReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
 
     let foundUser: User, updatedCustomer: CustomerCare;
 
@@ -570,7 +569,6 @@ export class AdminService {
         ...foundUser.customerCare,
         email: email ?? foundUser.customerCare.email,
         phoneNumber: phoneNumber ?? foundUser.customerCare.phoneNumber,
-        updatedAt: date,
       });
 
       return {
@@ -750,7 +748,6 @@ export class AdminService {
     const { email, phoneNumber, isSuper } = updateAdminReq;
 
     let foundUser, updatedAdmin: Admin;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     try {
       foundUser = await this.adminRepo.findOne({
         where: { id },
@@ -781,7 +778,6 @@ export class AdminService {
         email: email ?? foundUser.email,
         phoneNumber: phoneNumber ?? foundUser.phoneNumber,
         isSuper: isSuper ?? foundUser.isSuper,
-        updatedAt: date,
       });
 
       return {
@@ -923,7 +919,6 @@ export class AdminService {
 
   async updateLessonProfile(id: string, updateLessonReq: updateLessonReq) {
     const { type } = updateLessonReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundLesson: Lesson, updatedLesson: Lesson;
 
     try {
@@ -953,7 +948,6 @@ export class AdminService {
       updatedLesson = await this.lessonRepo.save({
         ...foundLesson,
         type: type ?? foundLesson.type,
-        updatedAt: date,
       });
 
       return {
@@ -973,7 +967,6 @@ export class AdminService {
 
   async updateSubjectProfile(id: string, updateSubjectReq: updateSubjectReq) {
     const { type } = updateSubjectReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundSubject, updatedSubject: Subject;
 
     try {
@@ -1004,7 +997,6 @@ export class AdminService {
       updatedSubject = await this.subjectRepo.save({
         ...foundSubject,
         type: type ?? foundSubject.type,
-        updatedAt: date,
       });
 
       return {
@@ -1022,8 +1014,8 @@ export class AdminService {
     }
   }
 
-   //!:GANESH for admin module
-   async createTest(createTestReq: createTestReq) {
+  //!:GANESH for admin module
+  async createTest(createTestReq: createTestReq) {
     const { topic, lessonId } = createTestReq;
     let testCreated: Test, foundLessonId: Lesson;
     try {
@@ -1074,7 +1066,6 @@ export class AdminService {
   //!:GANESH "update test". for admin module
   async updateTestProfile(id: string, updateTestReq: updateTestReq) {
     const { topic } = updateTestReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundTest, updatedTest: Test;
 
     try {
@@ -1105,7 +1096,6 @@ export class AdminService {
       updatedTest = await this.testRepo.save({
         ...foundTest,
         topic: topic ?? foundTest.topic,
-        updatedAt: date,
       });
 
       return {
@@ -1153,7 +1143,6 @@ export class AdminService {
     updateMockTestReq: updateMockTestReq,
   ) {
     const { mockTestName } = updateMockTestReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundMockTest, updatedMockTest: Badge;
 
     try {
@@ -1184,7 +1173,6 @@ export class AdminService {
       updatedMockTest = await this.mockTestRepo.save({
         ...foundMockTest,
         mockTestName: mockTestName ?? foundMockTest.mockTestName,
-        updatedAt: date,
       });
 
       return {
@@ -1228,7 +1216,6 @@ export class AdminService {
 
   async updateBadgeProfile(id: string, updateBadgeReq: updateBadgeReq) {
     const { badgeName } = updateBadgeReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundBadge, updatedBadge: Badge;
 
     try {
@@ -1259,7 +1246,6 @@ export class AdminService {
       updatedBadge = await this.badgeRepo.save({
         ...foundBadge,
         badgeName: badgeName ?? foundBadge.badgeName,
-        updatedAt: date,
       });
 
       return {
@@ -1274,366 +1260,493 @@ export class AdminService {
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
-    }    
-  }
-
-
-//!:GANESH for admin module
-async createReportCard(createReportCardReq: createReportCardReq) {
-  const { remark, lessonId, subjectId, studentId, testId } =
-    createReportCardReq;
-  let reportCardCreated: Test,
-    foundLessonId: Lesson,
-    foundSubjectId: Subject,
-    foundTestId: Test,
-    foundStudentId: Student;
-  try {
-    foundStudentId = await this.studentRepo.findOne({
-      where: {
-        id: studentId,
-      },
-    });
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.failedToFetchStudents + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  if (!foundStudentId) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.failedToStudent,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  try {
-    foundTestId = await this.testRepo.findOne({
-      where: {
-        id: testId,
-      },
-    });
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.checkingTest + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  if (!foundTestId) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.failedToFetchTest,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  try {
-    foundLessonId = await this.lessonRepo.findOne({
-      where: {
-        id: lessonId,
-      },
-    });
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.checkingLesson + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  if (!foundLessonId) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.failedToFetchLesson,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  try {
-    foundSubjectId = await this.subjectRepo.findOne({
-      where: {
-        id: subjectId,
-      },
-    });
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.checkingSubject + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  if (!foundSubjectId) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.failedToFetchSubjectById,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  try {
-    reportCardCreated = await this.reportCardRepo.save({
-      remark,
-      lesson: foundLessonId,
-      student: foundStudentId,
-      test: foundTestId,
-      subject: foundSubjectId,
-    });
-  } catch (e) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.saveReportCard + e,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-
-  return {
-    reportCardCreated,
-    success: true,
-  };
-}
-
-//!:GANESH "update report card". for admin module
-async updateReportCardProfile(
-  id: string,
-  updateReportCardReq: updateReportCardReq,
-) {
-  const { remark } = updateReportCardReq;
-  var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-  let foundReoprtCard, updatedReportCard: ReportCard;
-
-  try {
-    foundReoprtCard = await this.reportCardRepo.findOne({
-      where: { id },
-    });
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.checkingReportCard + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-
-  if (!foundReoprtCard) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.reportCardNotFound,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-
-  try {
-    updatedReportCard = await this.reportCardRepo.save({
-      ...foundReoprtCard,
-      remark: remark ?? foundReoprtCard.remark,
-      updatedAt: date,
-    });
-
-    return {
-      success: true,
-      updatedReportCard,
-    };
-  } catch (e) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.updatingReportCard,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-}
-async createSubject(createSubjectReq: createSubjectReq) {
-  const { type, learningPackageId } = createSubjectReq;
-  let subjectCreated: Subject, foundLearningPackageId: LearningPackage;
-  try {
-    foundLearningPackageId = await this.learningPackageRepo.findOne({
-      where: {
-        id: learningPackageId,
-      },
-    });
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.checkingLearningPackage + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  if (!foundLearningPackageId) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.failedToFetchLearningPackage,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-  try {
-    subjectCreated = await this.subjectRepo.save({
-      type,
-      learningPackage: foundLearningPackageId,
-    });
-  } catch (e) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.saveSubject + e,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-
-  return {
-    subjectCreated,
-    success: true,
-  };
-}
-
-async updateChapterProfile(id: string, updateChapterReq: updateChapterReq) {
-  const { type } = updateChapterReq;
-  var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-  let foundChapter, updatedChapter: Chapter;
-
-  try {
-    foundChapter = await this.chapterRepo.findOne({
-      where: { id },
-    });
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.checkingChapter + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-
-  if (!foundChapter) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.chapterNotFound,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-
-  try {
-    updatedChapter = await this.chapterRepo.save({
-      ...foundChapter,
-      type: type ?? foundChapter.type,
-      updatedAt: date,
-    });
-
-    return {
-      success: true,
-      updatedChapter,
-    };
-  } catch (e) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.updatingChapter,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-}
-
-async updateSetting(id: string, updateSettingReq: updateSettingReq) {
-  const { type } = updateSettingReq;
-  var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
-  let foundSetting, updatedSetting: Settings;
-
-  try {
-    foundSetting = await this.settingRepo.findOne({
-      where: { id },
-    });
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.checkingSetting + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-
-  if (!foundSetting) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.settingNotFound,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-
-  try {
-    updatedSetting = await this.settingRepo.save({
-      ...foundSetting,
-      type: type ?? foundSetting.type,
-      updatedAt: date,
-    });
-
-    return {
-      success: true,
-      updatedSetting,
-    };
-  } catch (e) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.updatingSetting,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-}
-
-async getUserSetting(
-  id: string,
-  options: IPaginationOptions,
-): Promise<Pagination<Settings>> {
-  let results, total;
-
-  try {
-    
-    results = await this.settingRepo.createQueryBuilder('Setting');
-    if (id != null) {
-      results.where('id = :id', { id });
     }
-  } catch (exp) {
-    throw new HttpException(
-      {
-        status: HttpStatus.NOT_IMPLEMENTED,
-        error: adminErrors.failedToFetchSetting + exp,
-      },
-      HttpStatus.NOT_IMPLEMENTED,
-    );
   }
 
-  return paginate<Settings>(results, options);
-}
+  //!:GANESH for admin module
+  async createReportCard(createReportCardReq: createReportCardReq) {
+    const { remark, lessonId, subjectId, studentId, testId } =
+      createReportCardReq;
+    let reportCardCreated: Test,
+      foundLessonId: Lesson,
+      foundSubjectId: Subject,
+      foundTestId: Test,
+      foundStudentId: Student;
+    try {
+      foundStudentId = await this.studentRepo.findOne({
+        where: {
+          id: studentId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchStudents + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundStudentId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToStudent,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      foundTestId = await this.testRepo.findOne({
+        where: {
+          id: testId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundTestId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchTest,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      foundLessonId = await this.lessonRepo.findOne({
+        where: {
+          id: lessonId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingLesson + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundLessonId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchLesson,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      foundSubjectId = await this.subjectRepo.findOne({
+        where: {
+          id: subjectId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingSubject + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundSubjectId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchSubjectById,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      reportCardCreated = await this.reportCardRepo.save({
+        remark,
+        lesson: foundLessonId,
+        student: foundStudentId,
+        test: foundTestId,
+        subject: foundSubjectId,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveReportCard + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
 
+    return {
+      reportCardCreated,
+      success: true,
+    };
+  }
+
+  //!:GANESH "update report card". for admin module
+  async updateReportCardProfile(
+    id: string,
+    updateReportCardReq: updateReportCardReq,
+  ) {
+    const { remark } = updateReportCardReq;
+    let foundReoprtCard, updatedReportCard: ReportCard;
+
+    try {
+      foundReoprtCard = await this.reportCardRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingReportCard + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundReoprtCard) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.reportCardNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedReportCard = await this.reportCardRepo.save({
+        ...foundReoprtCard,
+        remark: remark ?? foundReoprtCard.remark,
+      });
+
+      return {
+        success: true,
+        updatedReportCard,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingReportCard,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+  async createSubject(createSubjectReq: createSubjectReq) {
+    const { type, learningPackageId } = createSubjectReq;
+    let subjectCreated: Subject, foundLearningPackageId: LearningPackage;
+    try {
+      foundLearningPackageId = await this.learningPackageRepo.findOne({
+        where: {
+          id: learningPackageId,
+        },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingLearningPackage + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    if (!foundLearningPackageId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchLearningPackage,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    try {
+      subjectCreated = await this.subjectRepo.save({
+        type,
+        learningPackage: foundLearningPackageId,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveSubject + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      subjectCreated,
+      success: true,
+    };
+  }
+
+  async updateChapterProfile(id: string, updateChapterReq: updateChapterReq) {
+    const { type } = updateChapterReq;
+    let foundChapter, updatedChapter: Chapter;
+
+    try {
+      foundChapter = await this.chapterRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingChapter + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundChapter) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.chapterNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedChapter = await this.chapterRepo.save({
+        ...foundChapter,
+        type: type ?? foundChapter.type,
+      });
+
+      return {
+        success: true,
+        updatedChapter,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingChapter,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async updateSetting(id: string, updateSettingReq: updateSettingReq) {
+    const { type } = updateSettingReq;
+    let foundSetting, updatedSetting: Settings;
+
+    try {
+      foundSetting = await this.settingRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingSetting + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundSetting) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.settingNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedSetting = await this.settingRepo.save({
+        ...foundSetting,
+        type: type ?? foundSetting.type,
+      });
+
+      return {
+        success: true,
+        updatedSetting,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingSetting,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async getUserSetting(
+    id: string,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Settings>> {
+    let results, total;
+
+    try {
+      results = await this.settingRepo.createQueryBuilder('Setting');
+      if (id != null) {
+        results.where('id = :id', { id });
+      }
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchSetting + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return paginate<Settings>(results, options);
+  }
+
+  async BulkRegistration(file) {
+    const filepath = file.path;
+    const excelData = excelToJSON({
+      sourceFile: filepath,
+      header: {
+        rows: 1,
+      },
+      columnToKey: {
+        '*': '{{columnHeader}}',
+      },
+    });
+
+    console.log(excelData);
+    // console.log(excelData.Data.length);
+    // console.log(excelData.Data[0]);
+    // console.log(file);
+
+    // for (let i = 0; i < excelData.Data.length; i++) {
+    // let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
+    // let firstName = excelData.Data[i].firstName;
+    // let lastName = excelData.Data[i].lastName;
+    // let phoneNumber = excelData.Data[i].phoneNumber;
+    // let email = excelData.Data[i].email;
+    // let password = excelData.Data[i].password;
+    // let countryId = excelData.Data[i].countryId;
+
+    // //* check if phone number is already taken
+    // if (!isEmpty(phoneNumber)) {
+    //   try {
+    //     duplicatePhoneNumber = await this.userRepo.findOne({
+    //       where: {
+    //         parent: {
+    //           phoneNumber,
+    //         },
+    //       },
+    //     });
+    //   } catch (e) {
+    //     Logger.error(authErrors.dupPNQuery + e).console();
+
+    //     throw new HttpException(
+    //       {
+    //         status: HttpStatus.CONFLICT,
+    //         error: authErrors.dupPNQuery + e,
+    //       },
+    //       HttpStatus.CONFLICT,
+    //     );
+    //   }
+
+    //   if (
+    //     duplicatePhoneNumber &&
+    //     duplicatePhoneNumber.parent.phoneNumber != phoneNumber
+    //   ) {
+    //     throw new HttpException(
+    //       {
+    //         status: HttpStatus.CONFLICT,
+    //         error: `phone number ( ${phoneNumber} ) is already taken`,
+    //       },
+    //       HttpStatus.CONFLICT,
+    //     );
+    //   }
+    // }
+
+    // //* check if email is already taken
+    // if (!isEmpty(email)) {
+    //   try {
+    //     duplicateEmail = await this.userRepo.findOne({
+    //       where: {
+    //         parent: {
+    //           email,
+    //         },
+    //       },
+    //     });
+    //   } catch {
+    //     Logger.error(authErrors.dupEmailQuery).console();
+
+    //     throw new HttpException(
+    //       {
+    //         status: HttpStatus.CONFLICT,
+    //         error: authErrors.dupEmailQuery,
+    //       },
+    //       HttpStatus.CONFLICT,
+    //     );
+    //   }
+
+    //   if (duplicateEmail && duplicateEmail.parent.email != email) {
+    //     throw new HttpException(
+    //       {
+    //         status: HttpStatus.CONFLICT,
+    //         error: phoneNumber + ' : ' + 'email already exists',
+    //       },
+    //       HttpStatus.CONFLICT,
+    //     );
+    //   }
+    // }
+
+    // //* create user account
+    // try {
+    //   password = bcrypt.hash(password, parseInt(BCRYPT_SALT));
+
+    //   const createdParent = await this.createParentProfile({
+    //     email,
+    //     phoneNumber,
+    //     password,
+    //     countryId,
+    //   });
+    //   //  console.log("3")
+    //   //  console.log(createdParent)
+    //   createdUser = await this.userRepo.save({
+    //     firstName,
+    //     lastName,
+    //     type: UserTypes.PARENT,
+    //     parent: createdParent,
+    //   });
+    // } catch (e) {
+    //   Logger.error(authErrors.saveUser + e).console();
+
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.NOT_IMPLEMENTED,
+    //       error: authErrors.saveUser + e,
+    //     },
+    //     HttpStatus.NOT_IMPLEMENTED,
+    //   );
+    // }
+
+    // mailer(createdUser.parent.email, 'Registration Successful', {
+    //   text: `An action to change your password was successful`,
+    // });
+
+    return {
+      // createdUser,
+      success: true,
+    };
+    // }
+  }
 }

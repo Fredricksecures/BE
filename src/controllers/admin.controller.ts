@@ -14,27 +14,11 @@ import {
   ParseIntPipe,
   UploadedFile,
   UseInterceptors,
-  UploadedFiles,
-  UsePipes,
-  ValidationPipe,
-  BadRequestException,
 } from '@nestjs/common';
-import { CreateParentReq } from '../dto/auth.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { generateRandomHash, isEmpty } from 'src/utils/helpers';
-import { CountryList } from 'src/entities/countryList.entity';
-import * as bcrypt from 'bcrypt';
-import { diskStorage, Multer } from 'multer';
+import { diskStorage } from 'multer';
 import { User } from '../entities/user.entity';
-import Logger from 'src/utils/logger';
-import { mailer } from 'src/utils/mailer';
 import { Parent } from 'src/entities/parent.entity';
-// import { createParentProfile } from 'src/services/auth.service'
-//const getStream = require('into-stream');
-const excelToJSON = require('convert-excel-to-json');
-const XLSX = require('xlsx');
-import readXlsxFile from 'read-excel-file';
-//import { excelToJSON } from '@nestjs/convert-excel-to-json';
+
 import {
   UsersSessionsReq,
   UsersSessionsRes,
@@ -61,25 +45,16 @@ import {
   createSubjectReq,
   updateChapterReq,
   updateSettingReq,
-  SampleDto,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
 import { Request, Response } from 'express';
-import {
-  adminErrors,
-  adminMessages,
-  authErrors,
-  authMessages,
-} from 'src/utils/messages';
+import { adminErrors, adminMessages } from 'src/utils/messages';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { UtilityService } from '../services/utility.service';
-//import { Multer } from 'multer';
-//const multer  = require('multer')
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-
-const { BCRYPT_SALT } = process.env;
+import { Repository } from 'typeorm';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin')
 export class AdminController {
@@ -781,6 +756,7 @@ export class AdminController {
       );
     }
   }
+
   @Patch('update-setting/:id')
   async updateSetting(
     @Req() req: Request,
@@ -812,6 +788,7 @@ export class AdminController {
       );
     }
   }
+
   @Get('user-setting')
   async getUserSetting(
     @Req() req: Request,
@@ -830,10 +807,6 @@ export class AdminController {
       meta: users.meta,
     });
   }
-  @Post('/')
-  public async createUser() {
-    return 'Hello';
-  }
 
   @Post('bulk-upload')
   @UseInterceptors(
@@ -846,170 +819,16 @@ export class AdminController {
       }),
     }),
   )
-  async bulkUpload(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
-    const filepath = file.path;
-    const excelData = excelToJSON({
-      sourceFile: filepath,
-      header: {
-        rows: 1,
-      },
-      columnToKey: {
-        '*': '{{columnHeader}}',
-      },
+  async bulkUpload(
+    @UploadedFile() file: Express.Multer.File,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const bulkUsers = await this.adminService.BulkRegistration(file);
+
+    resp.json({
+      status: HttpStatus.OK,
+      message: adminMessages.bulk,
+      bulkUsers,
     });
-    console.log(excelData);
-    console.log(excelData.Data.length);
-    console.log(excelData.Data[0]);
-
-    for (let i = 0; i < excelData.Data.length; i++) {
-      let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
-      let firstName = excelData.Data[i].firstName;
-      let lastName = excelData.Data[i].lastName;
-      let phoneNumber = excelData.Data[i].phoneNumber;
-      let email = excelData.Data[i].email;
-      let password = excelData.Data[i].password;
-      let countryId = excelData.Data[i].countryId;
-      //* check if phone number is already taken
-      if (!isEmpty(phoneNumber)) {
-        try {
-          duplicatePhoneNumber = await this.userRepo.findOne({
-            where: {
-              parent: {
-                phoneNumber,
-              },
-            },
-          });
-        } catch (e) {
-          Logger.error(authErrors.dupPNQuery + e).console();
-
-          throw new HttpException(
-            {
-              status: HttpStatus.CONFLICT,
-              error: authErrors.dupPNQuery + e,
-            },
-            HttpStatus.CONFLICT,
-          );
-        }
-
-        if (
-          duplicatePhoneNumber &&
-          duplicatePhoneNumber.parent.phoneNumber != phoneNumber
-        ) {
-          throw new HttpException(
-            {
-              status: HttpStatus.CONFLICT,
-              error: `phone number ( ${phoneNumber} ) is already taken`,
-            },
-            HttpStatus.CONFLICT,
-          );
-        }
-      }
-
-      //* check if email is already taken
-      if (!isEmpty(email)) {
-        try {
-          duplicateEmail = await this.userRepo.findOne({
-            where: {
-              parent: {
-                email,
-              },
-            },
-          });
-        } catch {
-          Logger.error(authErrors.dupEmailQuery).console();
-
-          throw new HttpException(
-            {
-              status: HttpStatus.CONFLICT,
-              error: authErrors.dupEmailQuery,
-            },
-            HttpStatus.CONFLICT,
-          );
-        }
-
-        if (duplicateEmail && duplicateEmail.parent.email != email) {
-          throw new HttpException(
-            {
-              status: HttpStatus.CONFLICT,
-              error: phoneNumber + ' : ' + 'email already exists',
-            },
-            HttpStatus.CONFLICT,
-          );
-        }
-      }
-
-      //* create user account
-      try {
-        password = bcrypt.hash(password, parseInt(BCRYPT_SALT));
-
-        const createdParent = await this.createParentProfile({
-          email,
-          phoneNumber,
-          password,
-          countryId,
-        });
-        //  console.log("3")
-        //  console.log(createdParent)
-        createdUser = await this.userRepo.save({
-          firstName,
-          lastName,
-          type: UserTypes.PARENT,
-          parent: createdParent,
-        });
-      } catch (e) {
-        Logger.error(authErrors.saveUser + e).console();
-
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: authErrors.saveUser + e,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
-
-      mailer(createdUser.parent.email, 'Registration Successful', {
-        text: `An action to change your password was successful`,
-      });
-
-      return {
-        createdUser,
-        success: true,
-      };
-    }
-  }
-
-  async createParentProfile(createParentReq: CreateParentReq): Promise<Parent> {
-    const { phoneNumber, email, password, countryId } = createParentReq;
-    let createdParent: Parent;
-
-    const country: CountryList = await this.utilityService.getCountryList(
-      countryId,
-    );
-
-    try {
-      createdParent = await this.parentRepo.save({
-        phoneNumber,
-        email,
-        password,
-        passwordResetPin: '',
-        address: '',
-        country,
-        students: [],
-      });
-    } catch (e) {
-      Logger.error(authErrors.createdParent + e).console();
-
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.createdParent + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    return createdParent;
   }
 }
