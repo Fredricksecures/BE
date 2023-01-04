@@ -39,13 +39,6 @@ export const jwtConfig = JwtModule.register({
 export const ModuleConfigs = {
   app: {
     entities: [
-      // User,
-      // Student,
-      // Parent,
-      // Device,
-      // CountryList,
-      // Session,
-      // LearningPackage,
       Subscription,
       CustomerCare,
       Invoice,
@@ -62,7 +55,7 @@ export const ModuleConfigs = {
       Badge,
       MockTest,
       Review,
-      Settings
+      Settings,
     ],
   },
   utility: {
@@ -78,7 +71,8 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
-      Settings
+      Settings,
+      Badge,
     ],
   },
   admin: {
@@ -100,7 +94,7 @@ export const ModuleConfigs = {
       Badge,
       MockTest,
       Class,
-      Settings
+      Settings,
     ],
   },
   subscription: {
@@ -116,17 +110,13 @@ export const ModuleConfigs = {
       Student,
       ReportCard,
       Leaderboard,
-      Badge,
       MockTest,
       Class,
-      Review
+      Review,
     ],
   },
   classroom: {
-    entities: [
-      Class,
-      
-    ],
+    entities: [Class],
   },
   user: {
     entities: [
@@ -138,7 +128,8 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
-      Settings
+      Settings,
+      Badge,
     ],
   },
 };

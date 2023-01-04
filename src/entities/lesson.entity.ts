@@ -40,10 +40,6 @@ export class Lesson {
 
   @OneToMany(() => Review, (review) => review.lesson)
   reviews?: Review[];
-  
-  @OneToMany(() => ReportCard, (reportCard) => reportCard.lesson)
-  reportCard?: ReportCard[];
-
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

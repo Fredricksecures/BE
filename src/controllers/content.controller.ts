@@ -13,20 +13,10 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
 } from '@nestjs/common';
-import {
-  GetAllUsersSessionsReq,
-  GetAllUsersSessionsRes,
-  updateMockTestReq
-} from 'src/dto/admin.dto';
-import {
-  updateLeaderboardReq,
-  addReviewReq
-} from 'src/dto/content.dto';
+import { updateMockTestReq } from 'src/dto/admin.dto';
+import { updateLeaderboardReq, addReviewReq } from 'src/dto/content.dto';
 import { Request, Response } from 'express';
-import {
-  contentMessages,
-  contentErrors,
-} from 'src/utils/messages';
+import { contentMessages, contentErrors } from 'src/utils/messages';
 import { ContentService } from 'src/services/content.service';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
@@ -85,7 +75,6 @@ export class ContentController {
     });
   }
 
- 
   @Get('tests')
   async getTests(
     @Req() req: Request,
@@ -102,7 +91,7 @@ export class ContentController {
       meta: tests.meta,
     });
   }
- 
+
   @Get('report-cards')
   async getReportCards(
     @Req() req: Request,
@@ -159,30 +148,12 @@ export class ContentController {
     @Query('id') id,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const tests = await this.contentService.getLeaderboard(id,options);
+    const tests = await this.contentService.getLeaderboard(id, options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.leaderboardFetchSuccess,
       tests: tests.items,
       meta: tests.meta,
-    });
-  }
-
-  @Get('badges')
-  async getBadges(
-    @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
-    @Query('id') id,
-  ) {
-    const options: IPaginationOptions = { limit, page };
-    const badges = await this.contentService.getBadge(id,options);
-    resp.json({
-      status: HttpStatus.OK,
-      message: contentMessages.badgeFetchSuccess,
-      badges: badges.items,
-      meta: badges.meta,
     });
   }
 
@@ -238,7 +209,7 @@ export class ContentController {
     @Query('id') id,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const reviews = await this.contentService.getReviews(id,options);
+    const reviews = await this.contentService.getReviews(id, options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.reviewsFetchSuccess,
@@ -253,10 +224,12 @@ export class ContentController {
     @Body() body: updateMockTestReq,
     @Param('id') id,
   ) {
-    let { updatedMockTest, success } =
-      await this.contentService.updateMockTest(id, {
+    let { updatedMockTest, success } = await this.contentService.updateMockTest(
+      id,
+      {
         ...req.body,
-      });
+      },
+    );
 
     if (success) {
       resp.json({
@@ -275,5 +248,4 @@ export class ContentController {
       );
     }
   }
- 
 }
