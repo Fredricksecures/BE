@@ -49,36 +49,30 @@ export class UtilityService {
     return country;
   }
 
-  // async getLearningPackages(
-  //   packageId: string,
-  // ): Promise<Device | Array<Device>> {
-  //   let foundPackages: Device | Array<Device>;
+  async getDevice(deviceId: string) {
+    let foundDevice: Device;
 
-  //   console.log(packageId);
+    try {
+      foundDevice = await this.deviceRepo.findOne({
+        where: {
+          id: deviceId,
+        },
+      });
+    } catch (exp) {
+      Logger.error(utilityErrors.getDevice + exp);
 
-  //   try {
-  //     foundPackages =
-  //       packageId == undefined
-  //         ?await this.lPLRepo.find({})
-  //         : await this.lPLRepo.findOne({
-  //           where: {
-  //             id: packageId,
-  //           },
-  //         });
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: utilityErrors.getDevice + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
 
-  //     return foundPackages;
-  //   } catch (exp) {
-  //     Logger.error(utilityErrors.getPackageList + exp);
+    return foundDevice;
+  }
 
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.NOT_IMPLEMENTED,
-  //         error: utilityErrors.getPackageList + exp,
-  //       },
-  //       HttpStatus.NOT_IMPLEMENTED,
-  //     );
-  //   }
-  // }
   async getLearningPackages(
     packageId: string,
     options: IPaginationOptions,
@@ -113,7 +107,7 @@ export class UtilityService {
     let foundCountries;
     try {
       foundCountries =
-      supported == undefined
+        supported == undefined
           ? await this.countryLRepo.createQueryBuilder('CountryList')
           : await this.countryLRepo
               .createQueryBuilder('CountryList')
@@ -132,5 +126,4 @@ export class UtilityService {
       );
     }
   }
-
 }

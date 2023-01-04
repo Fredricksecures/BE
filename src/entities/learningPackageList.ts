@@ -1,19 +1,17 @@
+import { PackageTypes } from 'src/utils/enums';
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
+  OneToMany,
 } from 'typeorm';
-import { Student } from './student.entity';
-import { Lesson } from './lesson.entity';
 import { Subject } from './subject.entity';
-import { Test } from './test.entity';
 
-@Entity('report-cards')
-export class ReportCard {
-  constructor(data?: ReportCard) {
+@Entity('learning-package-list')
+export class LearningPackageList {
+  constructor(data?: LearningPackageList) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -25,14 +23,17 @@ export class ReportCard {
   id?: string;
 
   @Column({ type: 'varchar' })
-  remark?: string;
+  name?: string;
 
+  @Column({ type: 'varchar' })
+  price?: string;
 
-  @ManyToOne(() => Student, (student) => student.reportCard)
-  student?: Student;
-
-  @ManyToOne(() => Test, (test) => test.reportCard)
-  test?: Test;
+  @Column({
+    type: 'enum',
+    enum: PackageTypes,
+    default: PackageTypes.PRIMARY_SCHOOL,
+  })
+  type?: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
