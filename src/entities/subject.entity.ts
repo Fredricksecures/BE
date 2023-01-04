@@ -37,10 +37,6 @@ export class Subject {
   @OneToMany(() => Chapter, (Chapter) => Chapter.subject)
   chapters?: Chapter[];
 
-  @OneToMany(() => ReportCard, (reportCard) => reportCard.subject)
-  reportCard?: ReportCard[];
-
-
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
 

@@ -19,10 +19,10 @@ var moment = require('moment');
 import {
   updateLeaderboardReq,
   addReviewReq,
-  updateMockTestReq
+  updateMockTestReq,
 } from 'src/dto/content.dto';
 import { Lesson } from 'src/entities/lesson.entity';
-import { contentErrors,adminErrors } from 'src/utils/messages';
+import { contentErrors, adminErrors } from 'src/utils/messages';
 import { Chapter } from 'src/entities/chapter.entity';
 import { Subject } from 'src/entities/subject.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
@@ -42,12 +42,12 @@ export class ContentService {
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
     @InjectRepository(Test) private testRepo: Repository<Test>,
-    @InjectRepository(ReportCard)private reportCardRepo: Repository<ReportCard>,
-    @InjectRepository(Leaderboard)private leaderboardRepo: Repository<Leaderboard>,
-    @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
+    @InjectRepository(ReportCard)
+    private reportCardRepo: Repository<ReportCard>,
+    @InjectRepository(Leaderboard)
+    private leaderboardRepo: Repository<Leaderboard>,
     @InjectRepository(MockTest) private mockTestRepo: Repository<MockTest>,
-    @InjectRepository(Review) private reviewRepo: Repository<Review>,
-    // @InjectRepository(Parent) private parentRepo: Repository<Parent>, // @InjectRepository(User) private userRepo: Repository<User>, // @InjectRepository(Session) private sessionRepo: Repository<Session>, // @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Review) private reviewRepo: Repository<Review>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>, // @InjectRepository(User) private userRepo: Repository<User>, // @InjectRepository(Session) private sessionRepo: Repository<Session>, // @InjectRepository(Student) private studentRepo: Repository<Student>,
   ) {}
 
   async getChapters(options: IPaginationOptions): Promise<Pagination<Chapter>> {
@@ -113,7 +113,7 @@ export class ContentService {
     }
     return paginate<Test>(foundTests, options);
   }
-  
+
   async getReportCard(
     options: IPaginationOptions,
   ): Promise<Pagination<ReportCard>> {
@@ -193,45 +193,28 @@ export class ContentService {
     options: IPaginationOptions,
   ): Promise<Pagination<Leaderboard>> {
     let foundLeaderboards;
-    try {
-      foundLeaderboards = 
-      id == undefined
-      ? await this.leaderboardRepo.createQueryBuilder('Leaderboard')
-      : await this.badgeRepo.createQueryBuilder('Leaderboard')
-        .where('Leaderboard.id = :id', { id });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchLeaderboard + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
+
+    //:
+    // try {
+    //   foundLeaderboards =
+    //     id == undefined
+    //       ? await this.leaderboardRepo.createQueryBuilder('Leaderboard')
+    //       : await this.badgeRepo
+    //           .createQueryBuilder('Leaderboard')
+    //           .where('Leaderboard.id = :id', { id });
+    // } catch (exp) {
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.NOT_IMPLEMENTED,
+    //       error: contentErrors.failedToFetchLeaderboard + exp,
+    //     },
+    //     HttpStatus.NOT_IMPLEMENTED,
+    //   );
+    // }
+
     return paginate<Leaderboard>(foundLeaderboards, options);
   }
 
-  async getBadge(id:string, options: IPaginationOptions): Promise<Pagination<Badge>> {
-    let foundBadges;
-    console.log(id)
-    try {
-      foundBadges = 
-      id == undefined
-          ? await this.badgeRepo.createQueryBuilder('Badge')
-          : await this.badgeRepo.createQueryBuilder('Badge')
-            .where('Badge.id = :id', { id });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: contentErrors.failedToFetchBadge + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    return paginate<Badge>(foundBadges, options);
-  }
- 
   async getMockTest(
     options: IPaginationOptions,
   ): Promise<Pagination<MockTest>> {
@@ -249,7 +232,7 @@ export class ContentService {
     }
     return paginate<MockTest>(foundMockTests, options);
   }
-  
+
   async addReview(addReviewReq: addReviewReq) {
     const { lessonReview, lessonId } = addReviewReq;
     let reviewCreated: Review, foundLessonId: Lesson;
@@ -291,22 +274,26 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-  
+
     return {
       reviewCreated,
       success: true,
     };
   }
-   
-  async getReviews(id:string, options: IPaginationOptions): Promise<Pagination<Badge>> {
+
+  async getReviews(
+    id: string,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Badge>> {
     let foundReviews;
-    console.log(id)
+    console.log(id);
     try {
-      foundReviews = 
-      id == undefined
+      foundReviews =
+        id == undefined
           ? await this.reviewRepo.createQueryBuilder('Review')
-          : await this.reviewRepo.createQueryBuilder('Review')
-            .where('Review.id = :id', { id });
+          : await this.reviewRepo
+              .createQueryBuilder('Review')
+              .where('Review.id = :id', { id });
     } catch (exp) {
       throw new HttpException(
         {
@@ -318,12 +305,9 @@ export class ContentService {
     }
     return paginate<Badge>(foundReviews, options);
   }
-  
-  async updateMockTest(
-    id: string,
-    updateMockTestReq: updateMockTestReq,
-  ) {
-    const { mockTestName,subject } = updateMockTestReq;
+
+  async updateMockTest(id: string, updateMockTestReq: updateMockTestReq) {
+    const { mockTestName, subject } = updateMockTestReq;
     var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundMockTest, updatedMockTest: MockTest;
 
@@ -373,6 +357,4 @@ export class ContentService {
       );
     }
   }
-
- 
 }

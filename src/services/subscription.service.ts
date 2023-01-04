@@ -33,18 +33,22 @@ export class SubscriptionService {
   ): Promise<CreateSubscriptionRes> {
     return;
   }
-  
+
   async getSubscription(subscriptionId: string): Promise<Subscription> {
     return;
   }
 
-  async getSubscriptions(options: IPaginationOptions) : Promise<Pagination<Subscription>>{
+  async getSubscriptions(
+    options: IPaginationOptions,
+  ): Promise<Pagination<Subscription>> {
     let foundSubscriptions;
 
     try {
-      foundSubscriptions = await this.subscriptionRepo.createQueryBuilder('Subscription');
-        //relations: ['learningPackages'],
-     // });
+      foundSubscriptions = await this.subscriptionRepo.createQueryBuilder(
+        'Subscription',
+      );
+      //relations: ['learningPackages'],
+      // });
     } catch (exp) {
       throw new HttpException(
         {
@@ -96,12 +100,18 @@ export class SubscriptionService {
   //   return {Success:true,subscriptions:foundSubscriptions}
   // }
 
-
-  async getSubscriptionHistory(subscriptionId: string, options: IPaginationOptions, deatils: string, date: Date): Promise<Pagination<Invoice>> {
+  async getSubscriptionHistory(
+    subscriptionId: string,
+    options: IPaginationOptions,
+    deatils: string,
+    date: Date,
+  ): Promise<Pagination<Invoice>> {
     let foundInvoices;
 
     try {
-      foundInvoices = await this.invoicesRepo.createQueryBuilder('Invoice').where('Invoice.subscriptionId = :subscriptionId', { subscriptionId })
+      foundInvoices = await this.invoicesRepo
+        .createQueryBuilder('Invoice')
+        .where('Invoice.subscriptionId = :subscriptionId', { subscriptionId });
       // foundInvoices = await this.invoicesRepo.find({
       //   where: {
       //     subscription: {
@@ -128,7 +138,6 @@ export class SubscriptionService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return  paginate<Invoice>(foundInvoices, options)
-    
+    return paginate<Invoice>(foundInvoices, options);
   }
 }
