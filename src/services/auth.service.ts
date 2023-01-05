@@ -235,7 +235,7 @@ export class AuthService {
     //* Register Basic User Details
     let { firstName, lastName, phoneNumber, email, password, countryId } =
       regUserReq;
-    console.log(countryId)
+
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
     //* check if phone number is already taken
@@ -260,10 +260,7 @@ export class AuthService {
         );
       }
 
-      if (
-        duplicatePhoneNumber &&
-        duplicatePhoneNumber.parent.phoneNumber != phoneNumber
-      ) {
+      if (duplicatePhoneNumber) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
@@ -295,8 +292,8 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-
-      if (duplicateEmail && duplicateEmail.parent.email != email) {
+      //console.log(duplicatePhoneNumber.parent)
+      if (duplicateEmail) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
@@ -335,9 +332,9 @@ export class AuthService {
       );
     }
 
-    mailer(createdUser.parent.email, 'Registration Successful', {
-      text: `An action to change your password was successful`,
-    });
+    // mailer(createdUser.parent.email, 'Registration Successful', {
+    //   text: `An action to change your password was successful`,
+    // });
 
     return {
       createdUser,
