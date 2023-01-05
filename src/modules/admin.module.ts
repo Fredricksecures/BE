@@ -4,6 +4,7 @@ import { AdminController } from '../controllers/admin.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, ModuleConfigs } from 'src/utils/constants';
 import { UtilityService } from 'src/services/utility.service';
+import { UserService } from 'src/services/user.service';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { UtilityService } from 'src/services/utility.service';
     TypeOrmModule.forFeature(ModuleConfigs['admin'].entities),
   ],
   controllers: [AdminController],
-  providers: [AdminService, UtilityService],
+  providers: [AdminService, UtilityService, UserService],
 })
 export class AdminModule {}

@@ -36,10 +36,8 @@ export class UserService {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
     @InjectRepository(Parent) private parentRepo: Repository<Parent>,
-    @InjectRepository(LearningPackage)
-    private packageRepo: Repository<LearningPackage>,
-    @InjectRepository(Subscription)
-    private subscriptionRepo: Repository<Subscription>,
+    @InjectRepository(LearningPackage)private packageRepo: Repository<LearningPackage>,
+    @InjectRepository(Subscription)private subscriptionRepo: Repository<Subscription>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
   ) {
     this.test();

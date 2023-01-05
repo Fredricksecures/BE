@@ -95,6 +95,8 @@ export const ModuleConfigs = {
       MockTest,
       Class,
       Settings,
+      Subscription
+     
     ],
   },
   subscription: {
@@ -128,7 +130,6 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
-      Settings,
       Badge,
     ],
   },

@@ -16,8 +16,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { diskStorage } from 'multer';
-import { User } from '../entities/user.entity';
-import { Parent } from 'src/entities/parent.entity';
+
 
 import {
   UsersSessionsReq,
@@ -51,18 +50,12 @@ import { UserTypes } from 'src/utils/enums';
 import { Request, Response } from 'express';
 import { adminErrors, adminMessages } from 'src/utils/messages';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
-import { UtilityService } from '../services/utility.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin')
 export class AdminController {
   constructor(
     private readonly adminService: AdminService,
-    private readonly utilityService: UtilityService,
-    @InjectRepository(User) private userRepo: Repository<User>,
-    @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
   @Get('user-sessions')

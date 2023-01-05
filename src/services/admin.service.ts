@@ -9,6 +9,8 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { UserService } from './user.service';
+import { mailer } from 'src/utils/mailer';
 import {
   GetAllUsersSessionsReq,
   UsersSessionsReq,
@@ -33,7 +35,7 @@ import {
   updateChapterReq,
   updateSettingReq,
 } from 'src/dto/admin.dto';
-import { adminMessages, adminErrors } from 'src/utils/messages';
+import { adminMessages, adminErrors, authErrors, authMessages } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Lesson } from 'src/entities/lesson.entity';
@@ -55,6 +57,7 @@ import { Class } from 'src/entities/class.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Settings } from 'src/entities/settings.entity';
+import { Subscription } from 'src/entities/subscription.entity';
 const excelToJSON = require('convert-excel-to-json');
 
 config();
@@ -65,18 +68,17 @@ export class AdminService {
   constructor(
     private jwtService: JwtService,
     private readonly utilityService: UtilityService,
+    private readonly userService: UserService,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
-    @InjectRepository(Parent) private parentRepo: Repository<Parent>,
     @InjectRepository(Lesson) private lessonRepo: Repository<Lesson>,
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
     @InjectRepository(Test) private testRepo: Repository<Test>,
     @InjectRepository(MockTest) private mockTestRepo: Repository<MockTest>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
-    @InjectRepository(Class) private classRepo: Repository<Class>,
     @InjectRepository(ReportCard)
     private reportCardRepo: Repository<ReportCard>,
     @InjectRepository(CustomerCare)
@@ -1626,123 +1628,124 @@ export class AdminService {
       },
     });
 
-    console.log(excelData);
+    //console.log(excelData);
     // console.log(excelData.Data.length);
     // console.log(excelData.Data[0]);
     // console.log(file);
 
-    // for (let i = 0; i < excelData.Data.length; i++) {
-    // let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
-    // let firstName = excelData.Data[i].firstName;
-    // let lastName = excelData.Data[i].lastName;
-    // let phoneNumber = excelData.Data[i].phoneNumber;
-    // let email = excelData.Data[i].email;
-    // let password = excelData.Data[i].password;
-    // let countryId = excelData.Data[i].countryId;
+    for (let i = 0; i < excelData.Data.length; i++) {
+    let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
+    let firstName = excelData.Data[i].firstName;
+    let lastName = excelData.Data[i].lastName;
+    let phoneNumber = excelData.Data[i].phoneNumber;
+    let email = excelData.Data[i].email;
+    let password = excelData.Data[i].password;
+    let countryId = excelData.Data[i].countryId;
+      
+    //* check if phone number is already taken
+    if (isEmpty(phoneNumber)) {
+      try {
+        duplicatePhoneNumber = await this.userRepo.findOne({
+          where: {
+            parent: {
+              phoneNumber,
+            },
+          },
+        });
+      
+      } catch (e) {
+        Logger.error(authErrors.dupPNQuery + e).console();
 
-    // //* check if phone number is already taken
-    // if (!isEmpty(phoneNumber)) {
-    //   try {
-    //     duplicatePhoneNumber = await this.userRepo.findOne({
-    //       where: {
-    //         parent: {
-    //           phoneNumber,
-    //         },
-    //       },
-    //     });
-    //   } catch (e) {
-    //     Logger.error(authErrors.dupPNQuery + e).console();
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: authErrors.dupPNQuery + e,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+      
+      if (duplicatePhoneNumber){
+       // duplicatePhoneNumber && duplicatePhoneNumber.parent.phoneNumber != phoneNumber) {
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: `phone number ( ${phoneNumber} ) is already taken. Change phone number in excel at line ${i+1}`,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+      
+    }
 
-    //     throw new HttpException(
-    //       {
-    //         status: HttpStatus.CONFLICT,
-    //         error: authErrors.dupPNQuery + e,
-    //       },
-    //       HttpStatus.CONFLICT,
-    //     );
-    //   }
+    //* check if email is already taken
+    if (!isEmpty(email)) {
+      try {
+        duplicateEmail = await this.userRepo.findOne({
+          where: {
+            parent: {
+              email,
+            },
+          },
+        });
+        
+      } catch {
+        Logger.error(authErrors.dupEmailQuery).console();
 
-    //   if (
-    //     duplicatePhoneNumber &&
-    //     duplicatePhoneNumber.parent.phoneNumber != phoneNumber
-    //   ) {
-    //     throw new HttpException(
-    //       {
-    //         status: HttpStatus.CONFLICT,
-    //         error: `phone number ( ${phoneNumber} ) is already taken`,
-    //       },
-    //       HttpStatus.CONFLICT,
-    //     );
-    //   }
-    // }
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: authErrors.dupEmailQuery,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
 
-    // //* check if email is already taken
-    // if (!isEmpty(email)) {
-    //   try {
-    //     duplicateEmail = await this.userRepo.findOne({
-    //       where: {
-    //         parent: {
-    //           email,
-    //         },
-    //       },
-    //     });
-    //   } catch {
-    //     Logger.error(authErrors.dupEmailQuery).console();
+      if (duplicateEmail ) {
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: `Email ( ${email} ) is already taken. Change email in excel at line ${i+1}`,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
 
-    //     throw new HttpException(
-    //       {
-    //         status: HttpStatus.CONFLICT,
-    //         error: authErrors.dupEmailQuery,
-    //       },
-    //       HttpStatus.CONFLICT,
-    //     );
-    //   }
+    //* create user account
+    try {
+      password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
+      
+      const createdParent = await this.userService.createParentProfile({
+        email,
+        phoneNumber,
+        password,
+        countryId,
+      });
+      //  console.log("3")
+      //  console.log(createdParent)
+      createdUser = await this.userRepo.save({
+        firstName,
+        lastName,
+        type: UserTypes.PARENT,
+        parent: createdParent,
+      });
+    } catch (e) {
+      Logger.error(authErrors.saveUser + e).console();
 
-    //   if (duplicateEmail && duplicateEmail.parent.email != email) {
-    //     throw new HttpException(
-    //       {
-    //         status: HttpStatus.CONFLICT,
-    //         error: phoneNumber + ' : ' + 'email already exists',
-    //       },
-    //       HttpStatus.CONFLICT,
-    //     );
-    //   }
-    // }
-
-    // //* create user account
-    // try {
-    //   password = bcrypt.hash(password, parseInt(BCRYPT_SALT));
-
-    //   const createdParent = await this.createParentProfile({
-    //     email,
-    //     phoneNumber,
-    //     password,
-    //     countryId,
-    //   });
-    //   //  console.log("3")
-    //   //  console.log(createdParent)
-    //   createdUser = await this.userRepo.save({
-    //     firstName,
-    //     lastName,
-    //     type: UserTypes.PARENT,
-    //     parent: createdParent,
-    //   });
-    // } catch (e) {
-    //   Logger.error(authErrors.saveUser + e).console();
-
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_IMPLEMENTED,
-    //       error: authErrors.saveUser + e,
-    //     },
-    //     HttpStatus.NOT_IMPLEMENTED,
-    //   );
-    // }
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.saveUser + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
 
     // mailer(createdUser.parent.email, 'Registration Successful', {
     //   text: `An action to change your password was successful`,
     // });
-
+  }
     return {
       // createdUser,
       success: true,

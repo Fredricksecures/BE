@@ -26,7 +26,7 @@ import {
 
 @Controller('subscription')
 export class SubscriptionController {
-  constructor(private readonly authService: SubscriptionService) {}
+  constructor(private readonly SubscriptionService: SubscriptionService) {}
 
   @Get('all')
   async getSubscriptions(
@@ -37,7 +37,7 @@ export class SubscriptionController {
   ) {
     const options: IPaginationOptions = { limit, page };
     const  subscriptions =
-      await this.authService.getSubscriptions(options);
+      await this.SubscriptionService.getSubscriptions(options);
     console.log(subscriptions.items)
     if (subscriptions) {
       resp.json({
@@ -93,7 +93,7 @@ export class SubscriptionController {
     @Param('subscriptionId') subscriptionId,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const history = await this.authService.getSubscriptionHistory(
+    const history = await this.SubscriptionService.getSubscriptionHistory(
       subscriptionId,
       options,
       filters.details,
@@ -125,7 +125,7 @@ export class SubscriptionController {
     @Body() body: CreateSubscriptionReq,
   ) {
     const { success, createdSubscription } =
-      await this.authService.createSubscription(body);
+      await this.SubscriptionService.createSubscription(body);
 
     if (success) {
       resp.json({
