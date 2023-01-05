@@ -247,6 +247,7 @@ export class AuthService {
               phoneNumber,
             },
           },
+          relations: ['parent'],
         });
       } catch (e) {
         Logger.error(authErrors.dupPNQuery + e).console();
