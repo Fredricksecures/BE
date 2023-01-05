@@ -245,8 +245,10 @@ export class AuthService {
           where: {
             parent: {
               phoneNumber,
-            },
+              
+            }, 
           },
+          relations: ['parent'],
         });
       } catch (e) {
         Logger.error(authErrors.dupPNQuery + e).console();
@@ -260,7 +262,7 @@ export class AuthService {
         );
       }
 
-      if (duplicatePhoneNumber) {
+      if (duplicatePhoneNumber && duplicatePhoneNumber.parent.phoneNumber == phoneNumber) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
@@ -280,6 +282,7 @@ export class AuthService {
               email,
             },
           },
+          relations: ['parent'],
         });
       } catch {
         Logger.error(authErrors.dupEmailQuery).console();
@@ -293,11 +296,11 @@ export class AuthService {
         );
       }
       //console.log(duplicatePhoneNumber.parent)
-      if (duplicateEmail) {
+      if (duplicateEmail && duplicateEmail.parent.email == email) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
-            error: phoneNumber + ' : ' + 'email already exists',
+            error: email + ' : ' + 'email already exists',
           },
           HttpStatus.CONFLICT,
         );

@@ -1629,7 +1629,7 @@ export class AdminService {
         '*': '{{columnHeader}}',
       },
     });
-    let regResp;
+    let regResp;let response;
       Promise.all(
         excelData.Data.map(async (user: any) => {
           regResp = await this.authService.registerUser({
@@ -1641,11 +1641,12 @@ export class AdminService {
             confirmPassword: user.password,
             countryId: user.countryId
           });
-         // return regResp.createdUser;
+          console.log(regResp)
+          response =  regResp.createdUser;
         })
       )
     return {
-      user:regResp,
+      user:response,
       success: true,
     };
   }
