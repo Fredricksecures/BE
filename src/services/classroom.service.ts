@@ -6,7 +6,7 @@ import {IPaginationOptions,paginate,Pagination,} from 'nestjs-typeorm-paginate';
 import { Class } from 'src/entities/class.entity';
 import { classroomMessages,classroomErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
-  var moment = require('moment');
+  
   @Injectable()
 export class ClassroomService {
   constructor(

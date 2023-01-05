@@ -267,11 +267,11 @@ export class UserService {
   async createParentProfile(createParentReq: CreateParentReq): Promise<Parent> {
     const { phoneNumber, email, password, countryId } = createParentReq;
     let createdParent: Parent;
-
+    
     const country: CountryList = await this.utilityService.getCountryList(
       countryId,
     );
-
+      
     try {
       createdParent = await this.parentRepo.save({
         phoneNumber,
@@ -314,7 +314,7 @@ export class UserService {
     options: IPaginationOptions,
   ): Promise<Pagination<Badge>> {
     let foundBadges;
-    console.log(id);
+   
     try {
       foundBadges =
         id == undefined
@@ -439,10 +439,7 @@ export class UserService {
   async updateParentProfile(updateParentReq: UpdateParentReq) {
     const { user, email, phoneNumber, address } = updateParentReq;
 
-    console.log(user);
-
     let foundUser: User, updatedParent: Parent;
-
     try {
       foundUser = await this.userRepo.findOne({
         where: { id: user.id },

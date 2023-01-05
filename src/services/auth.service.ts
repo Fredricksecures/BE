@@ -235,7 +235,7 @@ export class AuthService {
     //* Register Basic User Details
     let { firstName, lastName, phoneNumber, email, password, countryId } =
       regUserReq;
-
+    console.log(countryId)
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
     //* check if phone number is already taken

@@ -5,13 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, ModuleConfigs } from 'src/utils/constants';
 import { UtilityService } from 'src/services/utility.service';
 import { UserService } from 'src/services/user.service';
-
+import { AuthService } from '../services/auth.service';
 @Module({
   imports: [
     jwtConfig,
     TypeOrmModule.forFeature(ModuleConfigs['admin'].entities),
   ],
   controllers: [AdminController],
-  providers: [AdminService, UtilityService, UserService],
+  providers: [AdminService, UtilityService, UserService, AuthService],
 })
 export class AdminModule {}

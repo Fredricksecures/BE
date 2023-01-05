@@ -52,6 +52,7 @@ import { isEmpty } from 'src/utils/helpers';
 import * as bcrypt from 'bcrypt';
 import { UserTypes } from 'src/utils/enums';
 import { UtilityService } from './utility.service';
+import { AuthService } from './auth.service';
 import { CountryList } from 'src/entities/countryList.entity';
 import { Class } from 'src/entities/class.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
@@ -69,6 +70,7 @@ export class AdminService {
     private jwtService: JwtService,
     private readonly utilityService: UtilityService,
     private readonly userService: UserService,
+    private readonly authService: AuthService,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
@@ -1627,129 +1629,24 @@ export class AdminService {
         '*': '{{columnHeader}}',
       },
     });
-
-    //console.log(excelData);
-    // console.log(excelData.Data.length);
-    // console.log(excelData.Data[0]);
-    // console.log(file);
-
-    for (let i = 0; i < excelData.Data.length; i++) {
-    let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
-    let firstName = excelData.Data[i].firstName;
-    let lastName = excelData.Data[i].lastName;
-    let phoneNumber = excelData.Data[i].phoneNumber;
-    let email = excelData.Data[i].email;
-    let password = excelData.Data[i].password;
-    let countryId = excelData.Data[i].countryId;
-      
-    //* check if phone number is already taken
-    if (isEmpty(phoneNumber)) {
-      try {
-        duplicatePhoneNumber = await this.userRepo.findOne({
-          where: {
-            parent: {
-              phoneNumber,
-            },
-          },
-        });
-      
-      } catch (e) {
-        Logger.error(authErrors.dupPNQuery + e).console();
-
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: authErrors.dupPNQuery + e,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-      
-      if (duplicatePhoneNumber){
-       // duplicatePhoneNumber && duplicatePhoneNumber.parent.phoneNumber != phoneNumber) {
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: `phone number ( ${phoneNumber} ) is already taken. Change phone number in excel at line ${i+1}`,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-      
-    }
-
-    //* check if email is already taken
-    if (!isEmpty(email)) {
-      try {
-        duplicateEmail = await this.userRepo.findOne({
-          where: {
-            parent: {
-              email,
-            },
-          },
-        });
-        
-      } catch {
-        Logger.error(authErrors.dupEmailQuery).console();
-
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: authErrors.dupEmailQuery,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-
-      if (duplicateEmail ) {
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: `Email ( ${email} ) is already taken. Change email in excel at line ${i+1}`,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-    }
-
-    //* create user account
-    try {
-      password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
-      
-      const createdParent = await this.userService.createParentProfile({
-        email,
-        phoneNumber,
-        password,
-        countryId,
-      });
-      //  console.log("3")
-      //  console.log(createdParent)
-      createdUser = await this.userRepo.save({
-        firstName,
-        lastName,
-        type: UserTypes.PARENT,
-        parent: createdParent,
-      });
-    } catch (e) {
-      Logger.error(authErrors.saveUser + e).console();
-
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.saveUser + e,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-
-    // mailer(createdUser.parent.email, 'Registration Successful', {
-    //   text: `An action to change your password was successful`,
-    // });
-  }
+    let regResp;
+      Promise.all(
+        excelData.Data.map(async (user: any) => {
+          regResp = await this.authService.registerUser({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            password: user.password,
+            confirmPassword: user.password,
+            countryId: user.countryId
+          });
+         // return regResp.createdUser;
+        })
+      )
     return {
-      // createdUser,
+      user:regResp,
       success: true,
     };
-    // }
   }
 }

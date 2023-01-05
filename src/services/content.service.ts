@@ -14,7 +14,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-var moment = require('moment');
+
 
 import {
   updateLeaderboardReq,
@@ -139,7 +139,6 @@ export class ContentService {
     updateLeaderboardReq: updateLeaderboardReq,
   ) {
     const { points } = updateLeaderboardReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
     let foundLeaderboard, updatedLeaderboard: Leaderboard;
 
     try {
@@ -169,8 +168,7 @@ export class ContentService {
     try {
       updatedLeaderboard = await this.leaderboardRepo.save({
         ...foundLeaderboard,
-        points: points ?? foundLeaderboard.points,
-        updatedAt: date,
+        points: points ?? foundLeaderboard.points
       });
 
       return {
@@ -308,7 +306,7 @@ export class ContentService {
 
   async updateMockTest(id: string, updateMockTestReq: updateMockTestReq) {
     const { mockTestName, subject } = updateMockTestReq;
-    var date = moment().utc().format('YYYY-MM-DD hh:mm:ss');
+    
     let foundMockTest, updatedMockTest: MockTest;
 
     try {
@@ -339,8 +337,7 @@ export class ContentService {
       updatedMockTest = await this.leaderboardRepo.save({
         ...foundMockTest,
         mockTestName: mockTestName ?? foundMockTest.mockTestName,
-        subject: subject ?? foundMockTest.subject,
-        updatedAt: date,
+        subject: subject ?? foundMockTest.subject
       });
 
       return {
