@@ -40,8 +40,11 @@ export class AuthSeeder {
     //! const mockPaymentPlan = await this.seedPaymentPlans();
     //! const mockUserRoles = await this.seedUserRoles();
     // await this.seedUsers({ mockDevice, mockCountryList, mockSession });
-
-    this.seedUsers();
+    //* find out if seeded user(s) already exist(s)___________________________
+    const users = await this.userRepo.find({});
+    if (users.length === 0) {
+      this.seedUsers(USER_SEED);
+    }
   }
 
   async createMockSession(user: User) {
@@ -109,30 +112,23 @@ export class AuthSeeder {
     return mockDevices[0];
   }
 
-  async seedUsers() {
-    //* find out if seeded user(s) already exist(s)___________________________
-    const users = await this.userRepo.find({});
+  async seedUsers(data) {
+    Promise.all(
+      data.map(async (user: any) => {
+        const regResp = await this.authService.registerUser({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          password: user.password,
+          confirmPassword: user.password,
+          countryId: (await this.getMockCountryList()).id.toString(),
+        });
 
-    if (users.length === 0) {
-      console.log('seeding Users...............🌱🌱🌱');
-
-      Promise.all(
-        USER_SEED.map(async (user: any) => {
-          const regResp = await this.authService.registerUser({
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            password: user.password,
-            confirmPassword: user.password,
-            countryId: (await this.getMockCountryList()).id.toString(),
-          });
-
-          return regResp.createdUser;
-        }),
-      ).then((seededUsers: User[]) => {
-        console.log(seededUsers);
-      });
-    }
+        return regResp.createdUser;
+      }),
+    ).then((seededUsers: User[]) => {
+      console.log(seededUsers);
+    });
   }
 }
