@@ -239,14 +239,13 @@ export class AuthService {
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
     //* check if phone number is already taken
-    if (!isEmpty(phoneNumber)) {
+    if (isEmpty(phoneNumber)) {
       try {
         duplicatePhoneNumber = await this.userRepo.findOne({
           where: {
             parent: {
               phoneNumber,
-              
-            }, 
+            },
           },
           relations: ['parent'],
         });
@@ -261,8 +260,10 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-
-      if (duplicatePhoneNumber && duplicatePhoneNumber.parent.phoneNumber == phoneNumber) {
+      if (
+        duplicatePhoneNumber &&
+        duplicatePhoneNumber.parent.phoneNumber == phoneNumber
+      ) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,

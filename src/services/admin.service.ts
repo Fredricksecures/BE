@@ -35,7 +35,12 @@ import {
   updateChapterReq,
   updateSettingReq,
 } from 'src/dto/admin.dto';
-import { adminMessages, adminErrors, authErrors, authMessages } from 'src/utils/messages';
+import {
+  adminMessages,
+  adminErrors,
+  authErrors,
+  authMessages,
+} from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Lesson } from 'src/entities/lesson.entity';
@@ -1629,8 +1634,44 @@ export class AdminService {
         '*': '{{columnHeader}}',
       },
     });
-    let regResp;let response;
-      Promise.all(
+    let regResp;
+    let createdUser;
+    try {
+      let originalKeys = [
+      'firstName',
+      'lastName',
+      'phoneNumber',
+      'email',
+      'password',
+      'deviceId',
+      'countryId',
+      'address'];
+      let excelKeys = Object.keys(excelData.Data[0])
+      console.log(excelKeys)
+      console.log(originalKeys)
+      for(let i=0; i<originalKeys.length; i++)
+      {
+          if(originalKeys[i] == excelKeys[i])
+            break;
+          else
+          {
+            throw new HttpException(
+              {
+                status: HttpStatus.NO_CONTENT,
+                error: `Column missing ${originalKeys[i]} or not in a proper format: 'firstName','lastName',
+                'phoneNumber',
+                'email',
+                'password',
+                'deviceId',
+                'countryId',
+                'address'  `,
+              },
+              HttpStatus.NO_CONTENT,
+            );
+          }
+        
+      }
+      createdUser = await Promise.all(
         excelData.Data.map(async (user: any) => {
           regResp = await this.authService.registerUser({
             firstName: user.firstName,
@@ -1639,14 +1680,24 @@ export class AdminService {
             phoneNumber: user.phoneNumber,
             password: user.password,
             confirmPassword: user.password,
-            countryId: user.countryId
+            countryId: user.countryId,
           });
-          console.log(regResp)
-          response =  regResp.createdUser;
-        })
-      )
+          console.log(createdUser);
+          // response =  regResp;
+        }),
+      );
+    } catch (err) {
+      console.log(err.response.error)
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: err.response.error,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
     return {
-      user:response,
+      createdUser,
       success: true,
     };
   }
