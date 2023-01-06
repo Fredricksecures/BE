@@ -1637,39 +1637,34 @@ export class AdminService {
     let regResp;
     let createdUser;
     try {
-      let originalKeys = [
-      'firstName',
-      'lastName',
-      'phoneNumber',
-      'email',
-      'password',
-      'deviceId',
-      'countryId',
-      'address'];
-      let excelKeys = Object.keys(excelData.Data[0])
-      console.log(excelKeys)
-      console.log(originalKeys)
-      for(let i=0; i<originalKeys.length; i++)
-      {
-          if(originalKeys[i] == excelKeys[i])
-            break;
-          else
-          {
-            throw new HttpException(
-              {
-                status: HttpStatus.NO_CONTENT,
-                error: `Column missing ${originalKeys[i]} or not in a proper format: 'firstName','lastName',
+      const originalKeys = [
+        'firstName',
+        'lastName',
+        'phoneNumber',
+        'email',
+        'password',
+        'deviceId',
+        'countryId',
+        'address',
+      ];
+      const excelKeys = Object.keys(excelData.Data[0]);
+      for (let i = 0; i < originalKeys.length; i++) {
+        if (originalKeys[i] == excelKeys[i]) break;
+        else {
+          throw new HttpException(
+            {
+              status: HttpStatus.NO_CONTENT,
+              error: `Column missing ${originalKeys[i]} or not in a proper format: 'firstName','lastName',
                 'phoneNumber',
                 'email',
                 'password',
                 'deviceId',
                 'countryId',
                 'address'  `,
-              },
-              HttpStatus.NO_CONTENT,
-            );
-          }
-        
+            },
+            HttpStatus.NO_CONTENT,
+          );
+        }
       }
       createdUser = await Promise.all(
         excelData.Data.map(async (user: any) => {
@@ -1687,7 +1682,7 @@ export class AdminService {
         }),
       );
     } catch (err) {
-      console.log(err.response.error)
+      console.log(err.response.error);
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
