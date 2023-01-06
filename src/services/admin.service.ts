@@ -64,8 +64,11 @@ import { ReportCard } from 'src/entities/reportCard.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Settings } from 'src/entities/settings.entity';
 import { Subscription } from 'src/entities/subscription.entity';
+import { response } from 'express';
 const excelToJSON = require('convert-excel-to-json');
-
+const converter = require('json-2-csv');
+const CsvParser = require('json2csv').Parser;
+var navigator = require('navigator');
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -1636,6 +1639,7 @@ export class AdminService {
     });
     let regResp;
     let createdUser;
+    let csvData;
     try {
       const originalKeys = [
         'firstName',
@@ -1647,20 +1651,22 @@ export class AdminService {
         'countryId',
         'address',
       ];
+      let flag;
       const excelKeys = Object.keys(excelData.Data[0]);
       for (let i = 0; i < originalKeys.length; i++) {
-        if (originalKeys[i] == excelKeys[i]) break;
-        else {
+        for (let k = 0; k < excelKeys.length; k++) {
+          if (originalKeys[i] == excelKeys[k]) {
+            flag = 1;
+            break;
+          } else {
+            flag = 0;
+          }
+        }
+        if (flag == 0) {
           throw new HttpException(
             {
               status: HttpStatus.NO_CONTENT,
-              error: `Column missing ${originalKeys[i]} or not in a proper format: 'firstName','lastName',
-                'phoneNumber',
-                'email',
-                'password',
-                'deviceId',
-                'countryId',
-                'address'  `,
+              error: `Column missing (${originalKeys[i]}) `,
             },
             HttpStatus.NO_CONTENT,
           );
@@ -1677,12 +1683,19 @@ export class AdminService {
             confirmPassword: user.password,
             countryId: user.countryId,
           });
-          console.log(createdUser);
-          // response =  regResp;
-        }),
-      );
+          Promise.reject()
+        }).then((succ,err)=>{}),
+      )
+      //console.log(regResp);
+      for (let i = 0; i < excelData.Data.length; i++) {
+        excelData.Data[i].remark = 'Inserted';
+      }
+      csvData = await converter.json2csvAsync(excelData.Data);
+      console.log(csvData);
+      // const csvParser = new CsvParser({ originalKeys });
+      // csvData = csvParser.parse(excelData.Data);
     } catch (err) {
-      console.log(err.response.error);
+      console.log(createdUser);
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -1694,6 +1707,7 @@ export class AdminService {
     return {
       createdUser,
       success: true,
+      files: csvData,
     };
   }
 }
