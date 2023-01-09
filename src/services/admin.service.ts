@@ -1689,8 +1689,7 @@ export class AdminService {
           excelData.Data[i].remark = 'Inserted';
         }
         catch(e){
-          console.log(e)
-          excelData.Data[i].remark = ' Not Inserted';
+          excelData.Data[i].remark = e.response.error;
 
         }
 
