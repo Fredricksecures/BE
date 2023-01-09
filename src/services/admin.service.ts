@@ -1674,9 +1674,8 @@ export class AdminService {
           );
         }
       }
-      for(let i=0; i<excelData.Data.length; i++)
-      {
-        try{
+      for (let i = 0; i < excelData.Data.length; i++) {
+        try {
           regResp = await this.authService.registerUser({
             firstName: excelData.Data[i].firstName,
             lastName: excelData.Data[i].lastName,
@@ -1687,12 +1686,9 @@ export class AdminService {
             countryId: excelData.Data[i].countryId,
           });
           excelData.Data[i].remark = 'Inserted';
-        }
-        catch(e){
+        } catch (e) {
           excelData.Data[i].remark = e.response.error;
-
         }
-
       }
 
       // createdUser = await Promise.all(
