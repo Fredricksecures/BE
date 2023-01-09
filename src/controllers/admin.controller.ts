@@ -813,26 +813,18 @@ export class AdminController {
     @UploadedFile() file: Express.Multer.File,
     @Res({ passthrough: true }) resp: Response,
   ) {
-    const { createdUser, success , files } =
+    const { createdUser, success, successFile, errorFile } =
       await this.adminService.BulkRegistration(file);
     if (success) {
-      // const folderPath = __dirname;
-      // console.log(folderPath)
-      // console.log(folderPath)
-      //  resp.header('Content-Type', 'text/csv');
-      // // resp.attachment(file.filename)
-      // resp.download(folderPath,file.filename)
-      // resp.setHeader("Content-Type", "text/csv");
-      // resp.setHeader("Content-Disposition", "attachment; filename=tutorials.csv");
-      // resp.download(files)
-      // resp.sendFile(folderPath,files)
-      console.log(files)
+      console.log(successFile);
+      console.log(errorFile);
       resp.json({
         status: HttpStatus.OK,
-        createdUser ,
-        file: files
+       // message: adminMessages.bulk,
+        createdUser,
+        successFile: successFile,
+        errorFile: errorFile,
       });
-      
     }
   }
 }
