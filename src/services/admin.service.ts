@@ -1652,15 +1652,15 @@ export class AdminService {
         'address',
       ];
       let flag;
-      var date = new Date();
-      var current_date =
+      const date = new Date();
+      const current_date =
         date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-      var current_time =
+      const current_time =
         date.getHours() + '-' + date.getMinutes() + '-' + date.getSeconds();
-      let successFileName =
-        'Inserted_' + current_date + '_Time_' + current_time;
-      let errorFileName =
-        'Not_Inserted_' + current_date + '_Time_' + current_time;
+      const successFileName =
+        'registered_' + current_date + '_Time_' + current_time + '.csv';
+      const errorFileName =
+        'not_registered_' + current_date + '_Time_' + current_time + '.csv';
       successFileCreated = fs.createWriteStream(successFileName);
       errorFileCreated = fs.createWriteStream(errorFileName);
       const excelKeys = Object.keys(excelData.Data[0]);
