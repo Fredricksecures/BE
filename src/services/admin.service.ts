@@ -1674,31 +1674,52 @@ export class AdminService {
           );
         }
       }
-
-      createdUser = await Promise.all(
-        excelData.Data.map(async (user: any) => {
+      for(let i=0; i<excelData.Data.length; i++)
+      {
+        try{
           regResp = await this.authService.registerUser({
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            password: user.password,
-            confirmPassword: user.password,
-            countryId: user.countryId,
+            firstName: excelData.Data[i].firstName,
+            lastName: excelData.Data[i].lastName,
+            email: excelData.Data[i].email,
+            phoneNumber: excelData.Data[i].phoneNumber,
+            password: excelData.Data[i].password,
+            confirmPassword: excelData.Data[i].password,
+            countryId: excelData.Data[i].countryId,
           });
-          return regResp.createdUser;
-        }),
-      )
-        .then((seededUsers: User[]) => {
-          for (let i = 0; i < excelData.Data.length; i++) {
-            excelData.Data[i].remark = 'Inserted';
-          }
-        })
-        .catch((reject) => {
-          for (let i = 0; i < excelData.Data.length; i++) {
-            excelData.Data[i].remark = 'Not Inserted';
-          }
-        });
+          excelData.Data[i].remark = 'Inserted';
+        }
+        catch(e){
+          console.log(e)
+          excelData.Data[i].remark = ' Not Inserted';
+
+        }
+
+      }
+
+      // createdUser = await Promise.all(
+      //   excelData.Data.map(async (user: any) => {
+      //     regResp = await this.authService.registerUser({
+      //       firstName: user.firstName,
+      //       lastName: user.lastName,
+      //       email: user.email,
+      //       phoneNumber: user.phoneNumber,
+      //       password: user.password,
+      //       confirmPassword: user.password,
+      //       countryId: user.countryId,
+      //     });
+      //     return regResp.createdUser;
+      //   }),
+      // )
+      //   .then((seededUsers: User[]) => {
+      //     for (let i = 0; i < excelData.Data.length; i++) {
+      //       excelData.Data[i].remark = 'Inserted';
+      //     }
+      //   })
+      //   .catch((reject) => {
+      //     for (let i = 0; i < excelData.Data.length; i++) {
+      //       excelData.Data[i].remark = 'Not Inserted';
+      //     }
+      //   });
       const csvParser = new CsvParser({ originalKeys });
       csvData = csvParser.parse(excelData.Data);
       fileCreated = fs.createWriteStream('userData.csv');
