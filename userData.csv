@@ -1,6 +1,6 @@
 "firstName","lastName","email","password","deviceId","countryId","address","phoneNumber","remark"
-"a","XYZ","abcxyz12@email.com","SP123",1,116,"a",1234564512,"phone number ( 1234564512 ) is already taken"
-"a","GHJ","abc12@email.com","SP124",1,117,"a",123457,"phone number ( 123457 ) is already taken"
-"a","XBC","abc4512MrXYZ@email.com","SP125",1,118,"a",852364,"Inserted"
-"a","UVWX","abc1234@email.com","SP126",1,119,"a",123459,"phone number ( 123459 ) is already taken"
-"testnew","test","testnew12@mai.com","425test9",1,610,"test",147852369,"Inserted"
+"a","XYZ","abcxyz12@email.com","SP123",1,116,"a",1234564512,"could not save new user HttpException: Http Exception"
+"a","GHJ","abc12@email.com","SP124",1,117,"a",123457,
+"a","XBC","abc4512MrXYZ@email.com","SP125",1,118,"a",852364,
+"a","UVWX","abc1234@email.com","SP126",1,119,"a",123459,
+"testnew","test","testnew12@mai.com","425test9",1,610,"test",147852369,

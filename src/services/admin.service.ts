@@ -66,7 +66,6 @@ import { Settings } from 'src/entities/settings.entity';
 import { Subscription } from 'src/entities/subscription.entity';
 import { response } from 'express';
 const excelToJSON = require('convert-excel-to-json');
-const CsvParser = require('json2csv').Parser;
 
 var fs = require('fs');
 config();
@@ -1639,8 +1638,8 @@ export class AdminService {
     });
     let regResp;
     let createdUser;
-    let csvData;
-    let fileCreated;
+    let successFileCreated;
+    let errorFileCreated;
     try {
       const originalKeys = [
         'firstName',
@@ -1653,12 +1652,25 @@ export class AdminService {
         'address',
       ];
       let flag;
+      var date = new Date();
+      var current_date =
+        date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+      var current_time =
+        date.getHours() + '-' + date.getMinutes() + '-' + date.getSeconds();
+      let successFileName =
+        'Inserted_' + current_date + '_Time_' + current_time;
+      let errorFileName =
+        'Not_Inserted_' + current_date + '_Time_' + current_time;
+      successFileCreated = fs.createWriteStream(successFileName);
+      errorFileCreated = fs.createWriteStream(errorFileName);
       const excelKeys = Object.keys(excelData.Data[0]);
       // get the missing column
       for (let i = 0; i < originalKeys.length; i++) {
         for (let k = 0; k < excelKeys.length; k++) {
           if (originalKeys[i] == excelKeys[k]) {
             flag = 1;
+            successFileCreated.write(excelKeys[k] + ' ');
+            errorFileCreated.write(excelKeys[k] + ' ');
             break;
           } else {
             flag = 0;
@@ -1674,6 +1686,7 @@ export class AdminService {
           );
         }
       }
+      errorFileCreated.write('remarks');
       for (let i = 0; i < excelData.Data.length; i++) {
         try {
           regResp = await this.authService.registerUser({
@@ -1685,9 +1698,12 @@ export class AdminService {
             confirmPassword: excelData.Data[i].password,
             countryId: excelData.Data[i].countryId,
           });
-          excelData.Data[i].remark = 'Inserted';
+          const csv = Object.values(excelData.Data[i]).toString();
+          successFileCreated.write('\n' + csv + '\n');
         } catch (e) {
           excelData.Data[i].remark = e.response.error;
+          const csv = Object.values(excelData.Data[i]).toString();
+          errorFileCreated.write('\n' + csv + '\n');
         }
       }
 
@@ -1715,16 +1731,15 @@ export class AdminService {
       //       excelData.Data[i].remark = 'Not Inserted';
       //     }
       //   });
-      const csvParser = new CsvParser({ originalKeys });
-      csvData = csvParser.parse(excelData.Data);
-      fileCreated = fs.createWriteStream('userData.csv');
-      fileCreated.write(csvData);
-      fileCreated.end();
+
+      errorFileCreated.end();
+      successFileCreated.end();
     } catch (err) {
+      console.log(err);
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: err.response.error,
+          error: err,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -1732,7 +1747,8 @@ export class AdminService {
     return {
       createdUser,
       success: true,
-      files: fileCreated.path,
+      successFile: successFileCreated.path,
+      errorFile: errorFileCreated.path,
     };
   }
 }
