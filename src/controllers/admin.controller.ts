@@ -829,7 +829,6 @@ export class AdminController {
       console.log(files)
       resp.json({
         status: HttpStatus.OK,
-        message: adminMessages.bulk,
         createdUser ,
         file: files
       });

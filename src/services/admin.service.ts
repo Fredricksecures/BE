@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Index, Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
 import {
@@ -69,6 +69,7 @@ const excelToJSON = require('convert-excel-to-json');
 const converter = require('json-2-csv');
 const CsvParser = require('json2csv').Parser;
 var navigator = require('navigator');
+var fs = require('fs');
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -1640,6 +1641,7 @@ export class AdminService {
     let regResp;
     let createdUser;
     let csvData;
+    let dataExcel;
     try {
       const originalKeys = [
         'firstName',
@@ -1653,6 +1655,7 @@ export class AdminService {
       ];
       let flag;
       const excelKeys = Object.keys(excelData.Data[0]);
+      // get the missing column
       for (let i = 0; i < originalKeys.length; i++) {
         for (let k = 0; k < excelKeys.length; k++) {
           if (originalKeys[i] == excelKeys[k]) {
@@ -1672,6 +1675,7 @@ export class AdminService {
           );
         }
       }
+
       createdUser = await Promise.all(
         excelData.Data.map(async (user: any) => {
           regResp = await this.authService.registerUser({
@@ -1683,19 +1687,32 @@ export class AdminService {
             confirmPassword: user.password,
             countryId: user.countryId,
           });
-          Promise.reject()
-        }).then((succ,err)=>{}),
+          return regResp.createdUser;
+          //user.catch(error => console.log(error))
+          //Promise.reject(new Error('fail')).then(regResp, (regResp)=>{console.log(regResp)});
+        }),
       )
-      //console.log(regResp);
-      for (let i = 0; i < excelData.Data.length; i++) {
-        excelData.Data[i].remark = 'Inserted';
-      }
-      csvData = await converter.json2csvAsync(excelData.Data);
-      console.log(csvData);
-      // const csvParser = new CsvParser({ originalKeys });
-      // csvData = csvParser.parse(excelData.Data);
+        .then((seededUsers: User[]) => {
+          for (let i = 0; i < excelData.Data.length; i++) {
+            excelData.Data[i].remark = 'Inserted';
+          }
+        })
+        .catch((reject) => {
+          for (let i = 0; i < excelData.Data.length; i++) {
+            excelData.Data[i].remark = 'Not Inserted';
+          }
+
+          //  reject.map((row, index) => console.log(`${index}`))
+        });
+
+      // csvData = await converter.json2csvAsync(excelData.Data);
+      // console.log(csvData);
+      const csvParser = new CsvParser({ originalKeys });
+      csvData = csvParser.parse(excelData.Data);
+      dataExcel = fs.createWriteStream('userData.csv');
+      dataExcel.write(csvData);
+      dataExcel.end();
     } catch (err) {
-      console.log(createdUser);
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
@@ -1707,7 +1724,7 @@ export class AdminService {
     return {
       createdUser,
       success: true,
-      files: csvData,
+      files: dataExcel.path,
     };
   }
 }
