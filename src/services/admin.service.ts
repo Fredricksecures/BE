@@ -1640,7 +1640,7 @@ export class AdminService {
     let regResp;
     let createdUser;
     let csvData;
-    let dataExcel;
+    let fileCreated;
     try {
       const originalKeys = [
         'firstName',
@@ -1701,9 +1701,9 @@ export class AdminService {
         });
       const csvParser = new CsvParser({ originalKeys });
       csvData = csvParser.parse(excelData.Data);
-      dataExcel = fs.createWriteStream('userData.csv');
-      dataExcel.write(csvData);
-      dataExcel.end();
+      fileCreated = fs.createWriteStream('userData.csv');
+      fileCreated.write(csvData);
+      fileCreated.end();
     } catch (err) {
       throw new HttpException(
         {
@@ -1716,7 +1716,7 @@ export class AdminService {
     return {
       createdUser,
       success: true,
-      files: dataExcel.path,
+      files: fileCreated.path,
     };
   }
 }
