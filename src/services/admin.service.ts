@@ -66,9 +66,8 @@ import { Settings } from 'src/entities/settings.entity';
 import { Subscription } from 'src/entities/subscription.entity';
 import { response } from 'express';
 const excelToJSON = require('convert-excel-to-json');
-const converter = require('json-2-csv');
 const CsvParser = require('json2csv').Parser;
-var navigator = require('navigator');
+
 var fs = require('fs');
 config();
 const { BCRYPT_SALT } = process.env;
@@ -1688,8 +1687,6 @@ export class AdminService {
             countryId: user.countryId,
           });
           return regResp.createdUser;
-          //user.catch(error => console.log(error))
-          //Promise.reject(new Error('fail')).then(regResp, (regResp)=>{console.log(regResp)});
         }),
       )
         .then((seededUsers: User[]) => {
@@ -1701,12 +1698,7 @@ export class AdminService {
           for (let i = 0; i < excelData.Data.length; i++) {
             excelData.Data[i].remark = 'Not Inserted';
           }
-
-          //  reject.map((row, index) => console.log(`${index}`))
         });
-
-      // csvData = await converter.json2csvAsync(excelData.Data);
-      // console.log(csvData);
       const csvParser = new CsvParser({ originalKeys });
       csvData = csvParser.parse(excelData.Data);
       dataExcel = fs.createWriteStream('userData.csv');
