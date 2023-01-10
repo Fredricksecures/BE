@@ -1653,7 +1653,7 @@ export class AdminService {
       const columns = excelToJSON({
         sourceFile: file.path,
       });
-
+      //check if file is valid
       if (columns.Data.length > 0) {
         const avaliableColumns = Object.values(columns.Data[0]);
         for (let i = 0; i < originalKeys.length; i++) {
