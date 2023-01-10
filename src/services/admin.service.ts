@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Index, Repository } from 'typeorm';
+import { Column, Index, Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
 import {
@@ -1632,97 +1632,60 @@ export class AdminService {
     let files = [];
     let registeredUsers = [];
     let notRegisteredUsers = [];
+    let excelKeys 
+    const originalKeys = [
+      'firstName',
+      'lastName',
+      'phoneNumber',
+      'email',
+      'password',
+      'deviceId',
+      'countryId',
+      'address',
+    ];
     try {
       const date = Date.now();
-      const excelRows = excelToJSON({
+      const excelData = excelToJSON({
         sourceFile: file.path,
+        header: {
+          rows: 1,
+        },
+        columnToKey: {
+          '*': '{{columnHeader}}',
+        },
       });
-      //console.log(excelRows)
-      if (excelRows.Data.length > 0) {
-        const coulmns = [
-          'firstName',
-          'lastName',
-          'phoneNumber',
-          'email',
-          'password',
-          'deviceId',
-          'countryId',
-          'address',
-        ];
-        const headers = Object.values(excelRows.Data[0]);
-        const isValidFile = coulmns.every((item) => {
-          if (!headers.includes(item)) {
-            return {
-              coulmn: item,
-            };
-          }
-        });
-        if (isValidFile['coulmn']) {
-          console.log(isValidFile['coulmn']);
-        } else {
-          for (let i = 1; i < excelRows.Data.length; i++) {
-            const item = excelRows.Data[i];
-            const dataIsFine = coulmns.every((item) =>
-              item.hasOwnProperty(item),
+
+      //insert the excel data in user and parent entity
+      for (let i = 0; i < excelData.Data.length; i++) {
+        try {
+          if (Object.keys(excelData.Data[i]).length == originalKeys.length) {
+            regResp = await this.authService.registerUser({
+              firstName: excelData.Data[i].firstName,
+              lastName: excelData.Data[i].lastName,
+              email: excelData.Data[i].email,
+              phoneNumber: excelData.Data[i].phoneNumber,
+              password: excelData.Data[i].password,
+              confirmPassword: excelData.Data[i].password,
+              countryId: excelData.Data[i].countryId,
+            });
+            excelKeys = Object.keys(excelData.Data[i]);
+            registeredUsers.push(excelData.Data[i]);
+          } else {
+            const excelHeaders = Object.keys(excelData.Data[i]);
+            var result = originalKeys.filter(
+              (item) => excelHeaders.indexOf(item) == -1,
             );
-            try {
-              if (dataIsFine) {
-                regResp = await this.authService.registerUser({
-                  firstName: item.firstName,
-                  lastName: item.lastName,
-                  email: item.email,
-                  phoneNumber: item.phoneNumber,
-                  password: item.password,
-                  confirmPassword: item.password,
-                  countryId: item.countryId,
-                });
-                registeredUsers.push(item);
-              } else {
-                //error
-              }
-            } catch (e) {
-              item.remark = e.response.error;
-              notRegisteredUsers.push(item);
-            }
+            excelData.Data[i].remark = `Column missing (${result})`;
+          notRegisteredUsers.push(excelData.Data[i]);
           }
+        } catch (e) {
+          excelKeys = Object.keys(excelData.Data[i]);
+          excelData.Data[i].remark = e.response.error;
+          notRegisteredUsers.push(excelData.Data[i]);
         }
-      } else {
-        //
       }
-
-      const excelKeys = Object.keys(excelRows.Data[0]);
-      // get the missing column
-      // for (let i = 0; i < originalKeys.length; i++) {
-      //   if (excelData.Data[0].hasOwnProperty(originalKeys[i])) continue;
-      //   else {
-      //     throw new HttpException(
-      //       {
-      //         status: HttpStatus.NO_CONTENT,
-      //         error: `Column missing (${originalKeys[i]}) `,
-      //       },
-      //       HttpStatus.NO_CONTENT,
-      //     );
-      //   }
-      // }
-      //errorFileCreated.write('remarks');
-
-      // for (let i = 0; i < excelData.Data.length; i++) {
-      //   try {
-      //     regResp = await this.authService.registerUser({
-      //       firstName: excelData.Data[i].firstName,
-      //       lastName: excelData.Data[i].lastName,
-      //       email: excelData.Data[i].email,
-      //       phoneNumber: excelData.Data[i].phoneNumber,
-      //       password: excelData.Data[i].password,
-      //       confirmPassword: excelData.Data[i].password,
-      //       countryId: excelData.Data[i].countryId,
-      //     });
-      //     registeredUsers.push(excelData.Data[i]);
-      //   } catch (e) {
-      //     excelData.Data[i].remark = e.response.error;
-      //     notRegisteredUsers.push(excelData.Data[i]);
-      //   }
-      // }
+     
+      //creating csv file and add registered data
       if (registeredUsers.length > 0) {
         const successFileName = 'registered_' + date + '.csv';
         successFileCreated = fs.createWriteStream(successFileName);
@@ -1731,6 +1694,8 @@ export class AdminService {
         successFileCreated.write(csv);
         files.push(successFileCreated.path);
       }
+
+      //creating csv file and add not registered data
       if (notRegisteredUsers.length > 0) {
         const errorFileName = 'not_registered_' + date + '.csv';
         errorFileCreated = fs.createWriteStream(errorFileName);
