@@ -668,49 +668,11 @@ export class AuthService {
 
   async signIn(regUserReq: signInReq) {
     //* Register Basic User Details
-    let { firstName, lastName, phoneNumber, email, countryId } =
-      regUserReq;
-      if(!phoneNumber)
-      {
-        phoneNumber = ''
-      }
+    let { firstName, lastName, phoneNumber, email, countryId } = regUserReq;
+    if (!phoneNumber) {
+      phoneNumber = '';
+    }
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
-
-    //* check if phone number is already taken
-    // if (isEmpty(phoneNumber)) {
-    //   try {
-    //     duplicatePhoneNumber = await this.userRepo.findOne({
-    //       where: {
-    //         parent: {
-    //           phoneNumber,
-    //         },
-    //       },
-    //       relations: ['parent'],
-    //     });
-    //   } catch (e) {
-    //     Logger.error(authErrors.dupPNQuery + e).console();
-
-    //     throw new HttpException(
-    //       {
-    //         status: HttpStatus.CONFLICT,
-    //         error: authErrors.dupPNQuery + e,
-    //       },
-    //       HttpStatus.CONFLICT,
-    //     );
-    //   }
-    //   if (
-    //     duplicatePhoneNumber &&
-    //     duplicatePhoneNumber.parent.phoneNumber == phoneNumber
-    //   ) {
-    //     throw new HttpException(
-    //       {
-    //         status: HttpStatus.CONFLICT,
-    //         error: `phone number ( ${phoneNumber} ) is already taken`,
-    //       },
-    //       HttpStatus.CONFLICT,
-    //     );
-    //   }
-    // }
 
     //* check if email is already taken
     if (!isEmpty(email)) {
@@ -748,8 +710,8 @@ export class AuthService {
 
     //* create user account
     try {
-      let password =  generateRandomHash(6);
-      
+      let password = generateRandomHash(6);
+
       const createdParent = await this.userService.createParentProfile({
         email,
         phoneNumber,
@@ -783,5 +745,4 @@ export class AuthService {
       success: true,
     };
   }
-
 }
