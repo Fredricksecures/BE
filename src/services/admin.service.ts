@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Column, Index, Repository } from 'typeorm';
@@ -1629,10 +1634,10 @@ export class AdminService {
     let errorFileCreated;
     let successFileCreated;
     let regResp;
-    let files = [];
-    let registeredUsers = [];
-    let notRegisteredUsers = [];
-    let excelKeys 
+    const files = [];
+    const registeredUsers = [];
+    const notRegisteredUsers = [];
+    let excelKeys;
     const originalKeys = [
       'firstName',
       'lastName',
@@ -1645,6 +1650,22 @@ export class AdminService {
     ];
     try {
       const date = Date.now();
+      const columns = excelToJSON({
+        sourceFile: file.path,
+      });
+
+      if (columns.Data.length > 0) {
+        const avaliableColumns = Object.values(columns.Data[0]);
+        for (let i = 0; i < originalKeys.length; i++) {
+          const element = originalKeys[i];
+          if (!avaliableColumns.includes(element)) {
+            throw new BadRequestException(
+              `${element} is missing in uploaded file`,
+            );
+          }
+        }
+      }
+
       const excelData = excelToJSON({
         sourceFile: file.path,
         header: {
@@ -1672,11 +1693,11 @@ export class AdminService {
             registeredUsers.push(excelData.Data[i]);
           } else {
             const excelHeaders = Object.keys(excelData.Data[i]);
-            var result = originalKeys.filter(
+            const result = originalKeys.filter(
               (item) => excelHeaders.indexOf(item) == -1,
             );
             excelData.Data[i].remark = `Column missing (${result})`;
-          notRegisteredUsers.push(excelData.Data[i]);
+            notRegisteredUsers.push(excelData.Data[i]);
           }
         } catch (e) {
           excelKeys = Object.keys(excelData.Data[i]);
@@ -1684,7 +1705,7 @@ export class AdminService {
           notRegisteredUsers.push(excelData.Data[i]);
         }
       }
-     
+
       //creating csv file and add registered data
       if (registeredUsers.length > 0) {
         const successFileName = 'registered_' + date + '.csv';
@@ -1705,11 +1726,10 @@ export class AdminService {
         files.push(errorFileCreated.path);
       }
     } catch (err) {
-      console.log(err);
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: err.response,
+          error: err.response.message,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
