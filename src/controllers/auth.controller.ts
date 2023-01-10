@@ -30,6 +30,7 @@ import {
   ResetPasswordReq,
   ResetPasswordRes,
 } from 'src/dto/auth.dto';
+import { signInReq } from 'src/dto/signIn.dto';
 import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/utils/enums';
@@ -290,6 +291,25 @@ export class AuthController {
         },
         HttpStatus.NOT_FOUND,
       );
+    }
+  }
+
+  @Post('sign-in')
+  async signIn(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: signInReq,
+  ) {
+    const { createdUser, success }: BasicRegRes =
+      await this.authService.signIn(body);
+
+    if (success) {
+      resp.json({
+        success,
+        message: authMessages.userCreated,
+        status: HttpStatus.CREATED,
+        createdUser,
+      });
     }
   }
 }

@@ -13,6 +13,7 @@ import {
   ForgotPasswordReq,
   ForgotPasswordRes,
 } from '../dto/auth.dto';
+import { signInReq } from 'src/dto/signIn.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Device } from 'src/entities/device.entity';
@@ -664,4 +665,123 @@ export class AuthService {
       };
     }
   }
+
+  async signIn(regUserReq: signInReq) {
+    //* Register Basic User Details
+    let { firstName, lastName, phoneNumber, email, countryId } =
+      regUserReq;
+      if(!phoneNumber)
+      {
+        phoneNumber = ''
+      }
+    let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
+
+    //* check if phone number is already taken
+    // if (isEmpty(phoneNumber)) {
+    //   try {
+    //     duplicatePhoneNumber = await this.userRepo.findOne({
+    //       where: {
+    //         parent: {
+    //           phoneNumber,
+    //         },
+    //       },
+    //       relations: ['parent'],
+    //     });
+    //   } catch (e) {
+    //     Logger.error(authErrors.dupPNQuery + e).console();
+
+    //     throw new HttpException(
+    //       {
+    //         status: HttpStatus.CONFLICT,
+    //         error: authErrors.dupPNQuery + e,
+    //       },
+    //       HttpStatus.CONFLICT,
+    //     );
+    //   }
+    //   if (
+    //     duplicatePhoneNumber &&
+    //     duplicatePhoneNumber.parent.phoneNumber == phoneNumber
+    //   ) {
+    //     throw new HttpException(
+    //       {
+    //         status: HttpStatus.CONFLICT,
+    //         error: `phone number ( ${phoneNumber} ) is already taken`,
+    //       },
+    //       HttpStatus.CONFLICT,
+    //     );
+    //   }
+    // }
+
+    //* check if email is already taken
+    if (!isEmpty(email)) {
+      try {
+        duplicateEmail = await this.userRepo.findOne({
+          where: {
+            parent: {
+              email,
+            },
+          },
+          relations: ['parent'],
+        });
+      } catch {
+        Logger.error(authErrors.dupEmailQuery).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: authErrors.dupEmailQuery,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+      //console.log(duplicatePhoneNumber.parent)
+      if (duplicateEmail && duplicateEmail.parent.email == email) {
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: email + ' : ' + 'email already exists',
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
+
+    //* create user account
+    try {
+      let password =  generateRandomHash(6);
+      
+      const createdParent = await this.userService.createParentProfile({
+        email,
+        phoneNumber,
+        password,
+        countryId,
+      });
+      createdUser = await this.userRepo.save({
+        firstName,
+        lastName,
+        type: UserTypes.PARENT,
+        parent: createdParent,
+      });
+    } catch (e) {
+      Logger.error(authErrors.saveUser + e).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.saveUser + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    // mailer(createdUser.parent.email, 'Registration Successful', {
+    //   text: `An action to change your password was successful`,
+    // });
+
+    return {
+      createdUser,
+      success: true,
+    };
+  }
+
 }
