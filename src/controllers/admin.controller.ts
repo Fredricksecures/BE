@@ -813,18 +813,11 @@ export class AdminController {
     @UploadedFile() file: Express.Multer.File,
     @Res({ passthrough: true }) resp: Response,
   ) {
-    const { success ,files } =
-      await this.adminService.BulkRegistration(file);
+    const { success, files } = await this.adminService.BulkRegistration(file);
     if (success) {
-      // console.log(successFile);
-      // console.log(errorFile);
       resp.json({
         status: HttpStatus.OK,
-        file : files
-       // message: adminMessages.bulk,
-        // createdUser,
-        // successFile: successFile,
-        // errorFile: errorFile,
+        file: files,
       });
     }
   }
