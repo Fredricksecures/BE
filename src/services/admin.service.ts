@@ -66,7 +66,7 @@ import { Settings } from 'src/entities/settings.entity';
 import { Subscription } from 'src/entities/subscription.entity';
 import { response } from 'express';
 const excelToJSON = require('convert-excel-to-json');
-
+const { Parser } = require('json2csv');
 var fs = require('fs');
 config();
 const { BCRYPT_SALT } = process.env;
@@ -1626,129 +1626,132 @@ export class AdminService {
   }
 
   async BulkRegistration(file) {
-    const filepath = file.path;
-    const excelData = excelToJSON({
-      sourceFile: filepath,
-      header: {
-        rows: 1,
-      },
-      columnToKey: {
-        '*': '{{columnHeader}}',
-      },
-    });
-    let regResp;
-    let createdUser;
-    let successFileCreated;
     let errorFileCreated;
+    let successFileCreated;
+    let regResp;
+    let files = [];
+    let registeredUsers = [];
+    let notRegisteredUsers = [];
     try {
-      const originalKeys = [
-        'firstName',
-        'lastName',
-        'phoneNumber',
-        'email',
-        'password',
-        'deviceId',
-        'countryId',
-        'address',
-      ];
-      let flag;
-      const date = new Date();
-      const current_date =
-        date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-      const current_time =
-        date.getHours() + '-' + date.getMinutes() + '-' + date.getSeconds();
-      const successFileName =
-        'registered_' + current_date + '_Time_' + current_time + '.csv';
-      const errorFileName =
-        'not_registered_' + current_date + '_Time_' + current_time + '.csv';
-      successFileCreated = fs.createWriteStream(successFileName);
-      errorFileCreated = fs.createWriteStream(errorFileName);
-      const excelKeys = Object.keys(excelData.Data[0]);
-      // get the missing column
-      for (let i = 0; i < originalKeys.length; i++) {
-        for (let k = 0; k < excelKeys.length; k++) {
-          if (originalKeys[i] == excelKeys[k]) {
-            flag = 1;
-            successFileCreated.write(excelKeys[k] + ' ');
-            errorFileCreated.write(excelKeys[k] + ' ');
-            break;
-          } else {
-            flag = 0;
+      const date = Date.now();
+      const excelRows = excelToJSON({
+        sourceFile: file.path,
+      });
+      //console.log(excelRows)
+      if (excelRows.Data.length > 0) {
+        const coulmns = [
+          'firstName',
+          'lastName',
+          'phoneNumber',
+          'email',
+          'password',
+          'deviceId',
+          'countryId',
+          'address',
+        ];
+        const headers = Object.values(excelRows.Data[0]);
+        const isValidFile = coulmns.every((item) => {
+          if (!headers.includes(item)) {
+            return {
+              coulmn: item,
+            };
+          }
+        });
+        if (isValidFile['coulmn']) {
+          console.log(isValidFile['coulmn']);
+        } else {
+          for (let i = 1; i < excelRows.Data.length; i++) {
+            const item = excelRows.Data[i];
+            const dataIsFine = coulmns.every((item) =>
+              item.hasOwnProperty(item),
+            );
+            try {
+              if (dataIsFine) {
+                regResp = await this.authService.registerUser({
+                  firstName: item.firstName,
+                  lastName: item.lastName,
+                  email: item.email,
+                  phoneNumber: item.phoneNumber,
+                  password: item.password,
+                  confirmPassword: item.password,
+                  countryId: item.countryId,
+                });
+                registeredUsers.push(item);
+              } else {
+                //error
+              }
+            } catch (e) {
+              item.remark = e.response.error;
+              notRegisteredUsers.push(item);
+            }
           }
         }
-        if (flag == 0) {
-          throw new HttpException(
-            {
-              status: HttpStatus.NO_CONTENT,
-              error: `Column missing (${originalKeys[i]}) `,
-            },
-            HttpStatus.NO_CONTENT,
-          );
-        }
-      }
-      errorFileCreated.write('remarks');
-      for (let i = 0; i < excelData.Data.length; i++) {
-        try {
-          regResp = await this.authService.registerUser({
-            firstName: excelData.Data[i].firstName,
-            lastName: excelData.Data[i].lastName,
-            email: excelData.Data[i].email,
-            phoneNumber: excelData.Data[i].phoneNumber,
-            password: excelData.Data[i].password,
-            confirmPassword: excelData.Data[i].password,
-            countryId: excelData.Data[i].countryId,
-          });
-          const csv = Object.values(excelData.Data[i]).toString();
-          successFileCreated.write('\n' + csv + '\n');
-        } catch (e) {
-          excelData.Data[i].remark = e.response.error;
-          const csv = Object.values(excelData.Data[i]).toString();
-          errorFileCreated.write('\n' + csv + '\n');
-        }
+      } else {
+        //
       }
 
-      // createdUser = await Promise.all(
-      //   excelData.Data.map(async (user: any) => {
+      const excelKeys = Object.keys(excelRows.Data[0]);
+      // get the missing column
+      // for (let i = 0; i < originalKeys.length; i++) {
+      //   if (excelData.Data[0].hasOwnProperty(originalKeys[i])) continue;
+      //   else {
+      //     throw new HttpException(
+      //       {
+      //         status: HttpStatus.NO_CONTENT,
+      //         error: `Column missing (${originalKeys[i]}) `,
+      //       },
+      //       HttpStatus.NO_CONTENT,
+      //     );
+      //   }
+      // }
+      //errorFileCreated.write('remarks');
+
+      // for (let i = 0; i < excelData.Data.length; i++) {
+      //   try {
       //     regResp = await this.authService.registerUser({
-      //       firstName: user.firstName,
-      //       lastName: user.lastName,
-      //       email: user.email,
-      //       phoneNumber: user.phoneNumber,
-      //       password: user.password,
-      //       confirmPassword: user.password,
-      //       countryId: user.countryId,
+      //       firstName: excelData.Data[i].firstName,
+      //       lastName: excelData.Data[i].lastName,
+      //       email: excelData.Data[i].email,
+      //       phoneNumber: excelData.Data[i].phoneNumber,
+      //       password: excelData.Data[i].password,
+      //       confirmPassword: excelData.Data[i].password,
+      //       countryId: excelData.Data[i].countryId,
       //     });
-      //     return regResp.createdUser;
-      //   }),
-      // )
-      //   .then((seededUsers: User[]) => {
-      //     for (let i = 0; i < excelData.Data.length; i++) {
-      //       excelData.Data[i].remark = 'Inserted';
-      //     }
-      //   })
-      //   .catch((reject) => {
-      //     for (let i = 0; i < excelData.Data.length; i++) {
-      //       excelData.Data[i].remark = 'Not Inserted';
-      //     }
-      //   });
-
-      errorFileCreated.end();
-      successFileCreated.end();
+      //     registeredUsers.push(excelData.Data[i]);
+      //   } catch (e) {
+      //     excelData.Data[i].remark = e.response.error;
+      //     notRegisteredUsers.push(excelData.Data[i]);
+      //   }
+      // }
+      if (registeredUsers.length > 0) {
+        const successFileName = 'registered_' + date + '.csv';
+        successFileCreated = fs.createWriteStream(successFileName);
+        const parser = new Parser(excelKeys);
+        const csv = parser.parse(registeredUsers);
+        successFileCreated.write(csv);
+        files.push(successFileCreated.path);
+      }
+      if (notRegisteredUsers.length > 0) {
+        const errorFileName = 'not_registered_' + date + '.csv';
+        errorFileCreated = fs.createWriteStream(errorFileName);
+        const parser = new Parser(excelKeys);
+        const csv = parser.parse(notRegisteredUsers);
+        errorFileCreated.write(csv);
+        files.push(errorFileCreated.path);
+      }
     } catch (err) {
       console.log(err);
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: err,
+          error: err.response,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
     return {
-      createdUser,
       success: true,
-      successFile: successFileCreated.path,
-      errorFile: errorFileCreated.path,
+      files: files,
     };
   }
 }
