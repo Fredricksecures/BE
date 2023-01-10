@@ -8,10 +8,7 @@ import {
   Get,
   Param,
   HttpException,
-  Patch,
-  DefaultValuePipe,
-  ParseIntPipe,
-  Query,
+ 
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
