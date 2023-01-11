@@ -666,7 +666,7 @@ export class AuthService {
     }
   }
 
-  async signUp(regUserReq: signUpReq) {
+  async socialSignUp(regUserReq: signUpReq) {
     //* Register Basic User Details
     let { firstName, lastName, phoneNumber, email, countryId } = regUserReq;
     if (!phoneNumber) {
@@ -746,7 +746,7 @@ export class AuthService {
     };
   }
 
-  async signIn(signInReq: signInReq) {
+  async socialSignIn(signInReq: signInReq) {
     let { email, deviceId } = signInReq;
 
     let foundUser: User;
