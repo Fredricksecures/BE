@@ -17,7 +17,6 @@ import {
 } from '@nestjs/common';
 import { diskStorage } from 'multer';
 
-
 import {
   UsersSessionsReq,
   UsersSessionsRes,
@@ -44,6 +43,8 @@ import {
   createSubjectReq,
   updateChapterReq,
   updateSettingReq,
+  createClassReq,
+  createScheduleReq
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
@@ -54,9 +55,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin')
 export class AdminController {
-  constructor(
-    private readonly adminService: AdminService,
-  ) {}
+  constructor(private readonly adminService: AdminService) {}
 
   @Get('user-sessions')
   async getUserSessions(
@@ -816,12 +815,68 @@ export class AdminController {
     @UploadedFile() file: Express.Multer.File,
     @Res({ passthrough: true }) resp: Response,
   ) {
-    const bulkUsers = await this.adminService.BulkRegistration(file);
+    const { success, files } = await this.adminService.BulkRegistration(file);
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        file: files,
+      });
+    }
+  }
 
-    resp.json({
-      status: HttpStatus.OK,
-      message: adminMessages.bulk,
-      bulkUsers,
-    });
+  @Post('create-class')
+  async createClass(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createClassReq,
+  ) {
+    const { success, classCreated } = await this.adminService.createClass(
+      body,
+    );
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.classCreateSuccess,
+        classCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminMessages.failToCreateClass,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('create-schedule/:id')
+  async createSchedule (
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createScheduleReq,
+    @Param('id') id,
+  ) {
+   
+    const { success, scheduleCreated } = await this.adminService.createSchedule(
+      id,{...req.body},
+    );
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.scheduleCreateSuccess,
+        scheduleCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminMessages.failToCreateSchedule,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }

@@ -8,10 +8,6 @@ import {
   Get,
   Param,
   HttpException,
-  Patch,
-  DefaultValuePipe,
-  ParseIntPipe,
-  Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -30,6 +26,7 @@ import {
   ResetPasswordReq,
   ResetPasswordRes,
 } from 'src/dto/auth.dto';
+import { signUpReq, signInReq, SignInRes } from 'src/dto/socialLogin.dto';
 import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/utils/enums';
@@ -287,6 +284,63 @@ export class AuthController {
         {
           status: HttpStatus.NOT_FOUND,
           error: authErrors.logoutFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('social-sign-up')
+  async socialSignUp(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: signUpReq,
+  ) {
+    const { createdUser, success }: BasicRegRes =
+      await this.authService.socialSignUp(body);
+
+    if (success) {
+      resp.json({
+        success,
+        message: authMessages.userCreated,
+        status: HttpStatus.CREATED,
+        createdUser,
+      });
+    }
+  }
+
+  @Post('social-sign-in')
+  async socialSignIn(
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: signInReq,
+  ) {
+    let { success, user, session }: SignInRes =
+      await this.authService.socialSignIn(body);
+
+    if (success) {
+      user = await this.authService.formatPayload(user, UserTypes.DEFAULT);
+
+      //* add new session to user response payload
+      user = {
+        ...user,
+        parent: {
+          ...user.parent,
+          session,
+        },
+      };
+      resp.cookie('jwt', user.parent.session.token, { httpOnly: true });
+
+      resp.json({
+        success,
+        status: HttpStatus.FOUND,
+        message: authMessages.login,
+        user,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.loginFailed,
         },
         HttpStatus.NOT_FOUND,
       );

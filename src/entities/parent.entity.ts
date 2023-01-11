@@ -31,7 +31,7 @@ export class Parent {
   @JoinColumn()
   country?: CountryList;
 
-  @Column({ type: 'varchar', unique: true })
+  @Column({ type: 'varchar', unique: true, default: null })
   email?: string;
 
   @Column({ type: 'varchar', unique: true })

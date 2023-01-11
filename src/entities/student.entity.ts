@@ -35,9 +35,6 @@ export class Student {
   @OneToOne(() => Subscription)
   subscription?: Subscription;
 
-  @OneToMany(() => Class, (Class) => Class.student)
-  classes?: Class[];
-
   @OneToMany(() => ReportCard, (reportCard) => reportCard.student)
   reportCard?: ReportCard[];
 

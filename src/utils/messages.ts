@@ -167,6 +167,10 @@ export const adminMessages = {
   updatedChapterSuccess: 'Chapter updated successfully',
   updatedSettingSuccess: 'Setting updated successfully',
   userSettingFetchSuccess: 'User setting Fetched successfully',
+  classCreateSuccess: 'Class created successfully',
+  failToCreateClass: 'Error while creating class',
+  failToCreateSchedule: 'Error while creating schedule',
+  scheduleCreateSuccess: 'Schedule created successfully',
 };
 
 export const adminErrors = {
@@ -256,6 +260,11 @@ export const adminErrors = {
   settingNotFound: 'could not find setting with id provided',
   updatingSetting: 'Error querying for updating setting ',
   failedToFetchSetting: 'error while fetching setting. ',
+  saveClass: 'could not save new class ',
+  checkingStudent: 'Error querying for student ',
+  studentsNotFound: 'could not find student with this id =',
+  checkingClass: 'error while fetching class. ',
+  classNotFound: 'could not find class with id provided',
 };
 export const classroomMessages = {
   upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',

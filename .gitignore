@@ -2,10 +2,12 @@
 # compiled output
 /dist
 /node_modules
+/files
 .vscode
 # Logs
 logs
 *.log
+*.csv
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*

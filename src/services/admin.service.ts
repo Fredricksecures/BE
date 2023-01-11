@@ -1,7 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Column, Index, Repository } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from '../entities/user.entity';
 import {
@@ -34,8 +39,15 @@ import {
   createSubjectReq,
   updateChapterReq,
   updateSettingReq,
+  createClassReq,
+  createScheduleReq,
 } from 'src/dto/admin.dto';
-import { adminMessages, adminErrors, authErrors, authMessages } from 'src/utils/messages';
+import {
+  adminMessages,
+  adminErrors,
+  authErrors,
+  authMessages,
+} from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 import { Session } from 'src/entities/session.entity';
 import { Lesson } from 'src/entities/lesson.entity';
@@ -52,14 +64,17 @@ import { isEmpty } from 'src/utils/helpers';
 import * as bcrypt from 'bcrypt';
 import { UserTypes } from 'src/utils/enums';
 import { UtilityService } from './utility.service';
+import { AuthService } from './auth.service';
 import { CountryList } from 'src/entities/countryList.entity';
 import { Class } from 'src/entities/class.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Settings } from 'src/entities/settings.entity';
 import { Subscription } from 'src/entities/subscription.entity';
+import { response } from 'express';
 const excelToJSON = require('convert-excel-to-json');
-
+const { Parser } = require('json2csv');
+var fs = require('fs');
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -69,6 +84,7 @@ export class AdminService {
     private jwtService: JwtService,
     private readonly utilityService: UtilityService,
     private readonly userService: UserService,
+    private readonly authService: AuthService,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
@@ -85,7 +101,8 @@ export class AdminService {
     private customerCareRepo: Repository<CustomerCare>,
     @InjectRepository(LearningPackage)
     private learningPackageRepo: Repository<LearningPackage>,
-    @InjectRepository(Settings) private settingRepo: Repository<Settings>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+    @InjectRepository(Settings) private settingRepo: Repository<Settings>,
+    @InjectRepository(Class) private classRepo: Repository<Class>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
   async formatPayload(user: any, type: string) {
@@ -1617,139 +1634,236 @@ export class AdminService {
   }
 
   async BulkRegistration(file) {
-    const filepath = file.path;
-    const excelData = excelToJSON({
-      sourceFile: filepath,
-      header: {
-        rows: 1,
-      },
-      columnToKey: {
-        '*': '{{columnHeader}}',
-      },
-    });
-
-    //console.log(excelData);
-    // console.log(excelData.Data.length);
-    // console.log(excelData.Data[0]);
-    // console.log(file);
-
-    for (let i = 0; i < excelData.Data.length; i++) {
-    let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
-    let firstName = excelData.Data[i].firstName;
-    let lastName = excelData.Data[i].lastName;
-    let phoneNumber = excelData.Data[i].phoneNumber;
-    let email = excelData.Data[i].email;
-    let password = excelData.Data[i].password;
-    let countryId = excelData.Data[i].countryId;
-      
-    //* check if phone number is already taken
-    if (isEmpty(phoneNumber)) {
-      try {
-        duplicatePhoneNumber = await this.userRepo.findOne({
-          where: {
-            parent: {
-              phoneNumber,
-            },
-          },
-        });
-      
-      } catch (e) {
-        Logger.error(authErrors.dupPNQuery + e).console();
-
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: authErrors.dupPNQuery + e,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-      
-      if (duplicatePhoneNumber){
-       // duplicatePhoneNumber && duplicatePhoneNumber.parent.phoneNumber != phoneNumber) {
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: `phone number ( ${phoneNumber} ) is already taken. Change phone number in excel at line ${i+1}`,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-      
-    }
-
-    //* check if email is already taken
-    if (!isEmpty(email)) {
-      try {
-        duplicateEmail = await this.userRepo.findOne({
-          where: {
-            parent: {
-              email,
-            },
-          },
-        });
-        
-      } catch {
-        Logger.error(authErrors.dupEmailQuery).console();
-
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: authErrors.dupEmailQuery,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-
-      if (duplicateEmail ) {
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: `Email ( ${email} ) is already taken. Change email in excel at line ${i+1}`,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-    }
-
-    //* create user account
+    let errorFileCreated;
+    let successFileCreated;
+    let regResp;
+    const files = [];
+    const registeredUsers = [];
+    const notRegisteredUsers = [];
+    let excelKeys;
+    const originalKeys = [
+      'firstName',
+      'lastName',
+      'phoneNumber',
+      'email',
+      'password',
+      'deviceId',
+      'countryId',
+      'address',
+    ];
     try {
-      password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
-      
-      const createdParent = await this.userService.createParentProfile({
-        email,
-        phoneNumber,
-        password,
-        countryId,
+      const date = Date.now();
+      const columns = excelToJSON({
+        sourceFile: file.path,
       });
-      //  console.log("3")
-      //  console.log(createdParent)
-      createdUser = await this.userRepo.save({
-        firstName,
-        lastName,
-        type: UserTypes.PARENT,
-        parent: createdParent,
-      });
-    } catch (e) {
-      Logger.error(authErrors.saveUser + e).console();
+      //check if file is valid
+      if (columns.Data.length > 0) {
+        const avaliableColumns = Object.values(columns.Data[0]);
+        for (let i = 0; i < originalKeys.length; i++) {
+          const element = originalKeys[i];
+          if (!avaliableColumns.includes(element)) {
+            throw new BadRequestException(
+              `${element} is missing in uploaded file`,
+            );
+          }
+        }
+      }
 
+      const excelData = excelToJSON({
+        sourceFile: file.path,
+        header: {
+          rows: 1,
+        },
+        columnToKey: {
+          '*': '{{columnHeader}}',
+        },
+      });
+
+      //insert the excel data in user and parent entity
+      for (let i = 0; i < excelData.Data.length; i++) {
+        try {
+          if (Object.keys(excelData.Data[i]).length == originalKeys.length) {
+            regResp = await this.authService.registerUser({
+              firstName: excelData.Data[i].firstName,
+              lastName: excelData.Data[i].lastName,
+              email: excelData.Data[i].email,
+              phoneNumber: excelData.Data[i].phoneNumber,
+              password: excelData.Data[i].password,
+              confirmPassword: excelData.Data[i].password,
+              countryId: excelData.Data[i].countryId,
+            });
+            excelKeys = Object.keys(excelData.Data[i]);
+            registeredUsers.push(excelData.Data[i]);
+          } else {
+            const excelHeaders = Object.keys(excelData.Data[i]);
+            const result = originalKeys.filter(
+              (item) => excelHeaders.indexOf(item) == -1,
+            );
+            excelData.Data[i].remark = `Column missing (${result})`;
+            notRegisteredUsers.push(excelData.Data[i]);
+          }
+        } catch (e) {
+          excelKeys = Object.keys(excelData.Data[i]);
+          excelData.Data[i].remark = e.response.error;
+          notRegisteredUsers.push(excelData.Data[i]);
+        }
+      }
+
+      //creating csv file and add registered data
+      if (registeredUsers.length > 0) {
+        const successFileName = 'registered_' + date + '.csv';
+        successFileCreated = fs.createWriteStream(successFileName);
+        const parser = new Parser(excelKeys);
+        const csv = parser.parse(registeredUsers);
+        successFileCreated.write(csv);
+        files.push(successFileCreated.path);
+      }
+
+      //creating csv file and add not registered data
+      if (notRegisteredUsers.length > 0) {
+        const errorFileName = 'not_registered_' + date + '.csv';
+        errorFileCreated = fs.createWriteStream(errorFileName);
+        const parser = new Parser(excelKeys);
+        const csv = parser.parse(notRegisteredUsers);
+        errorFileCreated.write(csv);
+        files.push(errorFileCreated.path);
+      }
+    } catch (err) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: authErrors.saveUser + e,
+          error: err.response.message,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return {
+      success: true,
+      files: files,
+    };
+  }
+
+  async createClass(createClassReq: createClassReq) {
+    const { topic, state, startedAt, endedAt } = createClassReq;
+    let classCreated: Class;
+
+    try {
+      classCreated = await this.classRepo.save({
+        topic,
+        state,
+        startedAt,
+        endedAt,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveClass + e,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
 
-    // mailer(createdUser.parent.email, 'Registration Successful', {
-    //   text: `An action to change your password was successful`,
-    // });
-  }
     return {
-      // createdUser,
+      classCreated,
       success: true,
     };
+  }
+
+  async createSchedule(id: string, createScheduleReq: createScheduleReq) {
+    const { schedule } = createScheduleReq;
+    let scheduleCreated: Class, foundStudent: Student, foundClass: Class;
+  //  console.log(schedule);
+
+    try {
+      foundClass = await this.classRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingClass + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundClass) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.classNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    //console.log(schedule.split(",").length);
+    const scheduleValues = schedule.split(",")
+    //console.log(scheduleValues)
+    try {
+      for (let index = 0; index < scheduleValues.length; index++) {
+        const id = scheduleValues[index];
+        
+        foundStudent = await this.studentRepo.findOne({
+          where: { id },
+        });
+        console.log(foundStudent)
+        if(foundStudent == null)
+        {
+          throw new HttpException(
+            {
+              status: HttpStatus.NOT_IMPLEMENTED,
+              message: adminErrors.studentsNotFound+ id,
+            },
+            HttpStatus.NOT_IMPLEMENTED,
+          );
+        }
+      }
+     
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingStudent + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    // if (!foundStudent) {
+      // throw new HttpException(
+      //   {
+      //     status: HttpStatus.NOT_IMPLEMENTED,
+      //     error: adminErrors.studentsNotFound,
+      //   },
+      //   HttpStatus.NOT_IMPLEMENTED,
+      // );
     // }
+    // if (foundClass.schedule != null) {
+    //  // schedule = foundClass.schedule.concat(schedule).unique();
+    // }
+   // console.log(foundClass.schedule)
+   // let newarr = foundClass.schedule.push(schedule)
+   // console.log(newarr)
+    try {
+      scheduleCreated = await this.classRepo.save({
+        ...foundClass,
+        schedule: schedule ?? foundClass.schedule,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveClass + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      scheduleCreated,
+      success: true,
+    };
   }
 }

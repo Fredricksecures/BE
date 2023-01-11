@@ -10,6 +10,7 @@ import {
   IsMobilePhone,
   IsBoolean,
   IsNumber,
+  IsArray,
 } from 'class-validator';
 import { Session } from 'src/entities/session.entity';
 import { CustomerCare } from 'src/entities/CustomerCare.entity';
@@ -301,6 +302,31 @@ export class SampleDto {
   Age:number;
   Phone_No:number;
   Email:string;
+}
+export class createClassReq {
+  @IsNotEmpty()
+  @IsString()
+  topic: string;
+
+  @IsNotEmpty()
+  @IsString()
+  state: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  startedAt: string;
+  
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  endedAt: string;
+}
+export class createScheduleReq {
+  @IsNotEmpty()
+  @IsString()
+  schedule: string;
+
 }
 // export class createdAdminRes {
 //   createAdmin?: User | undefined;

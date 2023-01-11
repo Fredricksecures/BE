@@ -13,6 +13,7 @@ import {
   ForgotPasswordReq,
   ForgotPasswordRes,
 } from '../dto/auth.dto';
+import { signUpReq, signInReq } from 'src/dto/socialLogin.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Device } from 'src/entities/device.entity';
@@ -239,7 +240,7 @@ export class AuthService {
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
     //* check if phone number is already taken
-    if (!isEmpty(phoneNumber)) {
+    if (isEmpty(phoneNumber)) {
       try {
         duplicatePhoneNumber = await this.userRepo.findOne({
           where: {
@@ -247,6 +248,7 @@ export class AuthService {
               phoneNumber,
             },
           },
+          relations: ['parent'],
         });
       } catch (e) {
         Logger.error(authErrors.dupPNQuery + e).console();
@@ -259,10 +261,9 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-
       if (
         duplicatePhoneNumber &&
-        duplicatePhoneNumber.parent.phoneNumber != phoneNumber
+        duplicatePhoneNumber.parent.phoneNumber == phoneNumber
       ) {
         throw new HttpException(
           {
@@ -283,6 +284,7 @@ export class AuthService {
               email,
             },
           },
+          relations: ['parent'],
         });
       } catch {
         Logger.error(authErrors.dupEmailQuery).console();
@@ -295,12 +297,12 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-
-      if (duplicateEmail && duplicateEmail.parent.email != email) {
+      //console.log(duplicatePhoneNumber.parent)
+      if (duplicateEmail && duplicateEmail.parent.email == email) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
-            error: phoneNumber + ' : ' + 'email already exists',
+            error: email + ' : ' + 'email already exists',
           },
           HttpStatus.CONFLICT,
         );
@@ -335,9 +337,9 @@ export class AuthService {
       );
     }
 
-    mailer(createdUser.parent.email, 'Registration Successful', {
-      text: `An action to change your password was successful`,
-    });
+    // mailer(createdUser.parent.email, 'Registration Successful', {
+    //   text: `An action to change your password was successful`,
+    // });
 
     return {
       createdUser,
@@ -662,5 +664,125 @@ export class AuthService {
         success: true,
       };
     }
+  }
+
+  async socialSignUp(regUserReq: signUpReq) {
+    //* Register Basic User Details
+    let { firstName, lastName, phoneNumber, email, countryId } = regUserReq;
+    if (!phoneNumber) {
+      phoneNumber = '';
+    }
+    let duplicateEmail: User, createdUser: User;
+
+    //* check if email is already taken
+    if (!isEmpty(email)) {
+      try {
+        duplicateEmail = await this.userRepo.findOne({
+          where: {
+            parent: {
+              email,
+            },
+          },
+          relations: ['parent'],
+        });
+      } catch {
+        Logger.error(authErrors.dupEmailQuery).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: authErrors.dupEmailQuery,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+      //console.log(duplicatePhoneNumber.parent)
+      if (duplicateEmail && duplicateEmail.parent.email == email) {
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: email + ' : ' + 'email already exists',
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
+
+    //* create user account
+    try {
+      let password = generateRandomHash(6);
+
+      const createdParent = await this.userService.createParentProfile({
+        email,
+        phoneNumber,
+        password,
+        countryId,
+      });
+      createdUser = await this.userRepo.save({
+        firstName,
+        lastName,
+        type: UserTypes.PARENT,
+        parent: createdParent,
+      });
+    } catch (e) {
+      Logger.error(authErrors.saveUser + e).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.saveUser + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    // mailer(createdUser.parent.email, 'Registration Successful', {
+    //   text: `An action to change your password was successful`,
+    // });
+
+    return {
+      createdUser,
+      success: true,
+    };
+  }
+
+  async socialSignIn(signInReq: signInReq) {
+    let { email, deviceId } = signInReq;
+
+    let foundUser: User;
+
+    //* find user with matching email
+    try {
+      foundUser = await this.userRepo.findOneOrFail({
+        where: { parent: { email } },
+        relations: ['parent'],
+      });
+    } catch (exp) {
+      Logger.error(exp).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.checkingEmail + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.emailNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    const newSession = await this.createSession(foundUser, deviceId);
+    return {
+      success: true,
+      user: foundUser,
+      session: newSession,
+    };
   }
 }
