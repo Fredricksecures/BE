@@ -8,7 +8,6 @@ import {
   Get,
   Param,
   HttpException,
- 
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -27,7 +26,7 @@ import {
   ResetPasswordReq,
   ResetPasswordRes,
 } from 'src/dto/auth.dto';
-import { signInReq } from 'src/dto/signIn.dto';
+import { signUpReq, signInReq, SignInRes } from 'src/dto/socialLogin.dto';
 import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/utils/enums';
@@ -291,14 +290,15 @@ export class AuthController {
     }
   }
 
-  @Post('sign-in')
-  async signIn(
+  @Post('sign-up')
+  async signUp(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Body() body: signInReq,
+    @Body() body: signUpReq,
   ) {
-    const { createdUser, success }: BasicRegRes =
-      await this.authService.signIn(body);
+    const { createdUser, success }: BasicRegRes = await this.authService.signUp(
+      body,
+    );
 
     if (success) {
       resp.json({
@@ -307,6 +307,45 @@ export class AuthController {
         status: HttpStatus.CREATED,
         createdUser,
       });
+    }
+  }
+
+  @Post('sign-in')
+  async signIn(
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: signInReq,
+  ) {
+    let { success, user, session }: SignInRes = await this.authService.signIn(
+      body,
+    );
+
+    if (success) {
+      user = await this.authService.formatPayload(user, UserTypes.DEFAULT);
+
+      //* add new session to user response payload
+      user = {
+        ...user,
+        parent: {
+          ...user.parent,
+          session,
+        },
+      };
+      resp.cookie('jwt', user.parent.session.token, { httpOnly: true });
+
+      resp.json({
+        success,
+        status: HttpStatus.FOUND,
+        message: authMessages.login,
+        user,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: authErrors.loginFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 }

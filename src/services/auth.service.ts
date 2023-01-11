@@ -13,7 +13,7 @@ import {
   ForgotPasswordReq,
   ForgotPasswordRes,
 } from '../dto/auth.dto';
-import { signInReq } from 'src/dto/signIn.dto';
+import { signUpReq, signInReq } from 'src/dto/socialLogin.dto';
 import { Student } from 'src/entities/student.entity';
 import { Parent } from 'src/entities/parent.entity';
 import { Device } from 'src/entities/device.entity';
@@ -666,13 +666,13 @@ export class AuthService {
     }
   }
 
-  async signIn(regUserReq: signInReq) {
+  async signUp(regUserReq: signUpReq) {
     //* Register Basic User Details
     let { firstName, lastName, phoneNumber, email, countryId } = regUserReq;
     if (!phoneNumber) {
       phoneNumber = '';
     }
-    let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
+    let duplicateEmail: User, createdUser: User;
 
     //* check if email is already taken
     if (!isEmpty(email)) {
@@ -743,6 +743,46 @@ export class AuthService {
     return {
       createdUser,
       success: true,
+    };
+  }
+
+  async signIn(signInReq: signInReq) {
+    let { email, deviceId } = signInReq;
+
+    let foundUser: User;
+
+    //* find user with matching email
+    try {
+      foundUser = await this.userRepo.findOneOrFail({
+        where: { parent: { email } },
+        relations: ['parent'],
+      });
+    } catch (exp) {
+      Logger.error(exp).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.checkingEmail + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: authErrors.emailNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    const newSession = await this.createSession(foundUser, deviceId);
+    return {
+      success: true,
+      user: foundUser,
+      session: newSession,
     };
   }
 }
