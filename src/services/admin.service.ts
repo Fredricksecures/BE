@@ -39,6 +39,8 @@ import {
   createSubjectReq,
   updateChapterReq,
   updateSettingReq,
+  createClassReq,
+  createScheduleReq,
 } from 'src/dto/admin.dto';
 import {
   adminMessages,
@@ -99,7 +101,8 @@ export class AdminService {
     private customerCareRepo: Repository<CustomerCare>,
     @InjectRepository(LearningPackage)
     private learningPackageRepo: Repository<LearningPackage>,
-    @InjectRepository(Settings) private settingRepo: Repository<Settings>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+    @InjectRepository(Settings) private settingRepo: Repository<Settings>,
+    @InjectRepository(Class) private classRepo: Repository<Class>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
   async formatPayload(user: any, type: string) {
@@ -1737,6 +1740,130 @@ export class AdminService {
     return {
       success: true,
       files: files,
+    };
+  }
+
+  async createClass(createClassReq: createClassReq) {
+    const { topic, state, startedAt, endedAt } = createClassReq;
+    let classCreated: Class;
+
+    try {
+      classCreated = await this.classRepo.save({
+        topic,
+        state,
+        startedAt,
+        endedAt,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveClass + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      classCreated,
+      success: true,
+    };
+  }
+
+  async createSchedule(id: string, createScheduleReq: createScheduleReq) {
+    const { schedule } = createScheduleReq;
+    let scheduleCreated: Class, foundStudent: Student, foundClass: Class;
+  //  console.log(schedule);
+
+    try {
+      foundClass = await this.classRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingClass + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundClass) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.classNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    //console.log(schedule.split(",").length);
+    const scheduleValues = schedule.split(",")
+    //console.log(scheduleValues)
+    try {
+      for (let index = 0; index < scheduleValues.length; index++) {
+        const id = scheduleValues[index];
+        
+        foundStudent = await this.studentRepo.findOne({
+          where: { id },
+        });
+        console.log(foundStudent)
+        if(foundStudent == null)
+        {
+          throw new HttpException(
+            {
+              status: HttpStatus.NOT_IMPLEMENTED,
+              message: adminErrors.studentsNotFound+ id,
+            },
+            HttpStatus.NOT_IMPLEMENTED,
+          );
+        }
+      }
+     
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingStudent + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    // if (!foundStudent) {
+      // throw new HttpException(
+      //   {
+      //     status: HttpStatus.NOT_IMPLEMENTED,
+      //     error: adminErrors.studentsNotFound,
+      //   },
+      //   HttpStatus.NOT_IMPLEMENTED,
+      // );
+    // }
+    // if (foundClass.schedule != null) {
+    //  // schedule = foundClass.schedule.concat(schedule).unique();
+    // }
+   // console.log(foundClass.schedule)
+   // let newarr = foundClass.schedule.push(schedule)
+   // console.log(newarr)
+    try {
+      scheduleCreated = await this.classRepo.save({
+        ...foundClass,
+        schedule: schedule ?? foundClass.schedule,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveClass + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      scheduleCreated,
+      success: true,
     };
   }
 }

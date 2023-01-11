@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { ClassStates } from 'src/utils/enums';
 import { Student } from './student.entity';
@@ -28,8 +29,8 @@ export class Class {
   @Column({ type: 'enum', enum: ClassStates, default: ClassStates.STARTED })
   state?: string;
 
-  @ManyToOne(() => Student, (student) => student.classes)
-  student?: Student;
+  @Column({ type: 'varchar', nullable: true })
+  attendees?: Array<string>;
 
   @Column({ type: 'timestamp' })
   startedAt?: Date;
@@ -42,4 +43,7 @@ export class Class {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt?: Date;
+
+  @Column({ type: 'varchar', nullable: true })
+  schedule?: string;
 }

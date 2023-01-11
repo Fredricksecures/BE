@@ -43,6 +43,8 @@ import {
   createSubjectReq,
   updateChapterReq,
   updateSettingReq,
+  createClassReq,
+  createScheduleReq
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
@@ -819,6 +821,62 @@ export class AdminController {
         status: HttpStatus.OK,
         file: files,
       });
+    }
+  }
+
+  @Post('create-class')
+  async createClass(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createClassReq,
+  ) {
+    const { success, classCreated } = await this.adminService.createClass(
+      body,
+    );
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.classCreateSuccess,
+        classCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminMessages.failToCreateClass,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('create-schedule/:id')
+  async createSchedule (
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createScheduleReq,
+    @Param('id') id,
+  ) {
+   
+    const { success, scheduleCreated } = await this.adminService.createSchedule(
+      id,{...req.body},
+    );
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.scheduleCreateSuccess,
+        scheduleCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminMessages.failToCreateSchedule,
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 }
