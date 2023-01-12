@@ -34,7 +34,7 @@ export class Parent {
   @Column({ type: 'varchar', unique: true, default: null })
   email?: string;
 
-  @Column({ type: 'varchar', unique: true })
+  @Column({ type: 'varchar', unique: true, nullable: true })
   phoneNumber?: string;
 
   @Column({ type: 'varchar' })
