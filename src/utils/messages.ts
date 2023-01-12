@@ -171,6 +171,8 @@ export const adminMessages = {
   failToCreateClass: 'Error while creating class',
   failToCreateSchedule: 'Error while creating schedule',
   scheduleCreateSuccess: 'Schedule created successfully',
+  attendeesreateSuccess: 'Attendees created successfully',
+  failToCreateAttendees: 'Error while creating attendees',
 };
 
 export const adminErrors = {
@@ -262,7 +264,7 @@ export const adminErrors = {
   failedToFetchSetting: 'error while fetching setting. ',
   saveClass: 'could not save new class ',
   checkingStudent: 'Error querying for student ',
-  studentsNotFound: 'could not find student with this id =',
+  studentsNotFound: 'could not find student with id = ',
   checkingClass: 'error while fetching class. ',
   classNotFound: 'could not find class with id provided',
 };

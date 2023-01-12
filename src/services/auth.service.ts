@@ -669,9 +669,9 @@ export class AuthService {
   async socialSignUp(regUserReq: signUpReq) {
     //* Register Basic User Details
     let { firstName, lastName, phoneNumber, email, countryId } = regUserReq;
-    if (!phoneNumber) {
-      phoneNumber = '';
-    }
+    // if (!phoneNumber) {
+    //   phoneNumber = '';
+    // }
     let duplicateEmail: User, createdUser: User;
 
     //* check if email is already taken
@@ -696,7 +696,7 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-      //console.log(duplicatePhoneNumber.parent)
+    
       if (duplicateEmail && duplicateEmail.parent.email == email) {
         throw new HttpException(
           {
@@ -711,7 +711,6 @@ export class AuthService {
     //* create user account
     try {
       let password = generateRandomHash(6);
-
       const createdParent = await this.userService.createParentProfile({
         email,
         phoneNumber,
@@ -754,7 +753,9 @@ export class AuthService {
     //* find user with matching email
     try {
       foundUser = await this.userRepo.findOneOrFail({
-        where: { parent: { email } },
+        where: { 
+          parent:  {email}  
+        },
         relations: ['parent'],
       });
     } catch (exp) {
