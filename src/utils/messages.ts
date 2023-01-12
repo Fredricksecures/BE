@@ -262,7 +262,7 @@ export const adminErrors = {
   failedToFetchSetting: 'error while fetching setting. ',
   saveClass: 'could not save new class ',
   checkingStudent: 'Error querying for student ',
-  studentsNotFound: 'could not find student with this id =',
+  studentsNotFound: 'could not find student with id = ',
   checkingClass: 'error while fetching class. ',
   classNotFound: 'could not find class with id provided',
 };

@@ -1773,8 +1773,8 @@ export class AdminService {
   async createSchedule(id: string, createScheduleReq: createScheduleReq) {
     const { schedule } = createScheduleReq;
     let scheduleCreated: Class, foundStudent: Student, foundClass: Class;
-  //  console.log(schedule);
 
+    //Finding the class with particular id
     try {
       foundClass = await this.classRepo.findOne({
         where: { id },
@@ -1798,58 +1798,36 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    //console.log(schedule.split(",").length);
-    const scheduleValues = schedule.split(",")
-    //console.log(scheduleValues)
-    try {
-      for (let index = 0; index < scheduleValues.length; index++) {
-        const id = scheduleValues[index];
-        
-        foundStudent = await this.studentRepo.findOne({
-          where: { id },
-        });
-        console.log(foundStudent)
-        if(foundStudent == null)
-        {
-          throw new HttpException(
-            {
-              status: HttpStatus.NOT_IMPLEMENTED,
-              message: adminErrors.studentsNotFound+ id,
-            },
-            HttpStatus.NOT_IMPLEMENTED,
-          );
-        }
+
+    const scheduleInsertedValues = schedule.split(',');
+    let scheduleValues = foundClass.schedule.split(',');
+
+    // Used to check the schedule value is present in student table
+    for (let index = 0; index < scheduleInsertedValues.length; index++) {
+      const id = scheduleInsertedValues[index];
+      foundStudent = await this.studentRepo.findOne({
+        where: { id },
+      });
+      if (foundStudent == null) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            message: adminErrors.studentsNotFound + id,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
       }
-     
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: adminErrors.checkingStudent + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
     }
 
-    // if (!foundStudent) {
-      // throw new HttpException(
-      //   {
-      //     status: HttpStatus.NOT_IMPLEMENTED,
-      //     error: adminErrors.studentsNotFound,
-      //   },
-      //   HttpStatus.NOT_IMPLEMENTED,
-      // );
-    // }
-    // if (foundClass.schedule != null) {
-    //  // schedule = foundClass.schedule.concat(schedule).unique();
-    // }
-   // console.log(foundClass.schedule)
-   // let newarr = foundClass.schedule.push(schedule)
-   // console.log(newarr)
+    //Checking that schedule value is already present or not
+    let concat = scheduleInsertedValues.concat(scheduleValues);
+    let set = new Set(concat);
+    let result = [...set];
+
     try {
       scheduleCreated = await this.classRepo.save({
         ...foundClass,
-        schedule: schedule ?? foundClass.schedule,
+        schedule: result.toString(),
       });
     } catch (e) {
       throw new HttpException(
