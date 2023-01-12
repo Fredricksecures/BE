@@ -71,6 +71,7 @@ import { Class } from 'src/entities/class.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Settings } from 'src/entities/settings.entity';
+import { SubscriptionService } from './subscription.service';
 import { Subscription } from 'src/entities/subscription.entity';
 import { response } from 'express';
 const excelToJSON = require('convert-excel-to-json');
@@ -86,6 +87,7 @@ export class AdminService {
     private readonly utilityService: UtilityService,
     private readonly userService: UserService,
     private readonly authService: AuthService,
+    private readonly subscriptionService: SubscriptionService,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
@@ -1638,6 +1640,7 @@ export class AdminService {
     let errorFileCreated;
     let successFileCreated;
     let regResp;
+    let createSubscription;
     const files = [];
     const registeredUsers = [];
     const notRegisteredUsers = [];
@@ -1651,6 +1654,12 @@ export class AdminService {
       'deviceId',
       'countryId',
       'address',
+      'details',
+      'duration',
+      'price',
+      'learningPackages',
+      'state',
+      'dueDate'
     ];
     try {
       const date = Date.now();
@@ -1693,6 +1702,15 @@ export class AdminService {
               confirmPassword: excelData.Data[i].password,
               countryId: excelData.Data[i].countryId,
             });
+            createSubscription = await this.subscriptionService.createSubscription({
+              details: excelData.Data[i].details,
+              duration: excelData.Data[i].duration,
+              price: excelData.Data[i].price,
+              learningPackages: excelData.Data[i].learningPackages,
+              state: excelData.Data[i].state,
+              dueDate: excelData.Data[i].dueDate,
+              
+            })
             excelKeys = Object.keys(excelData.Data[i]);
             registeredUsers.push(excelData.Data[i]);
           } else {

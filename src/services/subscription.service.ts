@@ -6,6 +6,7 @@ import { subscriptionMessages, subscriptionError } from 'src/utils/messages';
 import { Subscription } from 'src/entities/subscription.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Invoice } from 'src/entities/invoice.entity';
+import { SubscriptionStates } from 'src/utils/enums'; 
 import {
   IPaginationOptions,
   paginate,
@@ -23,15 +24,73 @@ export class SubscriptionService {
     @InjectRepository(Subscription)
     private subscriptionRepo: Repository<Subscription>,
     @InjectRepository(LearningPackage)
-    private sessionRepo: Repository<LearningPackage>,
+    private lPLRepo: Repository<LearningPackage>,
     @InjectRepository(Invoice)
     private invoicesRepo: Repository<Invoice>,
   ) {}
 
+  // async createSubscription(
+  //   params: CreateSubscriptionReq,
+  // ): Promise<CreateSubscriptionRes> {
+  //   return;
+  // }
+
   async createSubscription(
-    params: CreateSubscriptionReq,
+    CreateSubscriptionReq: CreateSubscriptionReq,
   ): Promise<CreateSubscriptionRes> {
-    return;
+    const {
+      details,
+      duration,
+      price,
+      learningPackages,
+      state,
+      dueDate,
+    } = CreateSubscriptionReq;
+    let createdSubscription: Subscription,
+      foundLearningPackage: LearningPackage;
+
+    const learningPackagesId = learningPackages.split(',');
+
+    // Used to check the schedule value is present in student table
+    for (let index = 0; index < learningPackagesId.length; index++) {
+      const id = learningPackagesId[index];
+      foundLearningPackage = await this.lPLRepo.findOne({
+        where: { id },
+      });
+      if (foundLearningPackage == null) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            message: subscriptionError.lPLNotFound + id,
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+    }
+
+    try {
+      createdSubscription = await this.subscriptionRepo.save({
+        details,
+        duration,
+        price,
+        learningPackages,
+        state : state?? SubscriptionStates.INACTIVE,
+        dueDate
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: subscriptionError.savedSubscription + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      createdSubscription,
+      success: true,
+    };
   }
 
   async getSubscription(subscriptionId: string): Promise<Subscription> {
