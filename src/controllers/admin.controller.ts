@@ -44,7 +44,8 @@ import {
   updateChapterReq,
   updateSettingReq,
   createClassReq,
-  createScheduleReq
+  createScheduleReq,
+  createAttendeesReq
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
@@ -879,4 +880,34 @@ export class AdminController {
       );
     }
   }
+
+  @Post('create-attendees/:id')
+  async createAttendees (
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createAttendeesReq,
+    @Param('id') id,
+  ) {
+   
+    const { success, attendeesCreated } = await this.adminService.createAttendees(
+      id,{...req.body},
+    );
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.attendeesreateSuccess,
+        attendeesCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminMessages.failToCreateAttendees,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
 }

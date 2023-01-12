@@ -326,6 +326,11 @@ export class createScheduleReq {
   @IsNotEmpty()
   @IsString()
   schedule: string;
+}
+export class createAttendeesReq {
+  @IsNotEmpty()
+  @IsString()
+  attendees: string;
 
 }
 // export class createdAdminRes {

@@ -30,7 +30,7 @@ export class Class {
   state?: string;
 
   @Column({ type: 'varchar', nullable: true })
-  attendees?: Array<string>;
+  attendees?: string;
 
   @Column({ type: 'timestamp' })
   startedAt?: Date;

@@ -171,6 +171,8 @@ export const adminMessages = {
   failToCreateClass: 'Error while creating class',
   failToCreateSchedule: 'Error while creating schedule',
   scheduleCreateSuccess: 'Schedule created successfully',
+  attendeesreateSuccess: 'Attendees created successfully',
+  failToCreateAttendees: 'Error while creating attendees',
 };
 
 export const adminErrors = {
