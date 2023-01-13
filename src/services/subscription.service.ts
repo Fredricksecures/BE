@@ -61,7 +61,7 @@ export class SubscriptionService {
         throw new HttpException(
           {
             status: HttpStatus.NOT_IMPLEMENTED,
-            message: subscriptionError.lPLNotFound + id,
+            error: subscriptionError.lPLNotFound + id,
           },
           HttpStatus.NOT_IMPLEMENTED,
         );
