@@ -45,7 +45,9 @@ import {
   updateSettingReq,
   createClassReq,
   createScheduleReq,
-  createAttendeesReq
+  createAttendeesReq,
+  bulkRegistrationReq,
+  bulkEmailReq
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
@@ -815,8 +817,12 @@ export class AdminController {
   async bulkUpload(
     @UploadedFile() file: Express.Multer.File,
     @Res({ passthrough: true }) resp: Response,
+    @Query() params: bulkRegistrationReq,
   ) {
-    const { success, files } = await this.adminService.BulkRegistration(file);
+    const { success, files } = await this.adminService.BulkRegistration(
+      params,
+      file,
+    );
     if (success) {
       resp.json({
         status: HttpStatus.OK,
@@ -831,9 +837,7 @@ export class AdminController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createClassReq,
   ) {
-    const { success, classCreated } = await this.adminService.createClass(
-      body,
-    );
+    const { success, classCreated } = await this.adminService.createClass(body);
 
     if (success) {
       resp.json({
@@ -853,15 +857,15 @@ export class AdminController {
   }
 
   @Post('create-schedule/:id')
-  async createSchedule (
+  async createSchedule(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createScheduleReq,
     @Param('id') id,
   ) {
-   
     const { success, scheduleCreated } = await this.adminService.createSchedule(
-      id,{...req.body},
+      id,
+      { ...req.body },
     );
 
     if (success) {
@@ -882,16 +886,14 @@ export class AdminController {
   }
 
   @Post('create-attendees/:id')
-  async createAttendees (
+  async createAttendees(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createAttendeesReq,
     @Param('id') id,
   ) {
-   
-    const { success, attendeesCreated } = await this.adminService.createAttendees(
-      id,{...req.body},
-    );
+    const { success, attendeesCreated } =
+      await this.adminService.createAttendees(id, { ...req.body });
 
     if (success) {
       resp.json({
@@ -909,5 +911,20 @@ export class AdminController {
       );
     }
   }
-
+  async bulkEmail(
+    @UploadedFile() file: Express.Multer.File,
+    @Res({ passthrough: true }) resp: Response,
+    @Query() params: bulkEmailReq,
+  ) {
+    const { success, files } = await this.adminService.BulkEmail(
+      params,
+      file,
+    );
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        file: files,
+      });
+    }
+  }
 }

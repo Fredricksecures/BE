@@ -333,6 +333,16 @@ export class createAttendeesReq {
   attendees: string;
 
 }
+export class bulkRegistrationReq {
+  @IsNotEmpty()
+  @IsString()
+  learningPackages: string;
+}
+export class bulkEmailReq {
+  @IsNotEmpty()
+  @IsString()
+  message: string;
+}
 // export class createdAdminRes {
 //   createAdmin?: User | undefined;
 //   success?: boolean;

@@ -1,3 +1,4 @@
+import { learningPackages } from './../utils/constants';
 import {
   BadRequestException,
   HttpException,
@@ -154,7 +155,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    console.log(foundUser);
+   
     if (!foundUser) {
       Logger.error(adminErrors.userNotFoundWithId);
 
@@ -653,7 +654,7 @@ export class AdminService {
           },
           relations: ['admin'],
         });
-        console.log(duplicatePhoneNumber);
+     
       } catch (e) {
         Logger.error(adminErrors.dupPNQuery + e).console();
 
@@ -691,7 +692,7 @@ export class AdminService {
           },
           relations: ['admin'],
         });
-        console.log(duplicateEmail);
+      
       } catch {
         Logger.error(adminErrors.dupEmailQuery).console();
 
@@ -824,7 +825,7 @@ export class AdminService {
     let results, total;
 
     try {
-      console.log(userId);
+      
       results = await this.userRepo.createQueryBuilder('User');
       if (userId != null) {
         results.where('Id = :userId', { userId });
@@ -899,7 +900,7 @@ export class AdminService {
           id: subjectId,
         },
       });
-      console.log(foundSubjectId);
+      
     } catch (exp) {
       throw new HttpException(
         {
@@ -1636,7 +1637,7 @@ export class AdminService {
     return paginate<Settings>(results, options);
   }
 
-  async BulkRegistration(file) {
+  async BulkRegistration(params, file) {
     let errorFileCreated;
     let successFileCreated;
     let regResp;
@@ -1644,7 +1645,7 @@ export class AdminService {
     const files = [];
     const registeredUsers = [];
     const notRegisteredUsers = [];
-    let excelKeys;
+    let excelKeys, lPLValues;
     const originalKeys = [
       'firstName',
       'lastName',
@@ -1657,9 +1658,8 @@ export class AdminService {
       'details',
       'duration',
       'price',
-      'learningPackages',
       'state',
-      'dueDate'
+      'dueDate',
     ];
     try {
       const date = Date.now();
@@ -1692,6 +1692,12 @@ export class AdminService {
       //insert the excel data in user and parent entity
       for (let i = 0; i < excelData.Data.length; i++) {
         try {
+          if (!excelData.Data[i].hasOwnProperty('learningPackages')) {
+            excelData.Data[i].learningPackages = params.learningPackages;
+            if (!(originalKeys.includes('learningPackages'))) {
+              originalKeys.push('learningPackages');
+            }
+          }
           if (Object.keys(excelData.Data[i]).length == originalKeys.length) {
             regResp = await this.authService.registerUser({
               firstName: excelData.Data[i].firstName,
@@ -1702,15 +1708,16 @@ export class AdminService {
               confirmPassword: excelData.Data[i].password,
               countryId: excelData.Data[i].countryId,
             });
-            createSubscription = await this.subscriptionService.createSubscription({
-              details: excelData.Data[i].details,
-              duration: excelData.Data[i].duration,
-              price: excelData.Data[i].price,
-              learningPackages: excelData.Data[i].learningPackages,
-              state: excelData.Data[i].state,
-              dueDate: excelData.Data[i].dueDate,
-              
-            })
+
+            createSubscription =
+              await this.subscriptionService.createSubscription({
+                details: excelData.Data[i].details,
+                duration: excelData.Data[i].duration,
+                price: excelData.Data[i].price,
+                learningPackages: excelData.Data[i].learningPackages,
+                state: excelData.Data[i].state,
+                dueDate: excelData.Data[i].dueDate,
+              });
             excelKeys = Object.keys(excelData.Data[i]);
             registeredUsers.push(excelData.Data[i]);
           } else {
