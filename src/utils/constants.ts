@@ -95,8 +95,8 @@ export const ModuleConfigs = {
       MockTest,
       Class,
       Settings,
-      Subscription
-     
+      Subscription,
+      Invoice,
     ],
   },
   subscription: {

@@ -696,7 +696,7 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-    
+
       if (duplicateEmail && duplicateEmail.parent.email == email) {
         throw new HttpException(
           {
@@ -735,9 +735,9 @@ export class AuthService {
       );
     }
 
-    // mailer(createdUser.parent.email, 'Registration Successful', {
-    //   text: `An action to change your password was successful`,
-    // });
+    mailer(createdUser.parent.email, 'Registration Successful', {
+      text: `An action to change your password was successful`,
+    });
 
     return {
       createdUser,
@@ -753,8 +753,8 @@ export class AuthService {
     //* find user with matching email
     try {
       foundUser = await this.userRepo.findOneOrFail({
-        where: { 
-          parent:  {email}  
+        where: {
+          parent: { email },
         },
         relations: ['parent'],
       });

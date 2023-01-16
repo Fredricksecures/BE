@@ -27,7 +27,6 @@ export class ReportCard {
   @Column({ type: 'varchar' })
   remark?: string;
 
-
   @ManyToOne(() => Student, (student) => student.reportCard)
   student?: Student;
 

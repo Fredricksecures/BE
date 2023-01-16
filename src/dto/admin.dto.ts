@@ -67,10 +67,9 @@ export class CustomerCareAgentReq {
 export class UpdateCustomerIdReq {
   @IsNotEmpty()
   @IsString()
-  Id: string; 
+  Id: string;
 }
 export class UpdateCustomerReq {
- 
   @IsOptional()
   @IsString()
   @IsEmail()
@@ -122,7 +121,7 @@ export class UsersSessionsRes {
   session?: Session;
   success?: boolean;
 }
-export class createAdminReq{
+export class createAdminReq {
   @IsNotEmpty()
   @IsString()
   @IsNotEmpty()
@@ -154,10 +153,9 @@ export class createAdminReq{
   @IsOptional()
   @IsNumber()
   countryId: number;
-
 }
 
-export class updateAdminReq{
+export class updateAdminReq {
   @IsOptional()
   @IsString()
   @IsEmail()
@@ -170,7 +168,6 @@ export class updateAdminReq{
   @IsOptional()
   @IsBoolean()
   isSuper: boolean;
-
 }
 export class BasicRegRes {
   createdUser?: User | undefined;
@@ -185,7 +182,6 @@ export class createLessonReq {
   @IsNotEmpty()
   @IsString()
   chapterId: string;
-
 }
 
 export class createChapterReq {
@@ -196,7 +192,6 @@ export class createChapterReq {
   @IsNotEmpty()
   @IsString()
   subjectId: string;
-
 }
 export class updateLessonReq {
   @IsNotEmpty()
@@ -217,38 +212,32 @@ export class createTestReq {
   @IsNotEmpty()
   @IsString()
   lessonId: string;
-
 }
 
 export class updateTestReq {
   @IsNotEmpty()
   @IsString()
   topic: string;
- 
 }
 export class createMockTestReq {
   @IsNotEmpty()
   @IsString()
   mockTestName: string;
- 
 }
 export class updateMockTestReq {
   @IsNotEmpty()
   @IsString()
   mockTestName: string;
- 
 }
 export class createBadgeReq {
   @IsNotEmpty()
   @IsString()
   badgeName: string;
- 
 }
 export class updateBadgeReq {
   @IsNotEmpty()
   @IsString()
   badgeName: string;
- 
 }
 export class createReportCardReq {
   @IsNotEmpty()
@@ -298,10 +287,10 @@ export class updateSettingReq {
 }
 export class SampleDto {
   First_Name: string;
-  Last_Name:string;
-  Age:number;
-  Phone_No:number;
-  Email:string;
+  Last_Name: string;
+  Age: number;
+  Phone_No: number;
+  Email: string;
 }
 export class createClassReq {
   @IsNotEmpty()
@@ -316,7 +305,7 @@ export class createClassReq {
   @IsString()
   @IsNotEmpty()
   startedAt: string;
-  
+
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -331,7 +320,16 @@ export class createAttendeesReq {
   @IsNotEmpty()
   @IsString()
   attendees: string;
-
+}
+export class bulkRegistrationReq {
+  @IsNotEmpty()
+  @IsString()
+  learningPackages: string;
+}
+export class bulkEmailReq {
+  @IsOptional()
+  @IsString()
+  message: string;
 }
 // export class createdAdminRes {
 //   createAdmin?: User | undefined;

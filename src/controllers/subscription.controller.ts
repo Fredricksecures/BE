@@ -36,15 +36,16 @@ export class SubscriptionController {
     @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const  subscriptions =
-      await this.SubscriptionService.getSubscriptions(options);
-    console.log(subscriptions.items)
+    const subscriptions = await this.SubscriptionService.getSubscriptions(
+      options,
+    );
+    console.log(subscriptions.items);
     if (subscriptions) {
       resp.json({
         status: HttpStatus.OK,
         message: subscriptionMessages.fetchSubscriptionSuccess,
         subscriptions: subscriptions.items,
-        meta:subscriptions.meta
+        meta: subscriptions.meta,
       });
     } else {
       throw new HttpException(
@@ -60,12 +61,12 @@ export class SubscriptionController {
   // async getSubscriptions(
   //   @Req() req: Request,
   //   @Res({ passthrough: true }) resp: Response,
-    
+
   // ) {
-    
+
   //   const  {Success,subscriptions} =
   //     await this.authService.getSubscriptions();
-   
+
   //   if (Success) {
   //     resp.json({
   //       status: HttpStatus.OK,
@@ -143,5 +144,4 @@ export class SubscriptionController {
       );
     }
   }
- 
 }

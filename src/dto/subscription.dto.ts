@@ -1,20 +1,29 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsDate } from 'class-validator';
 import { Subscription } from 'src/entities/subscription.entity';
+import { SubscriptionStates } from 'src/utils/enums';
 
 export class CreateSubscriptionReq {
   @IsNotEmpty()
   @IsString()
-  firstName: string;
+  details: string;
 
   @IsNotEmpty()
   @IsString()
-  lastName: string;
+  duration: string;
 
   @IsNotEmpty()
-  deviceId: string;
+  @IsString()
+  price: string;
 
   @IsNotEmpty()
-  countryId: string;
+  @IsString()
+  learningPackages: string;
+
+  @IsOptional()
+  state: SubscriptionStates;
+
+  @IsNotEmpty()
+  dueDate: string;
 }
 export class CreateSubscriptionRes {
   success: boolean;

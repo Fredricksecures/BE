@@ -16,7 +16,7 @@ export function mailer(
     },
   });
 
-  let transporter = createTransport({
+  const transporter = createTransport({
     host: 'mail.teesas.com',
     port: 465,
     auth: {
@@ -25,7 +25,7 @@ export function mailer(
     },
   });
 
-  let mailOptions = {
+  const mailOptions = {
     from: `${senderName || 'Teesas Education'} <${process.env.NOREPLY_EMAIL}>`,
     to: sendee,
     subject: title,

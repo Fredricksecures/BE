@@ -15,7 +15,6 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 
-
 import {
   updateLeaderboardReq,
   addReviewReq,
@@ -168,7 +167,7 @@ export class ContentService {
     try {
       updatedLeaderboard = await this.leaderboardRepo.save({
         ...foundLeaderboard,
-        points: points ?? foundLeaderboard.points
+        points: points ?? foundLeaderboard.points,
       });
 
       return {
@@ -306,7 +305,7 @@ export class ContentService {
 
   async updateMockTest(id: string, updateMockTestReq: updateMockTestReq) {
     const { mockTestName, subject } = updateMockTestReq;
-    
+
     let foundMockTest, updatedMockTest: MockTest;
 
     try {
@@ -337,7 +336,7 @@ export class ContentService {
       updatedMockTest = await this.leaderboardRepo.save({
         ...foundMockTest,
         mockTestName: mockTestName ?? foundMockTest.mockTestName,
-        subject: subject ?? foundMockTest.subject
+        subject: subject ?? foundMockTest.subject,
       });
 
       return {

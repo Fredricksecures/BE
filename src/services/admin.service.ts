@@ -1,3 +1,4 @@
+import { learningPackages } from './../utils/constants';
 import {
   BadRequestException,
   HttpException,
@@ -71,6 +72,7 @@ import { Class } from 'src/entities/class.entity';
 import { ReportCard } from 'src/entities/reportCard.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Settings } from 'src/entities/settings.entity';
+import { SubscriptionService } from './subscription.service';
 import { Subscription } from 'src/entities/subscription.entity';
 import { response } from 'express';
 const excelToJSON = require('convert-excel-to-json');
@@ -86,6 +88,7 @@ export class AdminService {
     private readonly utilityService: UtilityService,
     private readonly userService: UserService,
     private readonly authService: AuthService,
+    private readonly subscriptionService: SubscriptionService,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
@@ -152,7 +155,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    console.log(foundUser);
+
     if (!foundUser) {
       Logger.error(adminErrors.userNotFoundWithId);
 
@@ -651,7 +654,6 @@ export class AdminService {
           },
           relations: ['admin'],
         });
-        console.log(duplicatePhoneNumber);
       } catch (e) {
         Logger.error(adminErrors.dupPNQuery + e).console();
 
@@ -689,7 +691,6 @@ export class AdminService {
           },
           relations: ['admin'],
         });
-        console.log(duplicateEmail);
       } catch {
         Logger.error(adminErrors.dupEmailQuery).console();
 
@@ -822,7 +823,6 @@ export class AdminService {
     let results, total;
 
     try {
-      console.log(userId);
       results = await this.userRepo.createQueryBuilder('User');
       if (userId != null) {
         results.where('Id = :userId', { userId });
@@ -897,7 +897,6 @@ export class AdminService {
           id: subjectId,
         },
       });
-      console.log(foundSubjectId);
     } catch (exp) {
       throw new HttpException(
         {
@@ -1634,14 +1633,15 @@ export class AdminService {
     return paginate<Settings>(results, options);
   }
 
-  async BulkRegistration(file) {
+  async BulkRegistration(params, file) {
     let errorFileCreated;
     let successFileCreated;
     let regResp;
+    let createSubscription;
     const files = [];
     const registeredUsers = [];
     const notRegisteredUsers = [];
-    let excelKeys;
+    let excelKeys, lPLValues;
     const originalKeys = [
       'firstName',
       'lastName',
@@ -1651,6 +1651,11 @@ export class AdminService {
       'deviceId',
       'countryId',
       'address',
+      'details',
+      'duration',
+      'price',
+      'state',
+      'dueDate',
     ];
     try {
       const date = Date.now();
@@ -1683,6 +1688,14 @@ export class AdminService {
       //insert the excel data in user and parent entity
       for (let i = 0; i < excelData.Data.length; i++) {
         try {
+          if (!excelData.Data[i].hasOwnProperty('learningPackages')) {
+            if (params.length > 0) {
+              excelData.Data[i].learningPackages = params.learningPackages;
+              if (!originalKeys.includes('learningPackages')) {
+                originalKeys.push('learningPackages');
+              }
+            }
+          }
           if (Object.keys(excelData.Data[i]).length == originalKeys.length) {
             regResp = await this.authService.registerUser({
               firstName: excelData.Data[i].firstName,
@@ -1693,6 +1706,16 @@ export class AdminService {
               confirmPassword: excelData.Data[i].password,
               countryId: excelData.Data[i].countryId,
             });
+
+            createSubscription =
+              await this.subscriptionService.createSubscription({
+                details: excelData.Data[i].details,
+                duration: excelData.Data[i].duration,
+                price: excelData.Data[i].price,
+                learningPackages: excelData.Data[i].learningPackages,
+                state: excelData.Data[i].state,
+                dueDate: excelData.Data[i].dueDate,
+              });
             excelKeys = Object.keys(excelData.Data[i]);
             registeredUsers.push(excelData.Data[i]);
           } else {
@@ -1713,7 +1736,7 @@ export class AdminService {
       //creating csv file and add registered data
       if (registeredUsers.length > 0) {
         const successFileName = 'registered_' + date + '.csv';
-        successFileCreated = fs.createWriteStream(successFileName);
+        successFileCreated = fs.createWriteStream('./files/' + successFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(registeredUsers);
         successFileCreated.write(csv);
@@ -1723,7 +1746,7 @@ export class AdminService {
       //creating csv file and add not registered data
       if (notRegisteredUsers.length > 0) {
         const errorFileName = 'not_registered_' + date + '.csv';
-        errorFileCreated = fs.createWriteStream(errorFileName);
+        errorFileCreated = fs.createWriteStream('./files/' + errorFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(notRegisteredUsers);
         errorFileCreated.write(csv);
@@ -1928,6 +1951,118 @@ export class AdminService {
     return {
       attendeesCreated,
       success: true,
+    };
+  }
+  async BulkEmail(params, file) {
+    let errorFileCreated;
+    let successFileCreated;
+    let mailCreate;
+    const files = [];
+    const mailSent = [];
+    const mailSentFail = [];
+    let excelKeys, lPLValues;
+    const originalKeys = ['email'];
+    try {
+      const date = Date.now();
+      const columns = excelToJSON({
+        sourceFile: file.path,
+      });
+      console.log(params.message);
+      if (!Object.values(columns.Sheet1[0]).includes('message')) {
+        if (params.message == 'undefined') {
+          throw new BadRequestException('Message is not mention');
+        }
+      }
+      //check if file is valid
+      if (columns.Sheet1.length > 0) {
+        const avaliableColumns = Object.values(columns.Sheet1[0]);
+        for (let i = 0; i < originalKeys.length; i++) {
+          const element = originalKeys[i];
+          if (!avaliableColumns.includes(element)) {
+            throw new BadRequestException(
+              `${element} is missing in uploaded file`,
+            );
+          }
+        }
+      }
+
+      const excelData = excelToJSON({
+        sourceFile: file.path,
+        header: {
+          rows: 1,
+        },
+        columnToKey: {
+          '*': '{{columnHeader}}',
+        },
+      });
+
+      //insert the excel data in user and parent entity
+      for (let i = 0; i < excelData.Sheet1.length; i++) {
+        try {
+          if (
+            !excelData.Sheet1[i].hasOwnProperty('message') ||
+            params.message
+          ) {
+            excelData.Sheet1[i].message = params.message;
+            if (!originalKeys.includes('message')) {
+              originalKeys.push('message');
+            }
+          }
+          if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
+            mailCreate = await mailer(
+              excelData.Sheet1[i].email,
+              'Mail sent Successful',
+              { text: excelData.Sheet1[i].message },
+            );
+            excelKeys = Object.keys(excelData.Sheet1[i]);
+            mailSent.push(excelData.Sheet1[i]);
+          } else {
+            const excelHeaders = Object.keys(excelData.Sheet1[i]);
+            const result = originalKeys.filter(
+              (item) => excelHeaders.indexOf(item) == -1,
+            );
+            excelData.Sheet1[i].remark = `Column missing (${result})`;
+            mailSentFail.push(excelData.Sheet1[i]);
+          }
+        } catch (e) {
+          excelKeys = Object.keys(excelData.Sheet1[i]);
+          excelData.Sheet1[i].remark = e;
+          mailSentFail.push(excelData.Sheet1[i]);
+        }
+      }
+      //creating csv file and add registered data
+      if (mailSent.length > 0) {
+        const successFileName = 'mailSent_' + date + '.csv';
+        // const path = fs.mkdir('/mailFiles');
+        successFileCreated = fs.createWriteStream('./files/' + successFileName);
+        const parser = new Parser(excelKeys);
+        const csv = parser.parse(mailSent);
+        successFileCreated.write(csv);
+        files.push(successFileCreated.path);
+      }
+
+      //creating csv file and add not registered data
+      if (mailSentFail.length > 0) {
+        const errorFileName = 'mail_not_sent_' + date + '.csv';
+        // const path = fs.mkdir('/mailFiles');
+        errorFileCreated = fs.createWriteStream('./files/' + errorFileName);
+        const parser = new Parser(excelKeys);
+        const csv = parser.parse(mailSentFail);
+        errorFileCreated.write(csv);
+        files.push(errorFileCreated.path);
+      }
+    } catch (err) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: err,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return {
+      success: true,
+      files: files,
     };
   }
 }

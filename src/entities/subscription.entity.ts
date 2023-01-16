@@ -22,7 +22,7 @@ export class Subscription {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   account?: string;
 
   @Column({ type: 'varchar' })
@@ -34,8 +34,8 @@ export class Subscription {
   @Column({ type: 'varchar' })
   price?: string;
 
-  @Column({ type: 'varchar', array: true })
-  learningPackages?: Array<string>;
+  @Column({ type: 'varchar' })
+  learningPackages?: string;
 
   @Column({
     type: 'enum',
@@ -47,8 +47,8 @@ export class Subscription {
   @OneToOne(() => Student)
   student?: Student;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  dueDate?: Date;
+  @CreateDateColumn({ type: 'varchar' })
+  dueDate?: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
