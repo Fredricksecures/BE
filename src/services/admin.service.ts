@@ -1689,9 +1689,11 @@ export class AdminService {
       for (let i = 0; i < excelData.Data.length; i++) {
         try {
           if (!excelData.Data[i].hasOwnProperty('learningPackages')) {
-            excelData.Data[i].learningPackages = params.learningPackages;
-            if (!originalKeys.includes('learningPackages')) {
-              originalKeys.push('learningPackages');
+            if (params.length > 0) {
+              excelData.Data[i].learningPackages = params.learningPackages;
+              if (!originalKeys.includes('learningPackages')) {
+                originalKeys.push('learningPackages');
+              }
             }
           }
           if (Object.keys(excelData.Data[i]).length == originalKeys.length) {
@@ -1965,7 +1967,12 @@ export class AdminService {
       const columns = excelToJSON({
         sourceFile: file.path,
       });
-
+      console.log(params.message);
+      if (!Object.values(columns.Sheet1[0]).includes('message')) {
+        if (params.message == 'undefined') {
+          throw new BadRequestException('Message is not mention');
+        }
+      }
       //check if file is valid
       if (columns.Sheet1.length > 0) {
         const avaliableColumns = Object.values(columns.Sheet1[0]);
@@ -2001,7 +2008,6 @@ export class AdminService {
               originalKeys.push('message');
             }
           }
-
           if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
             mailCreate = await mailer(
               excelData.Sheet1[i].email,
