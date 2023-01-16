@@ -22,7 +22,7 @@ export class Subscription {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar' , nullable: true})
+  @Column({ type: 'varchar', nullable: true })
   account?: string;
 
   @Column({ type: 'varchar' })

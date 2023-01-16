@@ -13,6 +13,12 @@ import { SubscriptionService } from '../services/subscription.service';
     TypeOrmModule.forFeature(ModuleConfigs['admin'].entities),
   ],
   controllers: [AdminController],
-  providers: [AdminService, UtilityService, UserService, AuthService, SubscriptionService],
+  providers: [
+    AdminService,
+    UtilityService,
+    UserService,
+    AuthService,
+    SubscriptionService,
+  ],
 })
 export class AdminModule {}

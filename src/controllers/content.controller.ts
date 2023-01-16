@@ -28,8 +28,8 @@ export class ContentController {
   async getChapters(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const chapters = await this.contentService.getChapters(options);
@@ -45,8 +45,8 @@ export class ContentController {
   async getLessons(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const lessons = await this.contentService.getLessons(options);
@@ -62,8 +62,8 @@ export class ContentController {
   async getSubjects(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const subjects = await this.contentService.getSubjects(options);
@@ -79,8 +79,8 @@ export class ContentController {
   async getTests(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const tests = await this.contentService.getTests(options);
@@ -96,8 +96,8 @@ export class ContentController {
   async getReportCards(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const tests = await this.contentService.getReportCard(options);
@@ -116,7 +116,7 @@ export class ContentController {
     @Body() body: updateLeaderboardReq,
     @Param('id') id,
   ) {
-    let { updatedLeaderboard, success } =
+    const { updatedLeaderboard, success } =
       await this.contentService.updateLeaderboardProfile(id, {
         ...req.body,
       });
@@ -143,8 +143,8 @@ export class ContentController {
   async getLeaderboards(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
     @Query('id') id,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -161,8 +161,8 @@ export class ContentController {
   async getMockTests(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const mockTests = await this.contentService.getMockTest(options);
@@ -204,8 +204,8 @@ export class ContentController {
   async getReviews(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
     @Query('id') id,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -224,12 +224,10 @@ export class ContentController {
     @Body() body: updateMockTestReq,
     @Param('id') id,
   ) {
-    let { updatedMockTest, success } = await this.contentService.updateMockTest(
-      id,
-      {
+    const { updatedMockTest, success } =
+      await this.contentService.updateMockTest(id, {
         ...req.body,
-      },
-    );
+      });
 
     if (success) {
       resp.json({

@@ -24,7 +24,6 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 
-
 @Controller('utility')
 export class UtilityController {
   constructor(
@@ -52,20 +51,23 @@ export class UtilityController {
 
   @Get('countries')
   async getCountries(
-    @Req() req: Request, 
+    @Req() req: Request,
     @Res() resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
-    @Query('supported') supported) {
-    
+    @Query('supported') supported,
+  ) {
     const options: IPaginationOptions = { limit, page };
-    const countries = await this.utilityService.getCountries(supported,options);
-   
+    const countries = await this.utilityService.getCountries(
+      supported,
+      options,
+    );
+
     resp.json({
       status: HttpStatus.FOUND,
       message: utlityMessages.countries,
       countries: countries.items,
-      meta: countries.meta
+      meta: countries.meta,
     });
   }
 
@@ -81,20 +83,24 @@ export class UtilityController {
   }
 
   @Get('learning-packages')
-  async getLPackages(@Req() req: Request, @Res() resp: Response,
-   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-   @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1, ){
+  async getLPackages(
+    @Req() req: Request,
+    @Res() resp: Response,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+  ) {
     const id = req.query.id;
     const options: IPaginationOptions = { limit, page };
     const learningPackages = await this.utilityService.getLearningPackages(
-      `${id}`,options
+      `${id}`,
+      options,
     );
 
     resp.json({
       status: HttpStatus.FOUND,
       message: utlityMessages.learningPackages,
       [`package${id ? '' : 's'}`]: learningPackages.items,
-      meta: learningPackages.meta
+      meta: learningPackages.meta,
     });
   }
 }

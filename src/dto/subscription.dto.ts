@@ -1,9 +1,8 @@
 import { IsString, IsNotEmpty, IsOptional, IsDate } from 'class-validator';
 import { Subscription } from 'src/entities/subscription.entity';
-import { SubscriptionStates } from 'src/utils/enums'; 
+import { SubscriptionStates } from 'src/utils/enums';
 
 export class CreateSubscriptionReq {
-
   @IsNotEmpty()
   @IsString()
   details: string;
@@ -16,7 +15,6 @@ export class CreateSubscriptionReq {
   @IsString()
   price: string;
 
-  
   @IsNotEmpty()
   @IsString()
   learningPackages: string;
@@ -25,8 +23,7 @@ export class CreateSubscriptionReq {
   state: SubscriptionStates;
 
   @IsNotEmpty()
-  dueDate: string
-  
+  dueDate: string;
 }
 export class CreateSubscriptionRes {
   success: boolean;

@@ -53,8 +53,6 @@ export class Parent {
   })
   onboardingStage?: string;
 
- 
-
   @OneToOne(() => User)
   user?: User;
 

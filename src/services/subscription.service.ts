@@ -6,7 +6,7 @@ import { subscriptionMessages, subscriptionError } from 'src/utils/messages';
 import { Subscription } from 'src/entities/subscription.entity';
 import { LearningPackage } from 'src/entities/learningPackage.entity';
 import { Invoice } from 'src/entities/invoice.entity';
-import { SubscriptionStates } from 'src/utils/enums'; 
+import { SubscriptionStates } from 'src/utils/enums';
 import {
   IPaginationOptions,
   paginate,
@@ -38,14 +38,8 @@ export class SubscriptionService {
   async createSubscription(
     CreateSubscriptionReq: CreateSubscriptionReq,
   ): Promise<CreateSubscriptionRes> {
-    const {
-      details,
-      duration,
-      price,
-      learningPackages,
-      state,
-      dueDate,
-    } = CreateSubscriptionReq;
+    const { details, duration, price, learningPackages, state, dueDate } =
+      CreateSubscriptionReq;
     let createdSubscription: Subscription,
       foundLearningPackage: LearningPackage;
 
@@ -74,8 +68,8 @@ export class SubscriptionService {
         duration,
         price,
         learningPackages,
-        state : state?? SubscriptionStates.INACTIVE,
-        dueDate
+        state: state ?? SubscriptionStates.INACTIVE,
+        dueDate,
       });
     } catch (e) {
       throw new HttpException(

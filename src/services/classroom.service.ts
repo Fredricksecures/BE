@@ -2,20 +2,24 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {IPaginationOptions,paginate,Pagination,} from 'nestjs-typeorm-paginate';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 import { Class } from 'src/entities/class.entity';
-import { classroomMessages,classroomErrors } from 'src/utils/messages';
+import { classroomMessages, classroomErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
-  
-  @Injectable()
+
+@Injectable()
 export class ClassroomService {
   constructor(
     private jwtService: JwtService,
     @InjectRepository(Class) private classRepo: Repository<Class>,
   ) {}
 
-//!:GANESH for classroom module
-async getUpcomingClasses(
+  //!:GANESH for classroom module
+  async getUpcomingClasses(
     options: IPaginationOptions,
   ): Promise<Pagination<Class>> {
     let foundUpcomingClasses;
@@ -33,5 +37,3 @@ async getUpcomingClasses(
     return paginate<Class>(foundUpcomingClasses, options);
   }
 }
-
-  

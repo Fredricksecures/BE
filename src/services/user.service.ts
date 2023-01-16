@@ -36,8 +36,10 @@ export class UserService {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
     @InjectRepository(Parent) private parentRepo: Repository<Parent>,
-    @InjectRepository(LearningPackage)private packageRepo: Repository<LearningPackage>,
-    @InjectRepository(Subscription)private subscriptionRepo: Repository<Subscription>,
+    @InjectRepository(LearningPackage)
+    private packageRepo: Repository<LearningPackage>,
+    @InjectRepository(Subscription)
+    private subscriptionRepo: Repository<Subscription>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
   ) {
     this.test();
@@ -267,11 +269,11 @@ export class UserService {
   async createParentProfile(createParentReq: CreateParentReq): Promise<Parent> {
     const { phoneNumber, email, password, countryId } = createParentReq;
     let createdParent: Parent;
-    
+
     const country: CountryList = await this.utilityService.getCountryList(
       countryId,
     );
-      
+
     try {
       createdParent = await this.parentRepo.save({
         phoneNumber,
@@ -314,7 +316,7 @@ export class UserService {
     options: IPaginationOptions,
   ): Promise<Pagination<Badge>> {
     let foundBadges;
-   
+
     try {
       foundBadges =
         id == undefined

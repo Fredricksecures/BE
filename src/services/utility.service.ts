@@ -26,7 +26,7 @@ export class UtilityService {
 
   async getCountryList(countryId: string) {
     let country: CountryList;
-    
+
     try {
       country = await this.countryLRepo.findOne({
         where: {
@@ -34,7 +34,6 @@ export class UtilityService {
           supported: true,
         },
       });
-     
     } catch (exp) {
       Logger.error(utilityErrors.getCountryList + exp);
 

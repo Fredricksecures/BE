@@ -26,7 +26,7 @@ export const subscriptionError = {
   checkingInvoices: 'Error querying for finding invoices --',
   failedToFetchSubscriptions: 'Failed to fetch subscriptions --',
   lPLNotFound: 'could not find learning package id = ',
-  savedSubscription: 'could not save new subscription'
+  savedSubscription: 'could not save new subscription',
 };
 
 export const authMessages = {

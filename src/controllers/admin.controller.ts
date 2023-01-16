@@ -47,7 +47,7 @@ import {
   createScheduleReq,
   createAttendeesReq,
   bulkRegistrationReq,
-  bulkEmailReq
+  bulkEmailReq,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
@@ -927,10 +927,8 @@ export class AdminController {
     @Res({ passthrough: true }) resp: Response,
     @Query() params: bulkEmailReq,
   ) {
-    const { success, files } = await this.adminService.BulkEmail(
-      params,
-      file,
-    );
+    const { success, files } = await this.adminService.BulkEmail(params, file);
+
     if (success) {
       resp.json({
         status: HttpStatus.OK,

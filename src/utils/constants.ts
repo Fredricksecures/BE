@@ -96,7 +96,7 @@ export const ModuleConfigs = {
       Class,
       Settings,
       Subscription,
-      Invoice
+      Invoice,
     ],
   },
   subscription: {

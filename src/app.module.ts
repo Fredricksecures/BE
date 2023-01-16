@@ -21,7 +21,7 @@ import { UserModule } from './modules/user.module';
     SubscriptionModule,
     ContentModule,
     ClassroomModule,
-    UserModule
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

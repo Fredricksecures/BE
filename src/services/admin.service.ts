@@ -1959,13 +1959,13 @@ export class AdminService {
     const mailSent = [];
     const mailSentFail = [];
     let excelKeys, lPLValues;
-    const originalKeys = ['email','message'];
+    const originalKeys = ['email'];
     try {
       const date = Date.now();
       const columns = excelToJSON({
         sourceFile: file.path,
       });
-      
+
       //check if file is valid
       if (columns.Sheet1.length > 0) {
         const avaliableColumns = Object.values(columns.Sheet1[0]);
@@ -1988,21 +1988,26 @@ export class AdminService {
           '*': '{{columnHeader}}',
         },
       });
-      
+
       //insert the excel data in user and parent entity
       for (let i = 0; i < excelData.Sheet1.length; i++) {
         try {
-          if (!excelData.Sheet1[i].hasOwnProperty('message')) {
+          if (
+            !excelData.Sheet1[i].hasOwnProperty('message') ||
+            params.message
+          ) {
             excelData.Sheet1[i].message = params.message;
             if (!originalKeys.includes('message')) {
               originalKeys.push('message');
             }
           }
+
           if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
-            mailCreate = mailer(excelData.Sheet1[i].email, 'Mail sent Successful', {text:excelData.Sheet1[i].message});
-           console.log(mailCreate);
-          // )
-            //if(mailCreate)
+            mailCreate = await mailer(
+              excelData.Sheet1[i].email,
+              'Mail sent Successful',
+              { text: excelData.Sheet1[i].message },
+            );
             excelKeys = Object.keys(excelData.Sheet1[i]);
             mailSent.push(excelData.Sheet1[i]);
           } else {
@@ -2015,7 +2020,7 @@ export class AdminService {
           }
         } catch (e) {
           excelKeys = Object.keys(excelData.Sheet1[i]);
-          excelData.Sheet1[i].remark = e.response.error;
+          excelData.Sheet1[i].remark = e;
           mailSentFail.push(excelData.Sheet1[i]);
         }
       }
@@ -2023,6 +2028,7 @@ export class AdminService {
       //creating csv file and add registered data
       if (mailSent.length > 0) {
         const successFileName = 'mailSent_' + date + '.csv';
+        fs.mkdir('/mailFiles');
         successFileCreated = fs.createWriteStream(successFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(mailSent);
@@ -2033,6 +2039,7 @@ export class AdminService {
       //creating csv file and add not registered data
       if (mailSentFail.length > 0) {
         const errorFileName = 'mail_not_sent_' + date + '.csv';
+        fs.mkdir('/mailFiles');
         errorFileCreated = fs.createWriteStream(errorFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(mailSentFail);
