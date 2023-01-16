@@ -1956,8 +1956,8 @@ export class AdminService {
     let successFileCreated;
     let mailCreate;
     const files = [];
-    const registeredUsers = [];
-    const notRegisteredUsers = [];
+    const mailSent = [];
+    const mailSentFail = [];
     let excelKeys, lPLValues;
     const originalKeys = ['email','message'];
     try {
@@ -2004,38 +2004,38 @@ export class AdminService {
           // )
             //if(mailCreate)
             excelKeys = Object.keys(excelData.Sheet1[i]);
-            registeredUsers.push(excelData.Sheet1[i]);
+            mailSent.push(excelData.Sheet1[i]);
           } else {
             const excelHeaders = Object.keys(excelData.Sheet1[i]);
             const result = originalKeys.filter(
               (item) => excelHeaders.indexOf(item) == -1,
             );
             excelData.Sheet1[i].remark = `Column missing (${result})`;
-            notRegisteredUsers.push(excelData.Sheet1[i]);
+            mailSentFail.push(excelData.Sheet1[i]);
           }
         } catch (e) {
           excelKeys = Object.keys(excelData.Sheet1[i]);
           excelData.Sheet1[i].remark = e.response.error;
-          notRegisteredUsers.push(excelData.Sheet1[i]);
+          mailSentFail.push(excelData.Sheet1[i]);
         }
       }
 
       //creating csv file and add registered data
-      if (registeredUsers.length > 0) {
+      if (mailSent.length > 0) {
         const successFileName = 'mailSent_' + date + '.csv';
         successFileCreated = fs.createWriteStream(successFileName);
         const parser = new Parser(excelKeys);
-        const csv = parser.parse(registeredUsers);
+        const csv = parser.parse(mailSent);
         successFileCreated.write(csv);
         files.push(successFileCreated.path);
       }
 
       //creating csv file and add not registered data
-      if (notRegisteredUsers.length > 0) {
+      if (mailSentFail.length > 0) {
         const errorFileName = 'mail_not_sent_' + date + '.csv';
         errorFileCreated = fs.createWriteStream(errorFileName);
         const parser = new Parser(excelKeys);
-        const csv = parser.parse(notRegisteredUsers);
+        const csv = parser.parse(mailSentFail);
         errorFileCreated.write(csv);
         files.push(errorFileCreated.path);
       }

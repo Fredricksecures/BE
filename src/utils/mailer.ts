@@ -36,10 +36,10 @@ export function mailer(
   return new Promise((resolve, reject) => {
     transporter.sendMail(mailOptions, function (err, info) {
       if (err) {
-       // console.log('Error while sending email => ' + err);
+        console.log('Error while sending email => ' + err);
         reject('Error while sending email' + err);
       } else {
-     //   console.log('Email sent => ', info);
+        console.log('Email sent => ', info);
         resolve(info);
       }
     });
