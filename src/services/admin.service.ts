@@ -1734,7 +1734,7 @@ export class AdminService {
       //creating csv file and add registered data
       if (registeredUsers.length > 0) {
         const successFileName = 'registered_' + date + '.csv';
-        successFileCreated = fs.createWriteStream(successFileName);
+        successFileCreated = fs.createWriteStream('./files/' + successFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(registeredUsers);
         successFileCreated.write(csv);
@@ -1744,7 +1744,7 @@ export class AdminService {
       //creating csv file and add not registered data
       if (notRegisteredUsers.length > 0) {
         const errorFileName = 'not_registered_' + date + '.csv';
-        errorFileCreated = fs.createWriteStream(errorFileName);
+        errorFileCreated = fs.createWriteStream('./files/' + errorFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(notRegisteredUsers);
         errorFileCreated.write(csv);
@@ -2024,28 +2024,11 @@ export class AdminService {
           mailSentFail.push(excelData.Sheet1[i]);
         }
       }
-
-      //creating a folder for files
-      const path = './mail-files';
-      fs.access(path, (error) => {
-        if (error) {
-          fs.mkdir(path, (error) => {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log('New Directory created successfully !!');
-            }
-          });
-        } else {
-          console.log('Given Directory already exists !!');
-        }
-      });
-
       //creating csv file and add registered data
       if (mailSent.length > 0) {
         const successFileName = 'mailSent_' + date + '.csv';
-       // const path = fs.mkdir('/mailFiles');
-        successFileCreated = fs.createWriteStream('./new-Directory/' + successFileName);
+        // const path = fs.mkdir('/mailFiles');
+        successFileCreated = fs.createWriteStream('./files/' + successFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(mailSent);
         successFileCreated.write(csv);
@@ -2055,8 +2038,8 @@ export class AdminService {
       //creating csv file and add not registered data
       if (mailSentFail.length > 0) {
         const errorFileName = 'mail_not_sent_' + date + '.csv';
-       // const path = fs.mkdir('/mailFiles');
-        errorFileCreated = fs.createWriteStream( './new-Directory/' + errorFileName);
+        // const path = fs.mkdir('/mailFiles');
+        errorFileCreated = fs.createWriteStream('./files/' + errorFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(mailSentFail);
         errorFileCreated.write(csv);
