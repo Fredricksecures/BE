@@ -2025,11 +2025,27 @@ export class AdminService {
         }
       }
 
+      //creating a folder for files
+      const path = './mail-files';
+      fs.access(path, (error) => {
+        if (error) {
+          fs.mkdir(path, (error) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('New Directory created successfully !!');
+            }
+          });
+        } else {
+          console.log('Given Directory already exists !!');
+        }
+      });
+
       //creating csv file and add registered data
       if (mailSent.length > 0) {
         const successFileName = 'mailSent_' + date + '.csv';
-        fs.mkdir('/mailFiles');
-        successFileCreated = fs.createWriteStream(successFileName);
+       // const path = fs.mkdir('/mailFiles');
+        successFileCreated = fs.createWriteStream('./new-Directory/' + successFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(mailSent);
         successFileCreated.write(csv);
@@ -2039,8 +2055,8 @@ export class AdminService {
       //creating csv file and add not registered data
       if (mailSentFail.length > 0) {
         const errorFileName = 'mail_not_sent_' + date + '.csv';
-        fs.mkdir('/mailFiles');
-        errorFileCreated = fs.createWriteStream(errorFileName);
+       // const path = fs.mkdir('/mailFiles');
+        errorFileCreated = fs.createWriteStream( './new-Directory/' + errorFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(mailSentFail);
         errorFileCreated.write(csv);
