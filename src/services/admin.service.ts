@@ -1954,21 +1954,21 @@ export class AdminService {
   async BulkEmail(params, file) {
     let errorFileCreated;
     let successFileCreated;
-    let regResp;
-    let createSubscription;
+    let mailCreate;
     const files = [];
     const registeredUsers = [];
     const notRegisteredUsers = [];
     let excelKeys, lPLValues;
-    const originalKeys = ['email'];
+    const originalKeys = ['email','message'];
     try {
       const date = Date.now();
       const columns = excelToJSON({
         sourceFile: file.path,
       });
+      
       //check if file is valid
-      if (columns.Data.length > 0) {
-        const avaliableColumns = Object.values(columns.Data[0]);
+      if (columns.Sheet1.length > 0) {
+        const avaliableColumns = Object.values(columns.Sheet1[0]);
         for (let i = 0; i < originalKeys.length; i++) {
           const element = originalKeys[i];
           if (!avaliableColumns.includes(element)) {
@@ -1988,39 +1988,41 @@ export class AdminService {
           '*': '{{columnHeader}}',
         },
       });
-
+      
       //insert the excel data in user and parent entity
-      for (let i = 0; i < excelData.Data.length; i++) {
+      for (let i = 0; i < excelData.Sheet1.length; i++) {
         try {
-          if (!excelData.Data[i].hasOwnProperty('message')) {
-            excelData.Data[i].message = params.message;
+          if (!excelData.Sheet1[i].hasOwnProperty('message')) {
+            excelData.Sheet1[i].message = params.message;
             if (!originalKeys.includes('message')) {
               originalKeys.push('message');
             }
           }
-          if (Object.keys(excelData.Data[i]).length == originalKeys.length) {
-            mailer(excelData.Data[i].email, 'Registration Successful', excelData.Data[i].message);
-
-            excelKeys = Object.keys(excelData.Data[i]);
-            registeredUsers.push(excelData.Data[i]);
+          if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
+            mailCreate = mailer(excelData.Sheet1[i].email, 'Mail sent Successful', {text:excelData.Sheet1[i].message});
+           console.log(mailCreate);
+          // )
+            //if(mailCreate)
+            excelKeys = Object.keys(excelData.Sheet1[i]);
+            registeredUsers.push(excelData.Sheet1[i]);
           } else {
-            const excelHeaders = Object.keys(excelData.Data[i]);
+            const excelHeaders = Object.keys(excelData.Sheet1[i]);
             const result = originalKeys.filter(
               (item) => excelHeaders.indexOf(item) == -1,
             );
-            excelData.Data[i].remark = `Column missing (${result})`;
-            notRegisteredUsers.push(excelData.Data[i]);
+            excelData.Sheet1[i].remark = `Column missing (${result})`;
+            notRegisteredUsers.push(excelData.Sheet1[i]);
           }
         } catch (e) {
-          excelKeys = Object.keys(excelData.Data[i]);
-          excelData.Data[i].remark = e.response.error;
-          notRegisteredUsers.push(excelData.Data[i]);
+          excelKeys = Object.keys(excelData.Sheet1[i]);
+          excelData.Sheet1[i].remark = e.response.error;
+          notRegisteredUsers.push(excelData.Sheet1[i]);
         }
       }
 
       //creating csv file and add registered data
       if (registeredUsers.length > 0) {
-        const successFileName = 'registered_' + date + '.csv';
+        const successFileName = 'mailSent_' + date + '.csv';
         successFileCreated = fs.createWriteStream(successFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(registeredUsers);
@@ -2030,7 +2032,7 @@ export class AdminService {
 
       //creating csv file and add not registered data
       if (notRegisteredUsers.length > 0) {
-        const errorFileName = 'not_registered_' + date + '.csv';
+        const errorFileName = 'mail_not_sent_' + date + '.csv';
         errorFileCreated = fs.createWriteStream(errorFileName);
         const parser = new Parser(excelKeys);
         const csv = parser.parse(notRegisteredUsers);
@@ -2041,7 +2043,7 @@ export class AdminService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: err.response.message,
+          error: err,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );

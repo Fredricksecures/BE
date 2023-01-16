@@ -16,7 +16,7 @@ export function mailer(
     },
   });
 
-  let transporter = createTransport({
+  const transporter = createTransport({
     host: 'mail.teesas.com',
     port: 465,
     auth: {
@@ -25,7 +25,7 @@ export function mailer(
     },
   });
 
-  let mailOptions = {
+  const mailOptions = {
     from: `${senderName || 'Teesas Education'} <${process.env.NOREPLY_EMAIL}>`,
     to: sendee,
     subject: title,
@@ -36,10 +36,10 @@ export function mailer(
   return new Promise((resolve, reject) => {
     transporter.sendMail(mailOptions, function (err, info) {
       if (err) {
-        console.log('Error while sending email => ' + err);
+       // console.log('Error while sending email => ' + err);
         reject('Error while sending email' + err);
       } else {
-        console.log('Email sent => ', info);
+     //   console.log('Email sent => ', info);
         resolve(info);
       }
     });

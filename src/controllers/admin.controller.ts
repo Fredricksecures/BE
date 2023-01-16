@@ -911,6 +911,17 @@ export class AdminController {
       );
     }
   }
+  @Post('bulk-email')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './files',
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + '.xlsx');
+        },
+      }),
+    }),
+  )
   async bulkEmail(
     @UploadedFile() file: Express.Multer.File,
     @Res({ passthrough: true }) resp: Response,

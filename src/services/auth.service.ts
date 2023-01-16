@@ -735,9 +735,9 @@ export class AuthService {
       );
     }
 
-    // mailer(createdUser.parent.email, 'Registration Successful', {
-    //   text: `An action to change your password was successful`,
-    // });
+    mailer(createdUser.parent.email, 'Registration Successful', {
+      text: `An action to change your password was successful`,
+    });
 
     return {
       createdUser,
