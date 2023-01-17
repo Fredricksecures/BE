@@ -43,6 +43,8 @@ import {
   createClassReq,
   createScheduleReq,
   createAttendeesReq,
+  createEmailTemplateReq,
+  updateEmailTemplateReq,
 } from 'src/dto/admin.dto';
 import {
   adminMessages,
@@ -75,9 +77,10 @@ import { Settings } from 'src/entities/settings.entity';
 import { SubscriptionService } from './subscription.service';
 import { Subscription } from 'src/entities/subscription.entity';
 import { response } from 'express';
-const excelToJSON = require('convert-excel-to-json');
-const { Parser } = require('json2csv');
-var fs = require('fs');
+import excelToJSON from 'convert-excel-to-json';
+import { Parser } from 'json2csv';
+import fs from 'fs';
+import { EmailTemplate } from 'src/entities/emailTemplate.entity';
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -106,7 +109,9 @@ export class AdminService {
     @InjectRepository(LearningPackage)
     private learningPackageRepo: Repository<LearningPackage>,
     @InjectRepository(Settings) private settingRepo: Repository<Settings>,
-    @InjectRepository(Class) private classRepo: Repository<Class>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+    @InjectRepository(Class) private classRepo: Repository<Class>,
+    @InjectRepository(EmailTemplate)
+    private emailRepo: Repository<EmailTemplate>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
   async formatPayload(user: any, type: string) {
@@ -2064,5 +2069,105 @@ export class AdminService {
       success: true,
       files: files,
     };
+  }
+
+  async createEmailTemplate(createEmailTemplateReq: createEmailTemplateReq) {
+    const { template, active } = createEmailTemplateReq;
+    let emailTemplateCreated: EmailTemplate;
+
+    try {
+      emailTemplateCreated = await this.emailRepo.save({
+        template,
+        active,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveEmail + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      emailTemplateCreated,
+      success: true,
+    };
+  }
+
+  async updateEmailTemplate(
+    id: string,
+    updateEmailTemplateReq: updateEmailTemplateReq,
+  ) {
+    const { template, active } = updateEmailTemplateReq;
+    let foundEmailTemplate, updatedEmailTemplate: EmailTemplate;
+    try {
+      foundEmailTemplate = await this.emailRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingTemplate + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundEmailTemplate) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.templateNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedEmailTemplate = await this.emailRepo.save({
+        ...foundEmailTemplate,
+        template: template ?? foundEmailTemplate.template,
+        active: active ?? foundEmailTemplate.active,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingTemplate + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      updatedEmailTemplate,
+      success: true,
+    };
+  }
+
+  async getEmailTemplate(templateId: string): Promise<EmailTemplate> {
+    let results;
+    try {
+      results = await this.emailRepo.find();
+      if (templateId != null) {
+        results = await this.emailRepo.findOne({
+          where: {
+            id: templateId,
+          },
+        });
+      }
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchEmailTemplate + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return results;
   }
 }

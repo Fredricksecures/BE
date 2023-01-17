@@ -331,6 +331,24 @@ export class bulkEmailReq {
   @IsString()
   message: string;
 }
+export class createEmailTemplateReq {
+  @IsNotEmpty()
+  @IsString()
+  template: string;
+
+  @IsOptional()
+  @IsBoolean()
+  active: boolean;
+}
+export class updateEmailTemplateReq {
+  @IsOptional()
+  @IsString()
+  template: string;
+
+  @IsOptional()
+  @IsBoolean()
+  active: boolean;
+}
 // export class createdAdminRes {
 //   createAdmin?: User | undefined;
 //   success?: boolean;

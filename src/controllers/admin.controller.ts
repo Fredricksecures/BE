@@ -1,3 +1,4 @@
+import { EmailTemplate } from './../entities/emailTemplate.entity';
 import {
   Query,
   Controller,
@@ -48,6 +49,8 @@ import {
   createAttendeesReq,
   bulkRegistrationReq,
   bulkEmailReq,
+  createEmailTemplateReq,
+  updateEmailTemplateReq,
 } from 'src/dto/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { UserTypes } from 'src/utils/enums';
@@ -64,8 +67,8 @@ export class AdminController {
   async getUserSessions(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
     @Query() query,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -142,8 +145,8 @@ export class AdminController {
   async getStudents(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
     @Query() params,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -244,8 +247,8 @@ export class AdminController {
   async getCustomers(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const users = await this.adminService.getCustomers(options);
@@ -288,8 +291,8 @@ export class AdminController {
   async getAdmin(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const users = await this.adminService.getAdmin(options);
@@ -339,8 +342,8 @@ export class AdminController {
   async getUsers(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
     @Query() params,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -415,7 +418,7 @@ export class AdminController {
     @Body() body: updateLessonReq,
     @Param('id') id,
   ) {
-    let { updatedLesson, success } =
+    const { updatedLesson, success } =
       await this.adminService.updateLessonProfile(id, {
         ...req.body,
       });
@@ -445,7 +448,7 @@ export class AdminController {
     @Body() body: updateSubjectReq,
     @Param('id') id,
   ) {
-    let { updatedSubject, success } =
+    const { updatedSubject, success } =
       await this.adminService.updateSubjectProfile(id, {
         ...req.body,
       });
@@ -500,7 +503,7 @@ export class AdminController {
     @Body() body: updateTestReq,
     @Param('id') id,
   ) {
-    let { updatedTest, success } = await this.adminService.updateTestProfile(
+    const { updatedTest, success } = await this.adminService.updateTestProfile(
       id,
       {
         ...req.body,
@@ -559,7 +562,7 @@ export class AdminController {
     @Body() body: updateMockTestReq,
     @Param('id') id,
   ) {
-    let { updatedMockTest, success } =
+    const { updatedMockTest, success } =
       await this.adminService.updateMockTestProfile(id, {
         ...req.body,
       });
@@ -614,12 +617,10 @@ export class AdminController {
     @Body() body: updateBadgeReq,
     @Param('id') id,
   ) {
-    let { updatedBadge, success } = await this.adminService.updateBadgeProfile(
-      id,
-      {
+    const { updatedBadge, success } =
+      await this.adminService.updateBadgeProfile(id, {
         ...req.body,
-      },
-    );
+      });
 
     if (success) {
       resp.json({
@@ -672,7 +673,7 @@ export class AdminController {
     @Body() body: updateReportCardReq,
     @Param('id') id,
   ) {
-    let { updatedReportCard, success } =
+    const { updatedReportCard, success } =
       await this.adminService.updateReportCardProfile(id, {
         ...req.body,
       });
@@ -729,7 +730,7 @@ export class AdminController {
     @Body() body: updateChapterReq,
     @Param('id') id,
   ) {
-    let { updatedChapter, success } =
+    const { updatedChapter, success } =
       await this.adminService.updateChapterProfile(id, {
         ...req.body,
       });
@@ -759,7 +760,7 @@ export class AdminController {
     @Body() body: updateSettingReq,
     @Param('id') id,
   ) {
-    let { updatedSetting, success } = await this.adminService.updateSetting(
+    const { updatedSetting, success } = await this.adminService.updateSetting(
       id,
       {
         ...req.body,
@@ -788,8 +789,8 @@ export class AdminController {
   async getUserSetting(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
     @Query() params,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -935,5 +936,75 @@ export class AdminController {
         file: files,
       });
     }
+  }
+  @Post('create-email-template')
+  async createEmailTemplate(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: createEmailTemplateReq,
+  ) {
+    const { success, emailTemplateCreated } =
+      await this.adminService.createEmailTemplate(body);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminErrors.emailCreateSuccess,
+        emailTemplateCreated,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.failToCreateEmail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Patch('update-email-template/:id')
+  async updateEmailTemplate(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: updateEmailTemplateReq,
+    @Param('id') id,
+  ) {
+    const { updatedEmailTemplate, success } =
+      await this.adminService.updateEmailTemplate(id, {
+        ...req.body,
+      });
+
+    if (success) {
+      resp.json({
+        success,
+        message: adminMessages.updatedEmailSuccess,
+        status: HttpStatus.OK,
+        updatedEmailTemplate,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.updatingEmailFail,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Get('email-template/:id?')
+  async getEmailTemplate(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Param('id') templateId,
+  ) {
+    const templates: EmailTemplate = await this.adminService.getEmailTemplate(
+      templateId,
+    );
+
+    resp.json({
+      status: HttpStatus.OK,
+      message: adminMessages.emailTemplateFetchSuccess,
+      templates: templates,
+    });
   }
 }

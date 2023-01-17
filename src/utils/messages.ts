@@ -175,6 +175,8 @@ export const adminMessages = {
   scheduleCreateSuccess: 'Schedule created successfully',
   attendeesreateSuccess: 'Attendees created successfully',
   failToCreateAttendees: 'Error while creating attendees',
+  updatedEmailSuccess: 'Email updated successfully',
+  emailTemplateFetchSuccess: 'Email template Fetched successfully',
 };
 
 export const adminErrors = {
@@ -269,6 +271,14 @@ export const adminErrors = {
   studentsNotFound: 'could not find student with id = ',
   checkingClass: 'error while fetching class. ',
   classNotFound: 'could not find class with id provided',
+  emailCreateSuccess: 'Email created successfully',
+  failToCreateEmail: 'Error while creating email',
+  saveEmail: 'could not save new email ',
+  updatingEmailFail: 'Failed to update email sessions',
+  checkingTemplate: 'error while fetching email template. ',
+  templateNotFound: 'could not find email template with id provided',
+  updatingTemplate: 'Error querying for updating email template',
+  failedToFetchEmailTemplate: 'error while fetching email template. ',
 };
 export const classroomMessages = {
   upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',
