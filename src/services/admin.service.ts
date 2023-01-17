@@ -1683,7 +1683,7 @@ export class AdminService {
         }
       }
       if (
-        !Object.values(columns.Sheet1[0]).includes('learningPackages') &&
+        !Object.values(columns.Data[0]).includes('learningPackages') &&
         Object.keys(params).length === 0
       ) {
         throw new BadRequestException('learningPackages is missing....!');

@@ -21,12 +21,12 @@ export class EmailTemplate {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar', unique: true, default: null })
+  @Column({ type: 'varchar', default: null })
   template?: string;
 
-  @Column({ type: 'bool', default: false })
+  @Column({ type: 'bool', default: true })
   active?: boolean;
-   
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
 
