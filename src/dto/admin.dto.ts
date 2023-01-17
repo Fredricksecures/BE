@@ -322,7 +322,7 @@ export class createAttendeesReq {
   attendees: string;
 }
 export class bulkRegistrationReq {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   learningPackages: string;
 }

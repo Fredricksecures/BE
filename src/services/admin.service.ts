@@ -1670,9 +1670,10 @@ export class AdminService {
       const columns = excelToJson({
         sourceFile: file.path,
       });
+
       //check if file is valid
-      if (columns.Data.length > 0) {
-        const avaliableColumns = Object.values(columns.Data[0]);
+      if (columns.Sheet1.length > 0) {
+        const avaliableColumns = Object.values(columns.Sheet1[0]);
         for (let i = 0; i < originalKeys.length; i++) {
           const element = originalKeys[i];
           if (!avaliableColumns.includes(element)) {
@@ -1681,13 +1682,18 @@ export class AdminService {
             );
           }
         }
+      } else {
+        throw new BadRequestException('File is missing.....!');
       }
+
+      //checking learning package is exist or not
       if (
-        !Object.values(columns.Data[0]).includes('learningPackages') &&
+        !Object.values(columns.Sheet1[0]).includes('learningPackages') &&
         Object.keys(params).length === 0
       ) {
         throw new BadRequestException('learningPackages is missing....!');
       }
+
       const excelData = excelToJson({
         sourceFile: file.path,
         header: {
@@ -1699,47 +1705,48 @@ export class AdminService {
       });
 
       //insert the excel data in user and parent entity
-      for (let i = 0; i < excelData.Data.length; i++) {
+      for (let i = 0; i < excelData.Sheet1.length; i++) {
         try {
-          if (!excelData.Data[i].hasOwnProperty('learningPackages')) {
-            excelData.Data[i].learningPackages = params.learningPackages;
-            originalKeys.push('learningPackages');
+          if (!excelData.Sheet1[i].hasOwnProperty('learningPackages')) {
+            excelData.Sheet1[i].learningPackages = params.learningPackages;
+            if (!originalKeys.includes('learningPackages'))
+              originalKeys.push('learningPackages');
           }
 
-          if (Object.keys(excelData.Data[i]).length == originalKeys.length) {
+          if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
             regResp = await this.authService.registerUser({
-              firstName: excelData.Data[i].firstName,
-              lastName: excelData.Data[i].lastName,
-              email: excelData.Data[i].email,
-              phoneNumber: excelData.Data[i].phoneNumber,
-              password: excelData.Data[i].password,
-              confirmPassword: excelData.Data[i].password,
-              countryId: excelData.Data[i].countryId,
+              firstName: excelData.Sheet1[i].firstName,
+              lastName: excelData.Sheet1[i].lastName,
+              email: excelData.Sheet1[i].email,
+              phoneNumber: excelData.Sheet1[i].phoneNumber,
+              password: excelData.Sheet1[i].password,
+              confirmPassword: excelData.Sheet1[i].password,
+              countryId: excelData.Sheet1[i].countryId,
             });
 
             createSubscription =
               await this.subscriptionService.createSubscription({
-                details: excelData.Data[i].details,
-                duration: excelData.Data[i].duration,
-                price: excelData.Data[i].price,
-                learningPackages: excelData.Data[i].learningPackages,
-                state: excelData.Data[i].state,
-                dueDate: excelData.Data[i].dueDate,
+                details: excelData.Sheet1[i].details,
+                duration: excelData.Sheet1[i].duration,
+                price: excelData.Sheet1[i].price,
+                learningPackages: excelData.Sheet1[i].learningPackages,
+                state: excelData.Sheet1[i].state,
+                dueDate: excelData.Sheet1[i].dueDate,
               });
-            excelKeys = Object.keys(excelData.Data[i]);
-            registeredUsers.push(excelData.Data[i]);
+            excelKeys = Object.keys(excelData.Sheet1[i]);
+            registeredUsers.push(excelData.Sheet1[i]);
           } else {
-            const excelHeaders = Object.keys(excelData.Data[i]);
+            const excelHeaders = Object.keys(excelData.Sheet1[i]);
             const result = originalKeys.filter(
               (item) => excelHeaders.indexOf(item) == -1,
             );
-            excelData.Data[i].remark = `Column missing (${result})`;
-            notRegisteredUsers.push(excelData.Data[i]);
+            excelData.Sheet1[i].remark = `Column missing (${result})`;
+            notRegisteredUsers.push(excelData.Sheet1[i]);
           }
         } catch (e) {
-          excelKeys = Object.keys(excelData.Data[i]);
-          excelData.Data[i].remark = e.response.error;
-          notRegisteredUsers.push(excelData.Data[i]);
+          excelKeys = Object.keys(excelData.Sheet1[i]);
+          excelData.Sheet1[i].remark = e.response.error;
+          notRegisteredUsers.push(excelData.Sheet1[i]);
         }
       }
 
@@ -1992,6 +1999,8 @@ export class AdminService {
       } else {
         throw new BadRequestException('sheet is empty....');
       }
+
+      //checking message is exist or not
       if (
         !Object.values(columns.Sheet1[0]).includes('message') &&
         Object.keys(params).length === 0
@@ -2060,7 +2069,6 @@ export class AdminService {
         files.push(errorFileCreated.path);
       }
     } catch (err) {
-      console.log(err);
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,

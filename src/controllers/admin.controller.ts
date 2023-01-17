@@ -266,7 +266,6 @@ export class AdminController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: createAdminReq,
   ) {
-    //console.log(body)
     const { success, createdUser }: BasicRegRes =
       await this.adminService.createAdmin(body);
 
