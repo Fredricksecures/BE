@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { learningPackages } from './../utils/constants';
 import {
   BadRequestException,
@@ -77,9 +78,11 @@ import { Settings } from 'src/entities/settings.entity';
 import { SubscriptionService } from './subscription.service';
 import { Subscription } from 'src/entities/subscription.entity';
 import { response } from 'express';
-import excelToJSON from 'convert-excel-to-json';
+// import excelToJSON from 'convert-excel-to-json';
+const excelToJson = require('convert-excel-to-json');
 import { Parser } from 'json2csv';
-import fs from 'fs';
+const fs = require('fs');
+// import fs from 'fs';
 import { EmailTemplate } from 'src/entities/emailTemplate.entity';
 config();
 const { BCRYPT_SALT } = process.env;
@@ -1664,7 +1667,7 @@ export class AdminService {
     ];
     try {
       const date = Date.now();
-      const columns = excelToJSON({
+      const columns = excelToJson({
         sourceFile: file.path,
       });
       //check if file is valid
@@ -1679,8 +1682,13 @@ export class AdminService {
           }
         }
       }
-
-      const excelData = excelToJSON({
+      if (
+        !Object.values(columns.Sheet1[0]).includes('learningPackages') &&
+        Object.keys(params).length === 0
+      ) {
+        throw new BadRequestException('learningPackages is missing....!');
+      }
+      const excelData = excelToJson({
         sourceFile: file.path,
         header: {
           rows: 1,
@@ -1694,13 +1702,10 @@ export class AdminService {
       for (let i = 0; i < excelData.Data.length; i++) {
         try {
           if (!excelData.Data[i].hasOwnProperty('learningPackages')) {
-            if (params.length > 0) {
-              excelData.Data[i].learningPackages = params.learningPackages;
-              if (!originalKeys.includes('learningPackages')) {
-                originalKeys.push('learningPackages');
-              }
-            }
+            excelData.Data[i].learningPackages = params.learningPackages;
+            originalKeys.push('learningPackages');
           }
+
           if (Object.keys(excelData.Data[i]).length == originalKeys.length) {
             regResp = await this.authService.registerUser({
               firstName: excelData.Data[i].firstName,
@@ -1969,15 +1974,10 @@ export class AdminService {
     const originalKeys = ['email'];
     try {
       const date = Date.now();
-      const columns = excelToJSON({
+      const columns = excelToJson({
         sourceFile: file.path,
       });
-      console.log(params.message);
-      if (!Object.values(columns.Sheet1[0]).includes('message')) {
-        if (params.message == 'undefined') {
-          throw new BadRequestException('Message is not mention');
-        }
-      }
+      
       //check if file is valid
       if (columns.Sheet1.length > 0) {
         const avaliableColumns = Object.values(columns.Sheet1[0]);
@@ -1989,9 +1989,16 @@ export class AdminService {
             );
           }
         }
+      } else {
+        throw new BadRequestException('sheet is empty....');
       }
-
-      const excelData = excelToJSON({
+      if (
+        !Object.values(columns.Sheet1[0]).includes('message') &&
+        Object.keys(params).length === 0
+      ) {
+        throw new BadRequestException('Message is missing....!');
+      }
+      const excelData = excelToJson({
         sourceFile: file.path,
         header: {
           rows: 1,
@@ -2004,15 +2011,11 @@ export class AdminService {
       //insert the excel data in user and parent entity
       for (let i = 0; i < excelData.Sheet1.length; i++) {
         try {
-          if (
-            !excelData.Sheet1[i].hasOwnProperty('message') ||
-            params.message
-          ) {
+          if (!excelData.Sheet1[i].hasOwnProperty('message')) {
             excelData.Sheet1[i].message = params.message;
-            if (!originalKeys.includes('message')) {
-              originalKeys.push('message');
-            }
+            originalKeys.push('message');
           }
+          
           if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
             mailCreate = await mailer(
               excelData.Sheet1[i].email,
@@ -2057,10 +2060,11 @@ export class AdminService {
         files.push(errorFileCreated.path);
       }
     } catch (err) {
+      console.log(err);
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: err,
+          error: err.response.message,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
