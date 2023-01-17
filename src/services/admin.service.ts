@@ -78,10 +78,10 @@ import { Settings } from 'src/entities/settings.entity';
 import { SubscriptionService } from './subscription.service';
 import { Subscription } from 'src/entities/subscription.entity';
 import { response } from 'express';
-// import excelToJSON from 'convert-excel-to-json';
-const excelToJson = require('convert-excel-to-json');
+import * as excelToJson from 'convert-excel-to-json';
 import { Parser } from 'json2csv';
-const fs = require('fs');
+import * as fs from 'fs';
+
 // import fs from 'fs';
 import { EmailTemplate } from 'src/entities/emailTemplate.entity';
 config();
@@ -1977,7 +1977,7 @@ export class AdminService {
       const columns = excelToJson({
         sourceFile: file.path,
       });
-      
+
       //check if file is valid
       if (columns.Sheet1.length > 0) {
         const avaliableColumns = Object.values(columns.Sheet1[0]);
@@ -2015,7 +2015,7 @@ export class AdminService {
             excelData.Sheet1[i].message = params.message;
             originalKeys.push('message');
           }
-          
+
           if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
             mailCreate = await mailer(
               excelData.Sheet1[i].email,
