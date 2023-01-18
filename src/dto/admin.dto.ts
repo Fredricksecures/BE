@@ -16,6 +16,7 @@ import { Session } from 'src/entities/session.entity';
 import { CustomerCare } from 'src/entities/CustomerCare.entity';
 import { User } from 'src/entities/user.entity';
 import { Admin } from 'src/entities/admin.entity';
+import { Student } from 'src/entities/student.entity';
 
 export class GetAllUsersSessionsReq {
   @IsNotEmpty()
@@ -314,9 +315,12 @@ export class createClassReq {
 }
 
 export class bookedClassReq {
+  @IsString()
+  classId: string;
+  
   @IsNotEmpty()
   @IsString()
-  booked: string;
+  user: User;
 }
 export class createAttendeesReq {
   @IsNotEmpty()

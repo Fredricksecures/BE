@@ -1811,14 +1811,13 @@ export class AdminService {
     };
   }
 
-  async bookedClass(id: string, bookedClassReq: bookedClassReq) {
-    const { booked } = bookedClassReq;
+  async bookedClass(bookedClassReq: bookedClassReq) {
+    const { classId, user } = bookedClassReq;
     let bookedClass: Class, foundStudent: Student, foundClass: Class;
     let concat, set, result, bookedClassValues;
-    //Finding the class with particular id
     try {
-      foundClass = await this.classRepo.findOne({
-        where: { id },
+      foundStudent = await this.studentRepo.findOne({
+        where: { parent: { id: user.parent.id } },
       });
     } catch (exp) {
       throw new HttpException(
@@ -1829,7 +1828,22 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
+    console.log(foundStudent);
+    //Finding the class with particular id
+    try {
+      foundClass = await this.classRepo.findOne({
+        where: { id: classId },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingClass + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    console.log(foundClass.booked);
     if (!foundClass) {
       throw new HttpException(
         {
@@ -1840,40 +1854,28 @@ export class AdminService {
       );
     }
 
-    const bookedClassInsertedValues = booked.split(',');
-
-    // Used to check the booked Class value is present in student table
-    for (let index = 0; index < bookedClassInsertedValues.length; index++) {
-      const id = bookedClassInsertedValues[index];
-      foundStudent = await this.studentRepo.findOne({
-        where: { id },
-      });
-      if (foundStudent == null) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            message: adminErrors.studentsNotFound + id,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
-    }
+  
 
     //Checking that booked Class value is already present or not
-    if ((foundClass.booked! = null)) {
+    if (foundClass.booked) {
       bookedClassValues = foundClass.booked.split(',');
-      concat = bookedClassInsertedValues.concat(bookedClassValues);
-      set = new Set(concat);
-      result = [...set];
-      result = result.sort();
-    } else {
-      bookedClassValues = booked.split(',');
-      result = bookedClassValues.sort();
+      for (let index = 0; index < bookedClassValues.length; index++) {
+        if (foundStudent.id == bookedClassValues[index]) {
+          result=foundClass.booked
+          break;
+        } else {
+          result= foundClass.booked+','.concat(foundStudent.id)
+        }
+       }
     }
+    else{
+      result=foundStudent.id
+    }
+
     try {
       bookedClass = await this.classRepo.save({
         ...foundClass,
-        booked: result.toString(),
+        booked: result,
       });
     } catch (e) {
       throw new HttpException(
@@ -1978,7 +1980,7 @@ export class AdminService {
     const files = [];
     const mailSent = [];
     const mailSentFail = [];
-    let excelKeys, lPLValues,templateData;
+    let excelKeys, lPLValues, templateData;
     const originalKeys = ['email'];
     try {
       const date = Date.now();
@@ -2039,11 +2041,13 @@ export class AdminService {
             foundTemplate = await this.getEmailTemplate(
               excelData.Sheet1[i].templateId.toString(),
             );
-              if(foundTemplate)
-              {
-                 templateData = foundTemplate.template.replace("${expression} ",excelData.Sheet1[i].content )
-              }
-              console.log(templateData)
+            if (foundTemplate) {
+              templateData = foundTemplate.template.replace(
+                '${expression} ',
+                excelData.Sheet1[i].content,
+              );
+            }
+            console.log(templateData);
             mailCreate = await mailer(
               excelData.Sheet1[i].email,
               'Mail sent Successful',

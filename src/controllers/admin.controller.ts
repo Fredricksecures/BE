@@ -58,10 +58,22 @@ import { Request, Response } from 'express';
 import { adminErrors, adminMessages } from 'src/utils/messages';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import { Middleware, UseMiddleware } from 'src/utils/middleware';
+import { UserService } from 'src/services/user.service';
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly userService: UserService,
+  ) {}
+
+  @Middleware
+  async sessionGuard(req, resp) {
+    await this.userService.verifyToken(req, resp, {
+      noTimeout: true,
+      useCookies: true,
+    });
+  }
 
   @Get('user-sessions')
   async getUserSessions(
@@ -857,17 +869,19 @@ export class AdminController {
   }
 
   @Post('booked-class/:id')
+  @UseMiddleware('sessionGuard')
   async bookedClass(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Body() body: bookedClassReq,
-    @Param('id') id,
+    //@Param('id') id,
   ) {
-    const { success, bookedClass } = await this.adminService.bookedClass(
-      id,
-      { ...req.body },
-    );
-
+    const {
+     params: {id},
+      body: { user },
+    } = req;
+    
+    const { success, bookedClass } = await this.adminService.bookedClass( {classId: `${id}`, user});
+    //console.log(studentId.id)
     if (success) {
       resp.json({
         status: HttpStatus.OK,
@@ -1007,5 +1021,3 @@ export class AdminController {
     });
   }
 }
-
-

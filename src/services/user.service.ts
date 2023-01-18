@@ -367,7 +367,7 @@ export class UserService {
 
     let foundStudents: Student | Array<Student>;
 
-    let parent = await this.getParentDetails(user.id, ['students']);
+    const parent = await this.getParentDetails(user.id, ['students']);
 
     if (!foundStudents) {
       Logger.error(userErrors.studentsNotFound).console();
