@@ -1,4 +1,4 @@
-import { EmailTemplate } from './../entities/emailTemplate.entity';
+import { EmailTemplate } from '../entities/email.template.entity';
 import {
   Query,
   Controller,
@@ -1007,3 +1007,14 @@ export class AdminController {
     });
   }
 }
+//Create live class - done (admin)
+book live class 
+attend live class 
+
+Email -> 
+email - add template id and change message to content
+
+classes
+change to live class
+change schedule to booked
+booklive class endpoint with student with auth gaurd.

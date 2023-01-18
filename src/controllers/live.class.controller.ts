@@ -14,13 +14,14 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { classroomMessages, classroomErrors } from 'src/utils/messages';
-import { ClassroomService } from 'src/services/classroom.service';
+import { liveClassMessages, liveClassErrors } from 'src/utils/messages';
+import { LiveClassService } from 'src/services/live.class.service';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
-@Controller('classroom')
-export class ClassroomController {
-  constructor(private readonly classroomService: ClassroomService) {}
+//change it to live class
+@Controller('liveclass')
+export class LiveClassController {
+  constructor(private readonly liveClassService: LiveClassService) {}
 
   @Get('upcoming-classes')
   async getUpcomingClasses(
@@ -30,12 +31,12 @@ export class ClassroomController {
     @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const upcomingClasses = await this.classroomService.getUpcomingClasses(
+    const upcomingClasses = await this.liveClassService.getUpcomingClasses(
       options,
     );
     resp.json({
       status: HttpStatus.OK,
-      message: classroomMessages.upcomingClassesFetchSuccess,
+      message: liveClassMessages.upcomingClassesFetchSuccess,
       upcomingClasses: upcomingClasses.items,
       meta: upcomingClasses.meta,
     });

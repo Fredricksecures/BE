@@ -292,6 +292,7 @@ export class SampleDto {
   Phone_No: number;
   Email: string;
 }
+
 export class createClassReq {
   @IsNotEmpty()
   @IsString()
@@ -311,6 +312,7 @@ export class createClassReq {
   @IsNotEmpty()
   endedAt: string;
 }
+
 export class createScheduleReq {
   @IsNotEmpty()
   @IsString()
@@ -329,7 +331,11 @@ export class bulkRegistrationReq {
 export class bulkEmailReq {
   @IsOptional()
   @IsString()
-  message: string;
+  content: string;
+
+  @IsOptional()
+  @IsString()
+  templateId: string;
 }
 export class createEmailTemplateReq {
   @IsNotEmpty()

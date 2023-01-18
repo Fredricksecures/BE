@@ -8,11 +8,11 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { Class } from 'src/entities/class.entity';
-import { classroomMessages, classroomErrors } from 'src/utils/messages';
+import { liveClassMessages, liveClassErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 
 @Injectable()
-export class ClassroomService {
+export class LiveClassService {
   constructor(
     private jwtService: JwtService,
     @InjectRepository(Class) private classRepo: Repository<Class>,
@@ -29,7 +29,7 @@ export class ClassroomService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: classroomErrors.failedToFetchUpcomingClasses + exp,
+          error: liveClassErrors.failedToFetchUpcomingClasses + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );

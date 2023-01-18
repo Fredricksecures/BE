@@ -280,10 +280,10 @@ export const adminErrors = {
   updatingTemplate: 'Error querying for updating email template',
   failedToFetchEmailTemplate: 'error while fetching email template. ',
 };
-export const classroomMessages = {
+export const liveClassMessages = {
   upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',
 };
-export const classroomErrors = {
+export const liveClassErrors = {
   failedToFetchUpcomingClasses: 'Failed to fetch upcoming classes',
 };
 export const userMessages = {

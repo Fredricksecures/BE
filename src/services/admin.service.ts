@@ -83,7 +83,7 @@ import { Parser } from 'json2csv';
 import * as fs from 'fs';
 
 // import fs from 'fs';
-import { EmailTemplate } from 'src/entities/emailTemplate.entity';
+import { EmailTemplate } from 'src/entities/email.template.entity';
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -1999,13 +1999,17 @@ export class AdminService {
       } else {
         throw new BadRequestException('sheet is empty....');
       }
-
-      //checking message is exist or not
-      if (
-        !Object.values(columns.Sheet1[0]).includes('message') &&
-        Object.keys(params).length === 0
-      ) {
-        throw new BadRequestException('Message is missing....!');
+    
+      //checking content is exist or not
+      if (!Object.values(columns.Sheet1[0]).includes('content') &&
+        !Object.keys(params).includes('content')) 
+      {
+        throw new BadRequestException('Content is missing....!');
+      }
+      if (!Object.values(columns.Sheet1[0]).includes('templateId') &&
+        !Object.keys(params).includes('templateId')) 
+      {
+        throw new BadRequestException('templateId is missing....!');
       }
       const excelData = excelToJson({
         sourceFile: file.path,
@@ -2020,16 +2024,16 @@ export class AdminService {
       //insert the excel data in user and parent entity
       for (let i = 0; i < excelData.Sheet1.length; i++) {
         try {
-          if (!excelData.Sheet1[i].hasOwnProperty('message')) {
-            excelData.Sheet1[i].message = params.message;
-            originalKeys.push('message');
+          if (!excelData.Sheet1[i].hasOwnProperty('content')) {
+            excelData.Sheet1[i].content = params.content;
+            originalKeys.push('content');
           }
 
           if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
             mailCreate = await mailer(
               excelData.Sheet1[i].email,
               'Mail sent Successful',
-              { text: excelData.Sheet1[i].message },
+              { text: excelData.Sheet1[i].content },
             );
             excelKeys = Object.keys(excelData.Sheet1[i]);
             mailSent.push(excelData.Sheet1[i]);

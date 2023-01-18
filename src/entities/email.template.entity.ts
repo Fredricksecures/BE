@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 
-@Entity('EmailTemplates')
+@Entity('email-templates')
 export class EmailTemplate {
   constructor(data?: EmailTemplate) {
     if (typeof data === 'object') {
