@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { learningPackages } from './../utils/constants';
 import {
   BadRequestException,
@@ -41,8 +42,10 @@ import {
   updateChapterReq,
   updateSettingReq,
   createClassReq,
-  createScheduleReq,
+  bookedClassReq,
   createAttendeesReq,
+  createEmailTemplateReq,
+  updateEmailTemplateReq,
 } from 'src/dto/admin.dto';
 import {
   adminMessages,
@@ -75,9 +78,12 @@ import { Settings } from 'src/entities/settings.entity';
 import { SubscriptionService } from './subscription.service';
 import { Subscription } from 'src/entities/subscription.entity';
 import { response } from 'express';
-const excelToJSON = require('convert-excel-to-json');
-const { Parser } = require('json2csv');
-var fs = require('fs');
+import * as excelToJson from 'convert-excel-to-json';
+import { Parser } from 'json2csv';
+import * as fs from 'fs';
+
+// import fs from 'fs';
+import { EmailTemplate } from 'src/entities/email.template.entity';
 config();
 const { BCRYPT_SALT } = process.env;
 
@@ -106,7 +112,9 @@ export class AdminService {
     @InjectRepository(LearningPackage)
     private learningPackageRepo: Repository<LearningPackage>,
     @InjectRepository(Settings) private settingRepo: Repository<Settings>,
-    @InjectRepository(Class) private classRepo: Repository<Class>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
+    @InjectRepository(Class) private classRepo: Repository<Class>,
+    @InjectRepository(EmailTemplate)
+    private emailRepo: Repository<EmailTemplate>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
 
   async formatPayload(user: any, type: string) {
@@ -1659,12 +1667,13 @@ export class AdminService {
     ];
     try {
       const date = Date.now();
-      const columns = excelToJSON({
+      const columns = excelToJson({
         sourceFile: file.path,
       });
+
       //check if file is valid
-      if (columns.Data.length > 0) {
-        const avaliableColumns = Object.values(columns.Data[0]);
+      if (columns.Sheet1.length > 0) {
+        const avaliableColumns = Object.values(columns.Sheet1[0]);
         for (let i = 0; i < originalKeys.length; i++) {
           const element = originalKeys[i];
           if (!avaliableColumns.includes(element)) {
@@ -1673,9 +1682,19 @@ export class AdminService {
             );
           }
         }
+      } else {
+        throw new BadRequestException('File is missing.....!');
       }
 
-      const excelData = excelToJSON({
+      //checking learning package is exist or not
+      if (
+        !Object.values(columns.Sheet1[0]).includes('learningPackages') &&
+        Object.keys(params).length === 0
+      ) {
+        throw new BadRequestException('learningPackages is missing....!');
+      }
+
+      const excelData = excelToJson({
         sourceFile: file.path,
         header: {
           rows: 1,
@@ -1686,50 +1705,48 @@ export class AdminService {
       });
 
       //insert the excel data in user and parent entity
-      for (let i = 0; i < excelData.Data.length; i++) {
+      for (let i = 0; i < excelData.Sheet1.length; i++) {
         try {
-          if (!excelData.Data[i].hasOwnProperty('learningPackages')) {
-            if (params.length > 0) {
-              excelData.Data[i].learningPackages = params.learningPackages;
-              if (!originalKeys.includes('learningPackages')) {
-                originalKeys.push('learningPackages');
-              }
-            }
+          if (!excelData.Sheet1[i].hasOwnProperty('learningPackages')) {
+            excelData.Sheet1[i].learningPackages = params.learningPackages;
+            if (!originalKeys.includes('learningPackages'))
+              originalKeys.push('learningPackages');
           }
-          if (Object.keys(excelData.Data[i]).length == originalKeys.length) {
+
+          if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
             regResp = await this.authService.registerUser({
-              firstName: excelData.Data[i].firstName,
-              lastName: excelData.Data[i].lastName,
-              email: excelData.Data[i].email,
-              phoneNumber: excelData.Data[i].phoneNumber,
-              password: excelData.Data[i].password,
-              confirmPassword: excelData.Data[i].password,
-              countryId: excelData.Data[i].countryId,
+              firstName: excelData.Sheet1[i].firstName,
+              lastName: excelData.Sheet1[i].lastName,
+              email: excelData.Sheet1[i].email,
+              phoneNumber: excelData.Sheet1[i].phoneNumber,
+              password: excelData.Sheet1[i].password,
+              confirmPassword: excelData.Sheet1[i].password,
+              countryId: excelData.Sheet1[i].countryId,
             });
 
             createSubscription =
               await this.subscriptionService.createSubscription({
-                details: excelData.Data[i].details,
-                duration: excelData.Data[i].duration,
-                price: excelData.Data[i].price,
-                learningPackages: excelData.Data[i].learningPackages,
-                state: excelData.Data[i].state,
-                dueDate: excelData.Data[i].dueDate,
+                details: excelData.Sheet1[i].details,
+                duration: excelData.Sheet1[i].duration,
+                price: excelData.Sheet1[i].price,
+                learningPackages: excelData.Sheet1[i].learningPackages,
+                state: excelData.Sheet1[i].state,
+                dueDate: excelData.Sheet1[i].dueDate,
               });
-            excelKeys = Object.keys(excelData.Data[i]);
-            registeredUsers.push(excelData.Data[i]);
+            excelKeys = Object.keys(excelData.Sheet1[i]);
+            registeredUsers.push(excelData.Sheet1[i]);
           } else {
-            const excelHeaders = Object.keys(excelData.Data[i]);
+            const excelHeaders = Object.keys(excelData.Sheet1[i]);
             const result = originalKeys.filter(
               (item) => excelHeaders.indexOf(item) == -1,
             );
-            excelData.Data[i].remark = `Column missing (${result})`;
-            notRegisteredUsers.push(excelData.Data[i]);
+            excelData.Sheet1[i].remark = `Column missing (${result})`;
+            notRegisteredUsers.push(excelData.Sheet1[i]);
           }
         } catch (e) {
-          excelKeys = Object.keys(excelData.Data[i]);
-          excelData.Data[i].remark = e.response.error;
-          notRegisteredUsers.push(excelData.Data[i]);
+          excelKeys = Object.keys(excelData.Sheet1[i]);
+          excelData.Sheet1[i].remark = e.response.error;
+          notRegisteredUsers.push(excelData.Sheet1[i]);
         }
       }
 
@@ -1794,14 +1811,13 @@ export class AdminService {
     };
   }
 
-  async createSchedule(id: string, createScheduleReq: createScheduleReq) {
-    const { schedule } = createScheduleReq;
-    let scheduleCreated: Class, foundStudent: Student, foundClass: Class;
-    let concat, set, result, scheduleValues;
-    //Finding the class with particular id
+  async bookedClass(bookedClassReq: bookedClassReq) {
+    const { classId, user } = bookedClassReq;
+    let bookedClass: Class, foundStudent: Student, foundClass: Class;
+    let concat, set, result, bookedClassValues;
     try {
-      foundClass = await this.classRepo.findOne({
-        where: { id },
+      foundStudent = await this.studentRepo.findOne({
+        where: { parent: { id: user.parent.id } },
       });
     } catch (exp) {
       throw new HttpException(
@@ -1812,7 +1828,22 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
+    console.log(foundStudent);
+    //Finding the class with particular id
+    try {
+      foundClass = await this.classRepo.findOne({
+        where: { id: classId },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingClass + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    console.log(foundClass.booked);
     if (!foundClass) {
       throw new HttpException(
         {
@@ -1823,40 +1854,28 @@ export class AdminService {
       );
     }
 
-    const scheduleInsertedValues = schedule.split(',');
+  
 
-    // Used to check the schedule value is present in student table
-    for (let index = 0; index < scheduleInsertedValues.length; index++) {
-      const id = scheduleInsertedValues[index];
-      foundStudent = await this.studentRepo.findOne({
-        where: { id },
-      });
-      if (foundStudent == null) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            message: adminErrors.studentsNotFound + id,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
+    //Checking that booked Class value is already present or not
+    if (foundClass.booked) {
+      bookedClassValues = foundClass.booked.split(',');
+      for (let index = 0; index < bookedClassValues.length; index++) {
+        if (foundStudent.id == bookedClassValues[index]) {
+          result=foundClass.booked
+          break;
+        } else {
+          result= foundClass.booked+','.concat(foundStudent.id)
+        }
+       }
+    }
+    else{
+      result=foundStudent.id
     }
 
-    //Checking that schedule value is already present or not
-    if ((foundClass.schedule! = null)) {
-      scheduleValues = foundClass.schedule.split(',');
-      concat = scheduleInsertedValues.concat(scheduleValues);
-      set = new Set(concat);
-      result = [...set];
-      result = result.sort();
-    } else {
-      scheduleValues = schedule.split(',');
-      result = scheduleValues.sort();
-    }
     try {
-      scheduleCreated = await this.classRepo.save({
+      bookedClass = await this.classRepo.save({
         ...foundClass,
-        schedule: result.toString(),
+        booked: result,
       });
     } catch (e) {
       throw new HttpException(
@@ -1869,7 +1888,7 @@ export class AdminService {
     }
 
     return {
-      scheduleCreated,
+      bookedClass,
       success: true,
     };
   }
@@ -1905,7 +1924,7 @@ export class AdminService {
 
     const attendeesInsertedValues = attendees.split(',');
 
-    // Used to check the schedule value is present in student table
+    // Used to check the booked Class value is present in student table
     for (let index = 0; index < attendeesInsertedValues.length; index++) {
       const id = attendeesInsertedValues[index];
       foundStudent = await this.studentRepo.findOne({
@@ -1922,7 +1941,7 @@ export class AdminService {
       }
     }
 
-    //Checking that schedule value is already present or not
+    //Checking that booked Class value is already present or not
     if ((foundClass.attendees! = null)) {
       attendeesValues = foundClass.attendees.split(',');
       concat = attendeesInsertedValues.concat(attendeesValues);
@@ -1957,22 +1976,18 @@ export class AdminService {
     let errorFileCreated;
     let successFileCreated;
     let mailCreate;
+    let foundTemplate: EmailTemplate;
     const files = [];
     const mailSent = [];
     const mailSentFail = [];
-    let excelKeys, lPLValues;
+    let excelKeys, lPLValues, templateData;
     const originalKeys = ['email'];
     try {
       const date = Date.now();
-      const columns = excelToJSON({
+      const columns = excelToJson({
         sourceFile: file.path,
       });
-      console.log(params.message);
-      if (!Object.values(columns.Sheet1[0]).includes('message')) {
-        if (params.message == 'undefined') {
-          throw new BadRequestException('Message is not mention');
-        }
-      }
+
       //check if file is valid
       if (columns.Sheet1.length > 0) {
         const avaliableColumns = Object.values(columns.Sheet1[0]);
@@ -1984,9 +1999,24 @@ export class AdminService {
             );
           }
         }
+      } else {
+        throw new BadRequestException('sheet is empty....');
       }
 
-      const excelData = excelToJSON({
+      //checking content and template id is exist or not
+      if (
+        !Object.values(columns.Sheet1[0]).includes('content') &&
+        !Object.keys(params).includes('content')
+      ) {
+        throw new BadRequestException('Content is missing....!');
+      }
+      if (
+        !Object.values(columns.Sheet1[0]).includes('templateId') &&
+        !Object.keys(params).includes('templateId')
+      ) {
+        throw new BadRequestException('templateId is missing....!');
+      }
+      const excelData = excelToJson({
         sourceFile: file.path,
         header: {
           rows: 1,
@@ -1995,25 +2025,35 @@ export class AdminService {
           '*': '{{columnHeader}}',
         },
       });
-
+      originalKeys.push('content');
+      originalKeys.push('templateId');
       //insert the excel data in user and parent entity
       for (let i = 0; i < excelData.Sheet1.length; i++) {
         try {
-          if (
-            !excelData.Sheet1[i].hasOwnProperty('message') ||
-            params.message
-          ) {
-            excelData.Sheet1[i].message = params.message;
-            if (!originalKeys.includes('message')) {
-              originalKeys.push('message');
-            }
+          if (!excelData.Sheet1[i].hasOwnProperty('content')) {
+            excelData.Sheet1[i].content = params.content;
           }
+          if (!excelData.Sheet1[i].hasOwnProperty('templateId')) {
+            excelData.Sheet1[i].templateId = params.templateId;
+          }
+
           if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
+            foundTemplate = await this.getEmailTemplate(
+              excelData.Sheet1[i].templateId.toString(),
+            );
+            if (foundTemplate) {
+              templateData = foundTemplate.template.replace(
+                '${expression} ',
+                excelData.Sheet1[i].content,
+              );
+            }
+            console.log(templateData);
             mailCreate = await mailer(
               excelData.Sheet1[i].email,
               'Mail sent Successful',
-              { text: excelData.Sheet1[i].message },
+              { text: templateData },
             );
+
             excelKeys = Object.keys(excelData.Sheet1[i]);
             mailSent.push(excelData.Sheet1[i]);
           } else {
@@ -2055,7 +2095,7 @@ export class AdminService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: err,
+          error: err.response.message,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
@@ -2064,5 +2104,107 @@ export class AdminService {
       success: true,
       files: files,
     };
+  }
+
+  async createEmailTemplate(createEmailTemplateReq: createEmailTemplateReq) {
+    const { template, active } = createEmailTemplateReq;
+    let emailTemplateCreated: EmailTemplate;
+
+    try {
+      emailTemplateCreated = await this.emailRepo.save({
+        template,
+        active,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.saveEmail + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      emailTemplateCreated,
+      success: true,
+    };
+  }
+
+  async updateEmailTemplate(
+    id: string,
+    updateEmailTemplateReq: updateEmailTemplateReq,
+  ) {
+    const { template, active } = updateEmailTemplateReq;
+    let foundEmailTemplate, updatedEmailTemplate: EmailTemplate;
+    try {
+      foundEmailTemplate = await this.emailRepo.findOne({
+        where: { id },
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.checkingTemplate + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundEmailTemplate) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.templateNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    try {
+      updatedEmailTemplate = await this.emailRepo.save({
+        ...foundEmailTemplate,
+        template: template ?? foundEmailTemplate.template,
+        active: active ?? foundEmailTemplate.active,
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.updatingTemplate + e,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      updatedEmailTemplate,
+      success: true,
+    };
+  }
+
+  async getEmailTemplate(templateId: string): Promise<EmailTemplate> {
+    let results;
+
+    try {
+      if (templateId != null) {
+        results = await this.emailRepo.findOne({
+          where: {
+            id: templateId,
+          },
+        });
+      } else {
+        results = await this.emailRepo.find();
+      }
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchEmailTemplate + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return results;
   }
 }

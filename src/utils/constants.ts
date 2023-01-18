@@ -24,6 +24,7 @@ import { Badge } from '../entities/badges.entity';
 import { MockTest } from '../entities/mockTest.entity';
 import { Review } from 'src/entities/review.entity';
 import { Settings } from 'src/entities/settings.entity';
+import { EmailTemplate } from 'src/entities/email.template.entity';
 
 config();
 
@@ -56,6 +57,7 @@ export const ModuleConfigs = {
       MockTest,
       Review,
       Settings,
+      EmailTemplate,
     ],
   },
   utility: {
@@ -97,6 +99,7 @@ export const ModuleConfigs = {
       Settings,
       Subscription,
       Invoice,
+      EmailTemplate,
     ],
   },
   subscription: {
@@ -117,7 +120,7 @@ export const ModuleConfigs = {
       Review,
     ],
   },
-  classroom: {
+  liveclass: {
     entities: [Class],
   },
   user: {

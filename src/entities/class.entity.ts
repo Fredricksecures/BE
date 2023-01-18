@@ -45,5 +45,5 @@ export class Class {
   updatedAt?: Date;
 
   @Column({ type: 'varchar', nullable: true })
-  schedule?: string;
+  booked?: string;
 }

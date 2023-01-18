@@ -45,7 +45,7 @@ export class SubscriptionService {
 
     const learningPackagesId = learningPackages.split(',');
 
-    // Used to check the schedule value is present in student table
+    // Used to check the Booked Class value is present in student table
     for (let index = 0; index < learningPackagesId.length; index++) {
       const id = learningPackagesId[index];
       foundLearningPackage = await this.lPLRepo.findOne({
@@ -87,9 +87,9 @@ export class SubscriptionService {
     };
   }
 
-  async getSubscription(subscriptionId: string): Promise<Subscription> {
-    return;
-  }
+  // async getSubscription(subscriptionId: string): Promise<Subscription> {
+  //   return;
+  // }
 
   async getSubscriptions(
     options: IPaginationOptions,

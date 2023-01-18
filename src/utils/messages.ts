@@ -171,10 +171,12 @@ export const adminMessages = {
   userSettingFetchSuccess: 'User setting Fetched successfully',
   classCreateSuccess: 'Class created successfully',
   failToCreateClass: 'Error while creating class',
-  failToCreateSchedule: 'Error while creating schedule',
-  scheduleCreateSuccess: 'Schedule created successfully',
+  failToBookedClass: 'Error while adding booked class',
+  bookedClassSuccess: 'Booked class created successfully',
   attendeesreateSuccess: 'Attendees created successfully',
   failToCreateAttendees: 'Error while creating attendees',
+  updatedEmailSuccess: 'Email updated successfully',
+  emailTemplateFetchSuccess: 'Email template Fetched successfully',
 };
 
 export const adminErrors = {
@@ -269,11 +271,19 @@ export const adminErrors = {
   studentsNotFound: 'could not find student with id = ',
   checkingClass: 'error while fetching class. ',
   classNotFound: 'could not find class with id provided',
+  emailCreateSuccess: 'Email created successfully',
+  failToCreateEmail: 'Error while creating email',
+  saveEmail: 'could not save new email ',
+  updatingEmailFail: 'Failed to update email sessions',
+  checkingTemplate: 'error while fetching email template. ',
+  templateNotFound: 'could not find email template with id provided',
+  updatingTemplate: 'Error querying for updating email template',
+  failedToFetchEmailTemplate: 'error while fetching email template. ',
 };
-export const classroomMessages = {
+export const liveClassMessages = {
   upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',
 };
-export const classroomErrors = {
+export const liveClassErrors = {
   failedToFetchUpcomingClasses: 'Failed to fetch upcoming classes',
 };
 export const userMessages = {

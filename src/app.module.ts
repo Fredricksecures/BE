@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { configService } from './services/config.service';
 import { UtilityModule } from './modules/utility.module';
 import { ContentModule } from './modules/content.module';
-import { ClassroomModule } from './modules/classroom.module';
+import { LiveClassModule } from './modules/live.class.module';
 import { UserModule } from './modules/user.module';
 
 @Module({
@@ -20,7 +20,7 @@ import { UserModule } from './modules/user.module';
     AdminModule,
     SubscriptionModule,
     ContentModule,
-    ClassroomModule,
+    LiveClassModule,
     UserModule,
   ],
   controllers: [AppController],

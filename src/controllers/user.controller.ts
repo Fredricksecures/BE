@@ -47,8 +47,8 @@ export class UserController {
   async getBadges(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
     @Query('id') id,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -126,7 +126,7 @@ export class UserController {
       query: { id },
       body: { user },
     } = req;
-
+    console.log(user)
     const students = await this.userService.getStudents({
       studentId: `${id}`,
       user,

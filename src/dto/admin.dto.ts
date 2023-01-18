@@ -16,6 +16,7 @@ import { Session } from 'src/entities/session.entity';
 import { CustomerCare } from 'src/entities/CustomerCare.entity';
 import { User } from 'src/entities/user.entity';
 import { Admin } from 'src/entities/admin.entity';
+import { Student } from 'src/entities/student.entity';
 
 export class GetAllUsersSessionsReq {
   @IsNotEmpty()
@@ -292,6 +293,7 @@ export class SampleDto {
   Phone_No: number;
   Email: string;
 }
+
 export class createClassReq {
   @IsNotEmpty()
   @IsString()
@@ -311,10 +313,14 @@ export class createClassReq {
   @IsNotEmpty()
   endedAt: string;
 }
-export class createScheduleReq {
+
+export class bookedClassReq {
+  @IsString()
+  classId: string;
+  
   @IsNotEmpty()
   @IsString()
-  schedule: string;
+  user: User;
 }
 export class createAttendeesReq {
   @IsNotEmpty()
@@ -322,14 +328,36 @@ export class createAttendeesReq {
   attendees: string;
 }
 export class bulkRegistrationReq {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   learningPackages: string;
 }
 export class bulkEmailReq {
   @IsOptional()
   @IsString()
-  message: string;
+  content: string;
+
+  @IsOptional()
+  @IsString()
+  templateId: string;
+}
+export class createEmailTemplateReq {
+  @IsNotEmpty()
+  @IsString()
+  template: string;
+
+  @IsOptional()
+  @IsBoolean()
+  active: boolean;
+}
+export class updateEmailTemplateReq {
+  @IsOptional()
+  @IsString()
+  template: string;
+
+  @IsOptional()
+  @IsBoolean()
+  active: boolean;
 }
 // export class createdAdminRes {
 //   createAdmin?: User | undefined;
