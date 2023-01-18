@@ -45,7 +45,7 @@ import {
   updateChapterReq,
   updateSettingReq,
   createClassReq,
-  createScheduleReq,
+  bookedClassReq,
   createAttendeesReq,
   bulkRegistrationReq,
   bulkEmailReq,
@@ -856,14 +856,14 @@ export class AdminController {
     }
   }
 
-  @Post('create-schedule/:id')
-  async createSchedule(
+  @Post('booked-class/:id')
+  async bookedClass(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Body() body: createScheduleReq,
+    @Body() body: bookedClassReq,
     @Param('id') id,
   ) {
-    const { success, scheduleCreated } = await this.adminService.createSchedule(
+    const { success, bookedClass } = await this.adminService.bookedClass(
       id,
       { ...req.body },
     );
@@ -871,14 +871,14 @@ export class AdminController {
     if (success) {
       resp.json({
         status: HttpStatus.OK,
-        message: adminMessages.scheduleCreateSuccess,
-        scheduleCreated,
+        message: adminMessages.bookedClassSuccess,
+        bookedClass,
       });
     } else {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: adminMessages.failToCreateSchedule,
+          error: adminMessages.failToBookedClass,
         },
         HttpStatus.NOT_FOUND,
       );
@@ -1007,14 +1007,5 @@ export class AdminController {
     });
   }
 }
-//Create live class - done (admin)
-book live class 
-attend live class 
 
-Email -> 
-email - add template id and change message to content
 
-classes
-change to live class
-change schedule to booked
-booklive class endpoint with student with auth gaurd.

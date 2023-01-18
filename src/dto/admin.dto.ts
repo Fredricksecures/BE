@@ -313,10 +313,10 @@ export class createClassReq {
   endedAt: string;
 }
 
-export class createScheduleReq {
+export class bookedClassReq {
   @IsNotEmpty()
   @IsString()
-  schedule: string;
+  booked: string;
 }
 export class createAttendeesReq {
   @IsNotEmpty()

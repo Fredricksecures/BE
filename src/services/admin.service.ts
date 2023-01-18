@@ -42,7 +42,7 @@ import {
   updateChapterReq,
   updateSettingReq,
   createClassReq,
-  createScheduleReq,
+  bookedClassReq,
   createAttendeesReq,
   createEmailTemplateReq,
   updateEmailTemplateReq,
@@ -1811,10 +1811,10 @@ export class AdminService {
     };
   }
 
-  async createSchedule(id: string, createScheduleReq: createScheduleReq) {
-    const { schedule } = createScheduleReq;
-    let scheduleCreated: Class, foundStudent: Student, foundClass: Class;
-    let concat, set, result, scheduleValues;
+  async bookedClass(id: string, bookedClassReq: bookedClassReq) {
+    const { booked } = bookedClassReq;
+    let bookedClass: Class, foundStudent: Student, foundClass: Class;
+    let concat, set, result, bookedClassValues;
     //Finding the class with particular id
     try {
       foundClass = await this.classRepo.findOne({
@@ -1840,11 +1840,11 @@ export class AdminService {
       );
     }
 
-    const scheduleInsertedValues = schedule.split(',');
+    const bookedClassInsertedValues = booked.split(',');
 
-    // Used to check the schedule value is present in student table
-    for (let index = 0; index < scheduleInsertedValues.length; index++) {
-      const id = scheduleInsertedValues[index];
+    // Used to check the booked Class value is present in student table
+    for (let index = 0; index < bookedClassInsertedValues.length; index++) {
+      const id = bookedClassInsertedValues[index];
       foundStudent = await this.studentRepo.findOne({
         where: { id },
       });
@@ -1859,21 +1859,21 @@ export class AdminService {
       }
     }
 
-    //Checking that schedule value is already present or not
-    if ((foundClass.schedule! = null)) {
-      scheduleValues = foundClass.schedule.split(',');
-      concat = scheduleInsertedValues.concat(scheduleValues);
+    //Checking that booked Class value is already present or not
+    if ((foundClass.booked! = null)) {
+      bookedClassValues = foundClass.booked.split(',');
+      concat = bookedClassInsertedValues.concat(bookedClassValues);
       set = new Set(concat);
       result = [...set];
       result = result.sort();
     } else {
-      scheduleValues = schedule.split(',');
-      result = scheduleValues.sort();
+      bookedClassValues = booked.split(',');
+      result = bookedClassValues.sort();
     }
     try {
-      scheduleCreated = await this.classRepo.save({
+      bookedClass = await this.classRepo.save({
         ...foundClass,
-        schedule: result.toString(),
+        booked: result.toString(),
       });
     } catch (e) {
       throw new HttpException(
@@ -1886,7 +1886,7 @@ export class AdminService {
     }
 
     return {
-      scheduleCreated,
+      bookedClass,
       success: true,
     };
   }
@@ -1922,7 +1922,7 @@ export class AdminService {
 
     const attendeesInsertedValues = attendees.split(',');
 
-    // Used to check the schedule value is present in student table
+    // Used to check the booked Class value is present in student table
     for (let index = 0; index < attendeesInsertedValues.length; index++) {
       const id = attendeesInsertedValues[index];
       foundStudent = await this.studentRepo.findOne({
@@ -1939,7 +1939,7 @@ export class AdminService {
       }
     }
 
-    //Checking that schedule value is already present or not
+    //Checking that booked Class value is already present or not
     if ((foundClass.attendees! = null)) {
       attendeesValues = foundClass.attendees.split(',');
       concat = attendeesInsertedValues.concat(attendeesValues);
@@ -1974,10 +1974,11 @@ export class AdminService {
     let errorFileCreated;
     let successFileCreated;
     let mailCreate;
+    let foundTemplate: EmailTemplate;
     const files = [];
     const mailSent = [];
     const mailSentFail = [];
-    let excelKeys, lPLValues;
+    let excelKeys, lPLValues,templateData;
     const originalKeys = ['email'];
     try {
       const date = Date.now();
@@ -1999,16 +2000,18 @@ export class AdminService {
       } else {
         throw new BadRequestException('sheet is empty....');
       }
-    
-      //checking content is exist or not
-      if (!Object.values(columns.Sheet1[0]).includes('content') &&
-        !Object.keys(params).includes('content')) 
-      {
+
+      //checking content and template id is exist or not
+      if (
+        !Object.values(columns.Sheet1[0]).includes('content') &&
+        !Object.keys(params).includes('content')
+      ) {
         throw new BadRequestException('Content is missing....!');
       }
-      if (!Object.values(columns.Sheet1[0]).includes('templateId') &&
-        !Object.keys(params).includes('templateId')) 
-      {
+      if (
+        !Object.values(columns.Sheet1[0]).includes('templateId') &&
+        !Object.keys(params).includes('templateId')
+      ) {
         throw new BadRequestException('templateId is missing....!');
       }
       const excelData = excelToJson({
@@ -2020,21 +2023,33 @@ export class AdminService {
           '*': '{{columnHeader}}',
         },
       });
-
+      originalKeys.push('content');
+      originalKeys.push('templateId');
       //insert the excel data in user and parent entity
       for (let i = 0; i < excelData.Sheet1.length; i++) {
         try {
           if (!excelData.Sheet1[i].hasOwnProperty('content')) {
             excelData.Sheet1[i].content = params.content;
-            originalKeys.push('content');
+          }
+          if (!excelData.Sheet1[i].hasOwnProperty('templateId')) {
+            excelData.Sheet1[i].templateId = params.templateId;
           }
 
           if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
+            foundTemplate = await this.getEmailTemplate(
+              excelData.Sheet1[i].templateId.toString(),
+            );
+              if(foundTemplate)
+              {
+                 templateData = foundTemplate.template.replace("${expression} ",excelData.Sheet1[i].content )
+              }
+              console.log(templateData)
             mailCreate = await mailer(
               excelData.Sheet1[i].email,
               'Mail sent Successful',
-              { text: excelData.Sheet1[i].content },
+              { text: templateData },
             );
+
             excelKeys = Object.keys(excelData.Sheet1[i]);
             mailSent.push(excelData.Sheet1[i]);
           } else {
@@ -2166,14 +2181,16 @@ export class AdminService {
 
   async getEmailTemplate(templateId: string): Promise<EmailTemplate> {
     let results;
+
     try {
-      results = await this.emailRepo.find();
       if (templateId != null) {
         results = await this.emailRepo.findOne({
           where: {
             id: templateId,
           },
         });
+      } else {
+        results = await this.emailRepo.find();
       }
     } catch (exp) {
       throw new HttpException(
