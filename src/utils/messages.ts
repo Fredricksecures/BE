@@ -173,7 +173,7 @@ export const adminMessages = {
   failToCreateClass: 'Error while creating class',
   failToBookedClass: 'Error while adding booked class',
   bookedClassSuccess: 'Booked class created successfully',
-  attendeesreateSuccess: 'Attendees created successfully',
+  bookAttendeesSuccess: 'Attendees booked successfully',
   failToCreateAttendees: 'Error while creating attendees',
   updatedEmailSuccess: 'Email updated successfully',
   emailTemplateFetchSuccess: 'Email template Fetched successfully',
