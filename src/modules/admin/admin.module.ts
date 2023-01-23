@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AdminService } from '../services/admin.service';
-import { AdminController } from '../controllers/admin.controller';
+import { AdminService } from './admin.service';
+import { AdminController } from './admin.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, ModuleConfigs } from 'src/utils/constants';
 import { UtilityService } from 'src/modules/utility/utility.service';

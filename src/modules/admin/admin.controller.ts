@@ -1,4 +1,4 @@
-import { EmailTemplate } from './email.template.entity';
+import { EmailTemplate } from './entity/email.template.entity';
 import {
   Query,
   Controller,
@@ -51,7 +51,7 @@ import {
   bulkEmailReq,
   createEmailTemplateReq,
   updateEmailTemplateReq,
-} from './admin.dto';
+} from './dto/admin.dto';
 import { AdminService } from './admin.service';
 import { UserTypes } from 'src/utils/enums';
 import { Request, Response } from 'express';

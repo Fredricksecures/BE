@@ -5,8 +5,8 @@ import {
   ValidateIf,
   IsNotEmpty,
 } from 'class-validator';
-import { Device } from 'src/modules/auth/device.entity';
-import { Session } from 'src/modules/auth/session.entity';
+import { Device } from 'src/modules/auth/entity/device.entity';
+import { Session } from 'src/modules/auth/entity/session.entity';
 
 export class signUpReq {
   @IsNotEmpty()

@@ -8,8 +8,8 @@ import {
   Column,
   JoinColumn,
 } from 'typeorm';
-import { CountryList } from '../utility/countryList.entity';
-import { User } from '../auth/user.entity';
+import { CountryList } from '../../utility/entity/countryList.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity('admin')
 export class Admin {

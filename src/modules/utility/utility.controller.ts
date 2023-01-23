@@ -10,14 +10,14 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { UtilityService } from './utility.service';
-import { UtilitySeeder } from 'src/modules/utility/utlity.seeder';
+import { UtilitySeeder } from './seeder/utility';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CountryList } from 'src/modules/utility/countryList.entity';
+import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { Repository } from 'typeorm';
 import { utlityMessages } from 'src/utils/messages';
-import { Device } from 'src/modules/auth/device.entity';
+import { Device } from 'src/modules/auth/entity/device.entity';
 import { Response, Request } from 'express';
-import { LearningPackage } from './learningPackage.entity';
+import { LearningPackage } from './entity/learningPackage.entity';
 import {
   IPaginationOptions,
   paginate,

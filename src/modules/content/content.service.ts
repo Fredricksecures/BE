@@ -3,12 +3,12 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { config } from 'dotenv';
-import { User } from '../auth/user.entity';
-import { GetAllUsersSessionsReq } from 'src/dto/admin.dto';
+import { User } from '../user/entity/user.entity';
+import { GetAllUsersSessionsReq } from '../admin/dto/admin.dto';
 import Logger from 'src/utils/logger';
-import { Session } from 'src/modules/auth/session.entity';
-import { Student } from 'src/modules/user/student.entity';
-import { Parent } from 'src/modules/auth/parent.entity';
+import { Session } from 'src/modules/auth/entity/session.entity';
+import { Student } from 'src/modules/user/entity/student.entity';
+import { Parent } from 'src/modules/auth/entity/parent.entity';
 import {
   IPaginationOptions,
   paginate,
@@ -19,19 +19,19 @@ import {
   updateLeaderboardReq,
   addReviewReq,
   updateMockTestReq,
-} from 'src/modules/content/content.dto';
-import { Lesson } from 'src/modules/admin/lesson.entity';
+} from 'src/modules/content/dto/content.dto';
+import { Lesson } from 'src/modules/content/entity/lesson.entity';
 import { contentErrors, adminErrors } from 'src/utils/messages';
-import { Chapter } from 'src/modules/admin/chapter.entity';
-import { Subject } from 'src/modules/admin/subject.entity';
-import { LearningPackage } from 'src/modules/utility/learningPackage.entity';
-import { Test } from 'src/modules/admin/test.entity';
-import { ReportCard } from 'src/modules/admin/reportCard.entity';
-import { Leaderboard } from 'src/modules/content/leaderBoard.entity';
-import { Badge } from 'src/modules/admin/badges.entity';
-import { MockTest } from 'src/modules/admin/mockTest.entity';
-import { Class } from 'src/modules/admin/class.entity';
-import { Review } from 'src/modules/content/review.entity';
+import { Chapter } from 'src/modules/content/entity/chapter.entity';
+import { Subject } from 'src/modules/content/entity/subject.entity';
+import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
+import { Test } from 'src/modules/content/entity/test.entity';
+import { ReportCard } from 'src/modules/user/entity/reportCard.entity';
+import { Leaderboard } from 'src/modules/content/entity/leaderBoard.entity';
+import { Badge } from 'src/modules/user/entity/badges.entity';
+import { MockTest } from 'src/modules/admin/entity/mockTest.entity';
+import { Class } from 'src/modules/liveClass/class.entity';
+import { Review } from 'src/modules/content/entity/review.entity';
 
 @Injectable()
 export class ContentService {

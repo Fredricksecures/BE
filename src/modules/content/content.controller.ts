@@ -13,8 +13,8 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
 } from '@nestjs/common';
-import { updateMockTestReq } from 'src/dto/admin.dto';
-import { updateLeaderboardReq, addReviewReq } from 'src/modules/content/content.dto';
+import { updateMockTestReq } from '../admin/dto/admin.dto';
+import { updateLeaderboardReq, addReviewReq } from 'src/modules/content/dto/content.dto';
 import { Request, Response } from 'express';
 import { contentMessages, contentErrors } from 'src/utils/messages';
 import { ContentService } from 'src/modules/content/content.service';

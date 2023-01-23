@@ -9,10 +9,10 @@ import {
   Column,
   JoinColumn,
 } from 'typeorm';
-import { CountryList } from '../utility/countryList.entity';
+import { CountryList } from '../../utility/entity/countryList.entity';
 import { Session } from './session.entity';
-import { Student } from '../user/student.entity';
-import { User } from './user.entity';
+import { Student } from '../../user/entity/student.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity('parents')
 export class Parent {

@@ -3,9 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { subscriptionMessages, subscriptionError } from 'src/utils/messages';
-import { Subscription } from 'src/modules/subscription/subscription.entity';
-import { LearningPackage } from 'src/modules/utility/learningPackage.entity';
-import { Invoice } from 'src/modules/subscription/invoice.entity';
+import { Subscription } from 'src/modules/subscription/entity/subscription.entity';
+import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
+import { Invoice } from 'src/modules/subscription/entity/invoice.entity';
 import { SubscriptionStates } from 'src/utils/enums';
 import {
   IPaginationOptions,
@@ -15,7 +15,7 @@ import {
 import {
   CreateSubscriptionReq,
   CreateSubscriptionRes,
-} from 'src/modules/subscription/subscription.dto';
+} from 'src/modules/subscription/dto/subscription.dto';
 
 @Injectable()
 export class SubscriptionService {

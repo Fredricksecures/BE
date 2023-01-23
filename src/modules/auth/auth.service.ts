@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { config } from 'dotenv';
-import { User } from './user.entity';
+import { User } from '../user/entity/user.entity';
 import {
   RegisterUserReq,
   LoginReq,
@@ -12,16 +12,16 @@ import {
   ResetPasswordRes,
   ForgotPasswordReq,
   ForgotPasswordRes,
-} from './auth.dto';
-import { signUpReq, signInReq } from 'src/modules/auth/socialLogin.dto';
-import { Student } from 'src/modules/user/student.entity';
-import { Parent } from 'src/modules/auth/parent.entity';
-import { Device } from 'src/modules/auth/device.entity';
+} from './dto/auth.dto';
+import { signUpReq, signInReq } from 'src/modules/auth/dto/socialLogin.dto';
+import { Student } from 'src/modules/user/entity/student.entity';
+import { Parent } from 'src/modules/auth/entity/parent.entity';
+import { Device } from 'src/modules/auth/entity/device.entity';
 import { generateRandomHash, isEmpty } from 'src/utils/helpers';
 import { authErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 import * as bcrypt from 'bcrypt';
-import { Session } from 'src/modules/auth/session.entity';
+import { Session } from 'src/modules/auth/entity/session.entity';
 import { UserTypes } from 'src/utils/enums';
 import { UtilityService } from '../utility/utility.service';
 import { mailer } from 'src/utils/mailer';

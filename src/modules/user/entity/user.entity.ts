@@ -7,11 +7,11 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { Student } from '../user/student.entity';
-import { Parent } from './parent.entity';
-import { CustomerCare } from '../../entities/customerCare.entity';
+import { Student } from './student.entity';
+import { Parent } from '../../auth/entity/parent.entity';
+import { CustomerCare } from '../../admin/entity/customerCare.entity';
 import { Genders, UserTypes } from 'src/utils/enums';
-import { Admin } from '../admin/admin.entity';
+import { Admin } from '../../admin/entity/admin.entity';
 
 @Entity('users')
 export class User {

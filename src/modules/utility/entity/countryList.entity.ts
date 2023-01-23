@@ -1,17 +1,16 @@
 import {
-  Column,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
+  OneToOne,
+  Column,
 } from 'typeorm';
+import { User } from '../../user/entity/user.entity';
 
-import { Student } from '../user/student.entity';
-
-@Entity('leaderboard')
-export class Leaderboard {
-  constructor(data?: Leaderboard) {
+@Entity('country-list')
+export class CountryList {
+  constructor(data?: CountryList) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -22,11 +21,17 @@ export class Leaderboard {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @ManyToOne(() => Student, (student) => student.reportCard)
-  student?: Student;
+  @OneToOne(() => User)
+  user?: User;
 
-  @Column({ type: 'int' })
-  points?: Number;
+  @Column({ type: 'varchar', unique: true })
+  name?: string;
+
+  @Column({ type: 'varchar' })
+  priceRate?: string;
+
+  @Column({ type: 'bool', default: false })
+  supported?: boolean;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

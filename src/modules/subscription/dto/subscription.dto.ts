@@ -1,5 +1,5 @@
 import { IsString, IsNotEmpty, IsOptional, IsDate } from 'class-validator';
-import { Subscription } from 'src/modules/subscription/subscription.entity';
+import { Subscription } from 'src/modules/subscription/entity/subscription.entity';
 import { SubscriptionStates } from 'src/utils/enums';
 
 export class CreateSubscriptionReq {

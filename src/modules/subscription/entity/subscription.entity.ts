@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   OneToOne,
 } from 'typeorm';
-import { Student } from '../user/student.entity';
+import { Student } from '../../user/entity/student.entity';
 
 @Entity('subscription')
 export class Subscription {

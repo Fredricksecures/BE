@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Subject } from '../admin/subject.entity';
+import { Subject } from '../../content/entity/subject.entity';
 
 @Entity('learning-package-list')
 export class LearningPackageList {

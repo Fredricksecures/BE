@@ -9,9 +9,9 @@ import {
   Column,
   JoinColumn,
 } from 'typeorm';
-import { CountryList } from '../modules/utility/countryList.entity';
-import { Session } from '../modules/auth/session.entity';
-import { User } from '../modules/auth/user.entity';
+import { CountryList } from '../../utility/entity/countryList.entity';
+import { Session } from '../../auth/entity/session.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity('customer-care')
 export class CustomerCare {

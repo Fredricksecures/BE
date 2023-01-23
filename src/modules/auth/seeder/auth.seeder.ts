@@ -8,13 +8,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { config } from 'dotenv';
-import { User } from './user.entity';
-import { authErrors } from '../../utils/messages';
-import { USER_SEED } from '../../utils/constants';
-import { Device } from 'src/modules/auth/device.entity';
-import { CountryList } from 'src/modules/utility/countryList.entity';
+import { User } from '../../user/entity/user.entity';
+import { authErrors } from '../../../utils/messages';
+import { USER_SEED } from '../../../utils/constants';
+import { Device } from 'src/modules/auth/entity/device.entity';
+import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { AuthService } from 'src/modules/auth/auth.service';
-import { Session } from 'src/modules/auth/session.entity';
+import { Session } from 'src/modules/auth/entity/session.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;

@@ -10,12 +10,12 @@ import {
   IsMobilePhone,
   IsArray,
 } from 'class-validator';
-import { CountryList } from 'src/modules/utility/countryList.entity';
-import { Device } from 'src/modules/auth/device.entity';
-import { Parent } from 'src/modules/auth/parent.entity';
-import { Session } from 'src/modules/auth/session.entity';
-import { Student } from 'src/modules/user/student.entity';
-import { User } from 'src/modules/auth/user.entity';
+import { CountryList } from 'src/modules/utility/entity/countryList.entity';
+import { Device } from 'src/modules/auth/entity/device.entity';
+import { Parent } from 'src/modules/auth/entity/parent.entity';
+import { Session } from 'src/modules/auth/entity/session.entity';
+import { Student } from 'src/modules/user/entity/student.entity';
+import { User } from 'src/modules/user/entity/user.entity';
 import { Match } from 'src/utils/decorators';
 
 class StudentReqObj {

@@ -17,7 +17,7 @@ import {
 import { SubscriptionService } from './subscription.service';
 import { Request, Response } from 'express';
 import { subscriptionError, subscriptionMessages } from 'src/utils/messages';
-import { CreateSubscriptionReq } from 'src/modules/subscription/subscription.dto';
+import { CreateSubscriptionReq } from 'src/modules/subscription/dto/subscription.dto';
 import {
   IPaginationOptions,
   paginate,

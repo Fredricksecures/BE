@@ -1,16 +1,21 @@
 import {
+  Column,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
-  Column,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm';
-import { User } from '../auth/user.entity';
+import { Chapter } from './chapter.entity';
+import { Lesson } from './lesson.entity';
+import { Material } from './material.entity';
+import { ReportCard } from '../../user/entity/reportCard.entity';
+import { Test } from './test.entity';
 
-@Entity('country-list')
-export class CountryList {
-  constructor(data?: CountryList) {
+@Entity('reviews')
+export class Review {
+  constructor(data?: Review) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -21,17 +26,11 @@ export class CountryList {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @OneToOne(() => User)
-  user?: User;
-
-  @Column({ type: 'varchar', unique: true })
-  name?: string;
-
   @Column({ type: 'varchar' })
-  priceRate?: string;
+  lessonReview?: string;
 
-  @Column({ type: 'bool', default: false })
-  supported?: boolean;
+  @ManyToOne(() => Lesson, (lesson) => lesson.reviews)
+  lesson?: Lesson;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

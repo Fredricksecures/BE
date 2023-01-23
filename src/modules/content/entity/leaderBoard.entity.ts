@@ -6,14 +6,12 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { Student } from '../user/student.entity';
-import { Lesson } from './lesson.entity';
-import { Subject } from './subject.entity';
-import { Test } from './test.entity';
 
-@Entity('report-cards')
-export class ReportCard {
-  constructor(data?: ReportCard) {
+import { Student } from '../../user/entity/student.entity';
+
+@Entity('leaderboard')
+export class Leaderboard {
+  constructor(data?: Leaderboard) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -24,14 +22,11 @@ export class ReportCard {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar' })
-  remark?: string;
-
   @ManyToOne(() => Student, (student) => student.reportCard)
   student?: Student;
 
-  @ManyToOne(() => Test, (test) => test.reportCard)
-  test?: Test;
+  @Column({ type: 'int' })
+  points?: Number;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

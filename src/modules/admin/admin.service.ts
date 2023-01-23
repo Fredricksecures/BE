@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Column, Index, Repository } from 'typeorm';
 import { config } from 'dotenv';
-import { User } from '../auth/user.entity';
+import { User } from '../user/entity/user.entity';
 import {
   IPaginationOptions,
   paginate,
@@ -46,7 +46,7 @@ import {
   bookAttendeesReq,
   createEmailTemplateReq,
   updateEmailTemplateReq,
-} from './admin.dto';
+} from './dto/admin.dto';
 import {
   adminMessages,
   adminErrors,
@@ -54,36 +54,36 @@ import {
   authMessages,
 } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
-import { Session } from 'src/modules/auth/session.entity';
-import { Lesson } from 'src/modules/admin/lesson.entity';
-import { Chapter } from 'src/modules/admin/chapter.entity';
-import { Subject } from 'src/modules/admin/subject.entity';
-import { Student } from 'src/modules/user/student.entity';
-import { Parent } from 'src/modules/auth/parent.entity';
-import { Admin } from 'src/modules/admin/admin.entity';
-import { CustomerCare } from './customerCare.entity';
-import { Test } from 'src/modules/admin/test.entity';
-import { MockTest } from 'src/modules/admin/mockTest.entity';
-import { Badge } from 'src/modules/admin/badges.entity';
+import { Session } from 'src/modules/auth/entity/session.entity';
+import { Lesson } from 'src/modules/content/entity/lesson.entity';
+import { Chapter } from 'src/modules/content/entity/chapter.entity';
+import { Subject } from 'src/modules/content/entity/subject.entity';
+import { Student } from 'src/modules/user/entity/student.entity';
+import { Parent } from 'src/modules/auth/entity/parent.entity';
+import { Admin } from 'src/modules/admin/entity/admin.entity';
+import { CustomerCare } from './entity/customerCare.entity';
+import { Test } from 'src/modules/content/entity/test.entity';
+import { MockTest } from 'src/modules/admin/entity/mockTest.entity';
+import { Badge } from 'src/modules/user/entity/badges.entity';
 import { isEmpty } from 'src/utils/helpers';
 import * as bcrypt from 'bcrypt';
 import { UserTypes } from 'src/utils/enums';
 import { UtilityService } from '../utility/utility.service';
 import { AuthService } from '../auth/auth.service';
-import { CountryList } from 'src/modules/utility/countryList.entity';
-import { Class } from 'src/modules/admin/class.entity';
-import { ReportCard } from 'src/modules/admin/reportCard.entity';
-import { LearningPackage } from 'src/modules/utility/learningPackage.entity';
-import { Settings } from 'src/modules/admin/settings.entity';
+import { CountryList } from 'src/modules/utility/entity/countryList.entity';
+import { Class } from 'src/modules/liveClass/class.entity';
+import { ReportCard } from 'src/modules/user/entity/reportCard.entity';
+import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
+import { Settings } from 'src/modules/user/settings.entity';
 import { SubscriptionService } from '../subscription/subscription.service';
-import { Subscription } from 'src/modules/subscription/subscription.entity';
+import { Subscription } from 'src/modules/subscription/entity/subscription.entity';
 import { response } from 'express';
 import * as excelToJson from 'convert-excel-to-json';
 import { Parser } from 'json2csv';
 import * as fs from 'fs';
 
 // import fs from 'fs';
-import { EmailTemplate } from 'src/modules/admin/email.template.entity';
+import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
 config();
 const { BCRYPT_SALT } = process.env;
 

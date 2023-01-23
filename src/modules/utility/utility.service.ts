@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { utilityErrors } from 'src/utils/messages';
-import { CountryList } from 'src/modules/utility/countryList.entity';
-import { Device } from 'src/modules/auth/device.entity';
+import { CountryList } from 'src/modules/utility/entity/countryList.entity';
+import { Device } from 'src/modules/auth/entity/device.entity';
 import { Repository } from 'typeorm';
 import Logger from 'src/utils/logger';
-import { LearningPackage } from 'src/modules/utility/learningPackage.entity';
+import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
 import {
   IPaginationOptions,
   paginate,

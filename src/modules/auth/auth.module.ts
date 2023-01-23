@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, ModuleConfigs } from 'src/utils/constants';
-import { AuthSeeder } from 'src/modules/auth/auth.seeder';
+import { AuthSeeder } from 'src/modules/auth/seeder/auth.seeder';
 import { UtilityService } from 'src/modules/utility/utility.service';
 import { UserService } from 'src/modules/user/user.service';
 

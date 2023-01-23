@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { Chapter } from './chapter.entity';
 import { Material } from './material.entity';
-import { ReportCard } from './reportCard.entity';
-import { Review } from '../content/review.entity';
+import { ReportCard } from '../../user/entity/reportCard.entity';
+import { Review } from './review.entity';
 import { Test } from './test.entity';
 
 @Entity('lessons')

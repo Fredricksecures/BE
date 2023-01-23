@@ -13,9 +13,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { Device } from 'src/modules/auth/device.entity';
-import { CountryList } from 'src/modules/utility/countryList.entity';
-import { AuthSeeder } from 'src/modules/auth/auth.seeder';
+import { Device } from 'src/modules/auth/entity/device.entity';
+import { CountryList } from 'src/modules/utility/entity/countryList.entity';
+import { AuthSeeder } from 'src/modules/auth/seeder/auth.seeder';
 import {
   RegisterUserReq,
   BasicRegRes,
@@ -25,8 +25,8 @@ import {
   ForgotPasswordRes,
   ResetPasswordReq,
   ResetPasswordRes,
-} from 'src/modules/auth/auth.dto';
-import { signUpReq, signInReq, SignInRes } from 'src/modules/auth/socialLogin.dto';
+} from 'src/modules/auth/dto/auth.dto';
+import { signUpReq, signInReq, SignInRes } from 'src/modules/auth/dto/socialLogin.dto';
 import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/utils/enums';

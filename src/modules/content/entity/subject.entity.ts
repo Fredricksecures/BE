@@ -8,9 +8,9 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Chapter } from './chapter.entity';
-import { LearningPackage } from '../utility/learningPackage.entity';
+import { LearningPackage } from '../../utility/entity/learningPackage.entity';
 import { Lesson } from './lesson.entity';
-import { ReportCard } from './reportCard.entity';
+import { ReportCard } from '../../user/entity/reportCard.entity';
 
 @Entity('subjects')
 export class Subject {

@@ -21,7 +21,7 @@ import {
   UpdateStudentReq,
   CreateStudentReq,
   BasicUpdateRes,
-} from 'src/modules/user/user.dto';
+} from 'src/modules/user/dto/user.dto';
 import { userErrors, userMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/utils/enums';

@@ -12,11 +12,11 @@ import {
   IsNumber,
   IsArray,
 } from 'class-validator';
-import { Session } from 'src/modules/auth/session.entity';
-import { CustomerCare } from './CustomerCare.entity';
-import { User } from 'src/modules/auth/user.entity';
-import { Admin } from 'src/modules/admin/admin.entity';
-import { Student } from 'src/modules/user/student.entity';
+import { Session } from 'src/modules/auth/entity/session.entity';
+import { CustomerCare } from '../entity/customerCare.entity';
+import { User } from 'src/modules/user/entity/user.entity';
+import { Admin } from 'src/modules/admin/entity/admin.entity';
+import { Student } from 'src/modules/user/entity/student.entity';
 
 export class GetAllUsersSessionsReq {
   @IsNotEmpty()

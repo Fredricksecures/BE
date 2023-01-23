@@ -9,12 +9,12 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { Class } from '../admin/class.entity';
-import { Parent } from '../auth/parent.entity';
-import { Subscription } from '../subscription/subscription.entity';
-import { User } from '../auth/user.entity';
-import { ReportCard } from '../admin/reportCard.entity';
-import { Leaderboard } from '../content/leaderBoard.entity';
+import { Class } from '../../liveClass/class.entity';
+import { Parent } from '../../auth/entity/parent.entity';
+import { Subscription } from '../../subscription/entity/subscription.entity';
+import { User } from './user.entity';
+import { ReportCard } from './reportCard.entity';
+import { Leaderboard } from '../../content/entity/leaderBoard.entity';
 
 @Entity('students')
 export class Student {

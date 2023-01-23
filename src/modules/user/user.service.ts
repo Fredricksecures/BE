@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { User } from '../auth/user.entity';
+import { User } from './entity/user.entity';
 import {
   CreateStudentReq,
   UpdateStudentReq,
@@ -11,22 +11,22 @@ import {
   CreateStudentRes,
   CreateParentReq,
   UpdateParentReq,
-} from './user.dto';
-import { Student } from 'src/modules/user/student.entity';
-import { Parent } from 'src/modules/auth/parent.entity';
+} from './dto/user.dto';
+import { Student } from 'src/modules/user/entity/student.entity';
+import { Parent } from 'src/modules/auth/entity/parent.entity';
 import { userErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 import { UserTypes, Genders } from 'src/utils/enums';
 import { UtilityService } from '../utility/utility.service';
-import { CountryList } from 'src/modules/utility/countryList.entity';
-import { LearningPackage } from 'src/modules/utility/learningPackage.entity';
-import { Subscription } from 'src/modules/subscription/subscription.entity';
+import { CountryList } from 'src/modules/utility/entity/countryList.entity';
+import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
+import { Subscription } from 'src/modules/subscription/entity/subscription.entity';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { Badge } from 'src/modules/admin/badges.entity';
+import { Badge } from 'src/modules/user/entity/badges.entity';
 
 @Injectable()
 export class UserService {
