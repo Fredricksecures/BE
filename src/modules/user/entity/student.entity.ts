@@ -9,7 +9,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { Class } from '../../liveClass/class.entity';
+import { Class } from '../../liveClass/entity/class.entity';
 import { Parent } from '../../auth/entity/parent.entity';
 import { Subscription } from '../../subscription/entity/subscription.entity';
 import { User } from './user.entity';

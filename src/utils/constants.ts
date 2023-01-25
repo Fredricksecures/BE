@@ -17,13 +17,13 @@ import { Lesson } from '../modules/content/entity/lesson.entity';
 import { Material } from '../modules/content/entity/material.entity';
 import { Chapter } from '../modules/content/entity/chapter.entity';
 import { Test } from '../modules/content/entity/test.entity';
-import { Class } from '../modules/liveClass/class.entity';
+import { Class } from '../modules/liveClass/entity/class.entity';
 import { ReportCard } from '../modules/user/entity/reportCard.entity';
 import { Leaderboard } from '../modules/content/entity/leaderBoard.entity';
 import { Badge } from '../modules/user/entity/badges.entity';
 import { MockTest } from '../modules/admin/entity/mockTest.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
-import { Settings } from 'src/modules/user/settings.entity';
+import { Settings } from 'src/modules/user/entity/settings.entity';
 import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
 
 config();

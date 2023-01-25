@@ -25,10 +25,10 @@ export class Subscription {
   @Column({ type: 'varchar', nullable: true })
   account?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   details?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   duration?: string;
 
   @Column({ type: 'varchar' })

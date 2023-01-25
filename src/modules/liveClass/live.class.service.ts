@@ -7,7 +7,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { Class } from 'src/modules/liveClass/class.entity';
+import { Class } from 'src/modules/liveClass/entity/class.entity';
 import { liveClassMessages, liveClassErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 

@@ -30,7 +30,7 @@ import { ReportCard } from 'src/modules/user/entity/reportCard.entity';
 import { Leaderboard } from 'src/modules/content/entity/leaderBoard.entity';
 import { Badge } from 'src/modules/user/entity/badges.entity';
 import { MockTest } from 'src/modules/admin/entity/mockTest.entity';
-import { Class } from 'src/modules/liveClass/class.entity';
+import { Class } from 'src/modules/liveClass/entity/class.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
 
 @Injectable()
