@@ -76,8 +76,6 @@ import { ReportCard } from 'src/modules/user/entity/reportCard.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
 import { Settings } from 'src/modules/user/entity/settings.entity';
 import { SubscriptionService } from '../subscription/subscription.service';
-import { Subscription } from 'src/modules/subscription/entity/subscription.entity';
-import { response } from 'express';
 import * as excelToJson from 'convert-excel-to-json';
 import { Parser } from 'json2csv';
 import * as fs from 'fs';
@@ -1814,7 +1812,7 @@ export class AdminService {
   async bookedClass(bookedClassReq: bookedClassReq) {
     const { classId, user } = bookedClassReq;
     let bookedClass: Class, foundStudent: Student, foundClass: Class;
-    let  result, bookedClassValues;
+    let result, bookedClassValues;
     try {
       foundStudent = await this.studentRepo.findOne({
         where: { parent: { id: user.parent.id } },
@@ -1843,7 +1841,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-   
+
     if (!foundClass) {
       throw new HttpException(
         {
@@ -1890,10 +1888,10 @@ export class AdminService {
     };
   }
 
-  async bookAttendees( bookAttendeesReq: bookAttendeesReq) {
+  async bookAttendees(bookAttendeesReq: bookAttendeesReq) {
     const { classId, user } = bookAttendeesReq;
     let bookAttendees: Class, foundStudent: Student, foundClass: Class;
-    let  result, bookAttendeesValues;
+    let result, bookAttendeesValues;
     try {
       foundStudent = await this.studentRepo.findOne({
         where: { parent: { id: user.parent.id } },
@@ -1907,7 +1905,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    
+
     //Finding the class with particular id
     try {
       foundClass = await this.classRepo.findOne({
@@ -1922,7 +1920,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-   
+
     if (!foundClass) {
       throw new HttpException(
         {
