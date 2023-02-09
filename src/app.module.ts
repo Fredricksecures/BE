@@ -11,6 +11,7 @@ import { UtilityModule } from './modules/utility/utility.module';
 import { ContentModule } from './modules/content/content.module';
 import { LiveClassModule } from './modules/liveClass/live.class.module';
 import { UserModule } from './modules/user/user.module';
+import { StoreModule } from './modules/store/store.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UserModule } from './modules/user/user.module';
     ContentModule,
     LiveClassModule,
     UserModule,
+    StoreModule,
   ],
   controllers: [AppController],
   providers: [AppService],

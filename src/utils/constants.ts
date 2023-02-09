@@ -1,3 +1,4 @@
+import { Store } from './../modules/store/entities/store.entity';
 import { config } from 'dotenv';
 import { DeviceTypes, Genders, PackageTypes, UserTypes } from './enums';
 import { JwtModule } from '@nestjs/jwt';
@@ -58,6 +59,7 @@ export const ModuleConfigs = {
       Review,
       Settings,
       EmailTemplate,
+      Store,
     ],
   },
   utility: {
@@ -135,6 +137,9 @@ export const ModuleConfigs = {
       Subscription,
       Badge,
     ],
+  },
+  store: {
+    entities: [Store],
   },
 };
 

@@ -317,3 +317,14 @@ export const userErrors = {
   checkingParent: 'Error querying for finding parent ',
   updatingParent: 'Error querying for updating parent ',
 };
+
+export const storeErrors = {
+  failedToAddProduct: 'Failed to add product',
+  productAddedSuccess: 'product added successfully',
+  failedToFetchProduct: 'Failed to fetch product',
+  productFetchedSuccess: 'product fetched successfully',
+  failedToUpdateProduct: 'Failed to update product',
+  productUpdatedSuccess: 'product updated successfully',
+  productNotFound: 'product not found',
+  failedToFindProduct: 'error while finding product',
+};

@@ -8,7 +8,7 @@ class ConfigService {
       USE_SSL,
       SSL_AUTHORIZE,
       DB_SYNC,
-      PORT: port,
+      DB_PORT: port,
     } = process.env;
     const {
       [`${ENVIRONMENT}_DB_USERNAME`]: username,
