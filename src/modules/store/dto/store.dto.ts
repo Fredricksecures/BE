@@ -25,6 +25,14 @@ export class AddProduct {
   image: string;
 
   @IsNotEmpty()
+  @IsString()
+  shortDescription: string;
+
+  @IsNotEmpty()
+  @IsString()
+  details: string;
+
+  @IsNotEmpty()
   @IsNumber()
   price: number;
 
@@ -54,6 +62,16 @@ export class UpdateProduct {
   @IsNotEmpty()
   @IsString()
   title: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  shortDescription: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  details: string;
 
   @IsOptional()
   @IsNotEmpty()

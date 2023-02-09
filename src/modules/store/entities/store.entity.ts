@@ -25,7 +25,13 @@ export class Store {
   title?: string;
 
   @Column({ type: 'text' })
+  shortDescription?: string;
+
+  @Column({ type: 'text' })
   description?: string;
+
+  @Column({ type: 'text' })
+  details?: string;
 
   @Column({ type: 'text' })
   image?: string;

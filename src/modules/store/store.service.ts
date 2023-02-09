@@ -13,7 +13,9 @@ export class StoreService {
     try {
       const {
         title,
+        shortDescription,
         description,
+        details,
         image,
         price,
         category,
@@ -23,7 +25,9 @@ export class StoreService {
       } = addProduct;
       const product = await this.storeRepo.save({
         title,
+        shortDescription,
         description,
+        details,
         image,
         price,
         category,
@@ -73,7 +77,9 @@ export class StoreService {
       const {
         id,
         title,
+        shortDescription,
         description,
+        details,
         image,
         price,
         category,
@@ -109,7 +115,9 @@ export class StoreService {
       const updatedProduct = await this.storeRepo.save({
         ...product,
         title,
+        shortDescription,
         description,
+        details,
         image,
         price,
         category,
