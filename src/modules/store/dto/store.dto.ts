@@ -1,3 +1,4 @@
+import { User } from 'src/modules/user/entity/user.entity';
 import {
   IsString,
   IsOptional,
@@ -51,6 +52,10 @@ export class AddProduct {
   @IsNotEmpty()
   @IsString()
   countryId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  subscriptionId: string;
 }
 
 export class UpdateProduct {
@@ -110,4 +115,42 @@ export class UpdateProduct {
   @IsOptional()
   @IsBoolean()
   active: boolean;
+
+  @IsOptional()
+  @IsString()
+  subscriptionId: string;
+}
+
+export class AddToCart {
+  user: User;
+
+  @IsNotEmpty()
+  @IsNumber()
+  qyt: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  price: number;
+
+  @IsNotEmpty()
+  @IsString()
+  productId: string;
+}
+
+export class UpdateCart {
+  user: User;
+
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  qyt: number;
+}
+
+export class DeleteCart {
+  @IsNotEmpty()
+  @IsString()
+  id: string;
 }

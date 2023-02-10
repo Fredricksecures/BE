@@ -1,16 +1,18 @@
-import { CountryList } from './../../utility/entity/countryList.entity';
+import { Cart } from './cart.entity';
+import { Subscription } from '../../subscription/entity/subscription.entity';
+import { CountryList } from '../../utility/entity/countryList.entity';
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
-@Entity('store')
-export class Store {
-  constructor(data?: Store) {
+@Entity('products')
+export class Products {
+  constructor(data?: Products) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -51,6 +53,18 @@ export class Store {
   @ManyToOne(() => CountryList)
   country?: CountryList;
 
+  @ManyToOne(() => Subscription, (subscription) => subscription.store)
+  subscription?: Subscription;
+
+  @OneToMany(() => Cart, (cart) => cart.product)
+  cart?: Cart;
+
   @Column({ type: 'bool', default: true })
   active?: boolean;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt?: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt?: Date;
 }

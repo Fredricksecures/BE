@@ -1,3 +1,4 @@
+import { Cart } from './../../store/entities/cart.entity';
 import {
   Column,
   Entity,
@@ -6,12 +7,14 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Student } from './student.entity';
 import { Parent } from '../../auth/entity/parent.entity';
 import { CustomerCare } from '../../admin/entity/customerCare.entity';
 import { Genders, UserTypes } from 'src/utils/enums';
 import { Admin } from '../../admin/entity/admin.entity';
+import { Orders } from 'src/modules/store/entities/orders.entity';
 
 @Entity('users')
 export class User {
@@ -62,6 +65,12 @@ export class User {
   @OneToOne(() => Student)
   @JoinColumn()
   student?: Student;
+
+  @OneToMany(() => Cart, (cart) => cart.user)
+  cart?: Cart;
+
+  @OneToMany(() => Orders, (orders) => orders.user)
+  order?: Orders;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

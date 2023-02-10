@@ -21,6 +21,11 @@ export enum DeviceTypes {
   UNKNOWN = 'UNKNOWN',
 }
 
+export enum OrderTypes {
+  PICKUP = 'PICKUP',
+  DELIVERY = 'DELIVERY',
+}
+
 export enum BrowserTypes {
   CHROME = 'CHROME',
   EDGE = 'EDGE',

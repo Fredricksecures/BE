@@ -1,4 +1,6 @@
-import { Store } from './../modules/store/entities/store.entity';
+import { Orders } from './../modules/store/entities/orders.entity';
+import { Cart } from './../modules/store/entities/cart.entity';
+import { Products } from '../modules/store/entities/products.entity';
 import { config } from 'dotenv';
 import { DeviceTypes, Genders, PackageTypes, UserTypes } from './enums';
 import { JwtModule } from '@nestjs/jwt';
@@ -59,7 +61,9 @@ export const ModuleConfigs = {
       Review,
       Settings,
       EmailTemplate,
-      Store,
+      Products,
+      Cart,
+      Orders,
     ],
   },
   utility: {
@@ -139,7 +143,19 @@ export const ModuleConfigs = {
     ],
   },
   store: {
-    entities: [Store],
+    entities: [
+      Products,
+      Cart,
+      User,
+      Device,
+      CountryList,
+      LearningPackage,
+      Student,
+      Parent,
+      Subscription,
+      Badge,
+      Orders,
+    ],
   },
 };
 

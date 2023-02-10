@@ -1,12 +1,17 @@
+import { UtilityService } from './../utility/utility.service';
+import { UserService } from './../user/user.service';
 import { Module } from '@nestjs/common';
 import { StoreService } from './store.service';
 import { StoreController } from './store.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ModuleConfigs } from 'src/utils/constants';
+import { ModuleConfigs, jwtConfig } from 'src/utils/constants';
 
 @Module({
-  imports: [TypeOrmModule.forFeature(ModuleConfigs['store'].entities)],
+  imports: [
+    jwtConfig,
+    TypeOrmModule.forFeature(ModuleConfigs['store'].entities),
+  ],
   controllers: [StoreController],
-  providers: [StoreService],
+  providers: [UtilityService, StoreService, UserService],
 })
 export class StoreModule {}
