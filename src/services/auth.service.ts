@@ -233,8 +233,7 @@ export class AuthService {
 
   async registerUser(regUserReq: RegisterUserReq) {
     //* Register Basic User Details
-    let { firstName, lastName, phoneNumber, email, password, countryId } =
-      regUserReq;
+    let { phoneNumber, email, password, countryId } = regUserReq;
 
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
@@ -318,8 +317,8 @@ export class AuthService {
         countryId,
       });
       createdUser = await this.userRepo.save({
-        firstName,
-        lastName,
+        // firstName,
+        // lastName,
         type: UserTypes.PARENT,
         parent: createdParent,
       });

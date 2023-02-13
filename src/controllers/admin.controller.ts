@@ -17,7 +17,6 @@ import {
 } from '@nestjs/common';
 import { diskStorage } from 'multer';
 
-
 import {
   UsersSessionsReq,
   UsersSessionsRes,
@@ -54,9 +53,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin')
 export class AdminController {
-  constructor(
-    private readonly adminService: AdminService,
-  ) {}
+  constructor(private readonly adminService: AdminService) {}
 
   @Get('user-sessions')
   async getUserSessions(

@@ -119,8 +119,8 @@ export class AuthSeeder {
       Promise.all(
         USER_SEED.map(async (user: any) => {
           const regResp = await this.authService.registerUser({
-            firstName: user.firstName,
-            lastName: user.lastName,
+            // firstName: user.firstName,
+            // lastName: user.lastName,
             email: user.email,
             phoneNumber: user.phoneNumber,
             password: user.password,
