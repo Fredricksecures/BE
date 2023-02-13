@@ -149,6 +149,26 @@ export class UpdateCart {
   qyt: number;
 }
 
+export class CreateOrder {
+  user: User;
+
+  @IsNotEmpty()
+  @IsString()
+  orderType: string;
+
+  @IsNotEmpty()
+  @IsString()
+  deliveryAddress: string;
+
+  @IsOptional()
+  @IsString()
+  couponCode: string;
+
+  @IsOptional()
+  @IsString()
+  salesCode: string;
+}
+
 export class DeleteCart {
   @IsNotEmpty()
   @IsString()

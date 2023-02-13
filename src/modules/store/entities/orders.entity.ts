@@ -30,6 +30,15 @@ export class Orders {
   @Column({ type: 'enum', enum: OrderTypes })
   orderType?: string;
 
+  @Column({ type: 'varchar' })
+  orderTotal?: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  couponCode?: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  salesCode?: string;
+
   @ManyToOne(() => User, (user) => user.order)
   user?: User;
 

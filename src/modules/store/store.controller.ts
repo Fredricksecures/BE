@@ -18,6 +18,7 @@ import {
   AddToCart,
   UpdateCart,
   DeleteCart,
+  CreateOrder,
 } from './dto/store.dto';
 import { Request, Response } from 'express';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
@@ -226,6 +227,34 @@ export class StoreController {
         {
           status: HttpStatus.NOT_FOUND,
           error: storeErrors.failedToDeleteCart,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Post('create-order')
+  @UseMiddleware('sessionGuard')
+  async createOrder(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() createOrder: CreateOrder,
+  ) {
+    const { success, data }: StoreResponse =
+      await this.storeService.createOrder(req.body);
+
+    if (success) {
+      resp.json({
+        success,
+        data,
+        message: storeErrors.orderCreated,
+        status: HttpStatus.OK,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: storeErrors.failedToCreateOrder,
         },
         HttpStatus.NOT_FOUND,
       );
