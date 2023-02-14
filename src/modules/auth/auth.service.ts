@@ -230,10 +230,9 @@ export class AuthService {
     return user;
   }
 
-  async googleLogin() {}
-
   async registerUser(regUserReq: RegisterUserReq) {
     //* Register Basic User Details
+    // eslint-disable-next-line prefer-const
     let { firstName, lastName, phoneNumber, email, password, countryId } =
       regUserReq;
 
@@ -336,11 +335,6 @@ export class AuthService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
-    // mailer(createdUser.parent.email, 'Registration Successful', {
-    //   text: `An action to change your password was successful`,
-    // });
-
     return {
       createdUser,
       success: true,

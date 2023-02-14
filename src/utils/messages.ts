@@ -341,3 +341,28 @@ export const storeErrors = {
   orderCreated: 'Order created successfully.',
   failedToCreateOrder: 'Failed to create order.',
 };
+
+export const ebookErrors = {
+  failedToAddEbook: 'Failed to add ebook',
+  ebookAddedSuccess: 'ebook added successfully',
+  failedToFetchEbook: 'Failed to fetch ebook',
+  ebookFetchedSuccess: 'ebook fetched successfully',
+  failedToUpdateEbook: 'Failed to update ebook',
+  ebookUpdatedSuccess: 'ebook updated successfully',
+  ebookNotFound: 'ebook not found',
+  failedToFindEbook: 'error while finding ebook',
+
+  failedToAddProductInCart: 'failed to add product in cart',
+  productAddedToCart: 'Product added to cart',
+  errorWhileFindingCart: 'Error while finding cart.',
+  cartNotFound: 'Cart not found.',
+  cartIsEmpty: 'Cart is empty.',
+  cartUpdated: 'Cart updated.',
+  cartDeleted: 'Cart deleted.',
+  failedToUpdateCart: 'Failed to update cart.',
+  failedToDeleteCart: 'Failed to delete cart.',
+  cartFetched: 'Cart fetched successfully.',
+  failedToFetchCart: 'Failed to fetch cart.',
+  orderCreated: 'Order created successfully.',
+  failedToCreateOrder: 'Failed to create order.',
+};

@@ -1,3 +1,4 @@
+import { Ebooks } from './../modules/ebook/entities/ebook.entity';
 import { Orders } from './../modules/store/entities/orders.entity';
 import { Cart } from './../modules/store/entities/cart.entity';
 import { Products } from '../modules/store/entities/products.entity';
@@ -64,6 +65,7 @@ export const ModuleConfigs = {
       Products,
       Cart,
       Orders,
+      Ebooks,
     ],
   },
   utility: {
@@ -155,6 +157,20 @@ export const ModuleConfigs = {
       Subscription,
       Badge,
       Orders,
+    ],
+  },
+  ebook: {
+    entities: [
+      Ebooks,
+      Cart,
+      User,
+      Device,
+      CountryList,
+      LearningPackage,
+      Student,
+      Parent,
+      Subscription,
+      Badge,
     ],
   },
 };

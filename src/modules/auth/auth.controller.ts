@@ -26,7 +26,11 @@ import {
   ResetPasswordReq,
   ResetPasswordRes,
 } from 'src/modules/auth/dto/auth.dto';
-import { signUpReq, signInReq, SignInRes } from 'src/modules/auth/dto/socialLogin.dto';
+import {
+  signUpReq,
+  signInReq,
+  SignInRes,
+} from 'src/modules/auth/dto/socialLogin.dto';
 import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
 import { UserTypes } from 'src/utils/enums';
