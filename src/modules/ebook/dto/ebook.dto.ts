@@ -11,7 +11,6 @@ export class EbookResponse {
   success: boolean;
   data: any;
 }
-
 export class AddEbook {
   @IsNotEmpty()
   @IsString()
@@ -53,7 +52,6 @@ export class AddEbook {
   @IsString()
   topic: string;
 }
-
 export class UpdateEbook {
   @IsNotEmpty()
   @IsString()
@@ -106,4 +104,34 @@ export class UpdateEbook {
   @IsOptional()
   @IsBoolean()
   active: boolean;
+}
+
+export class AddToCart {
+  user: User;
+
+  @IsNotEmpty()
+  @IsNumber()
+  price: number;
+
+  @IsNotEmpty()
+  @IsString()
+  productId: string;
+}
+
+export class DeleteCart {
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+}
+
+export class CreateOrder {
+  user: User;
+
+  @IsOptional()
+  @IsString()
+  couponCode: string;
+
+  @IsOptional()
+  @IsString()
+  salesCode: string;
 }

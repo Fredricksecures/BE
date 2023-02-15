@@ -149,6 +149,12 @@ export class UpdateCart {
   qyt: number;
 }
 
+export class DeleteCart {
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+}
+
 export class CreateOrder {
   user: User;
 
@@ -167,10 +173,4 @@ export class CreateOrder {
   @IsOptional()
   @IsString()
   salesCode: string;
-}
-
-export class DeleteCart {
-  @IsNotEmpty()
-  @IsString()
-  id: string;
 }

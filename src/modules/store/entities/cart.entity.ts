@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
+import { ProductType } from 'src/utils/enums';
 @Entity('cart')
 export class Cart {
   constructor(data?: Cart) {
@@ -28,6 +29,9 @@ export class Cart {
 
   @Column({ type: 'varchar' })
   price?: number;
+
+  @Column({ type: 'enum', enum: ProductType })
+  productType?: string;
 
   @ManyToOne(() => Products, (products) => products.cart)
   product?: Products;

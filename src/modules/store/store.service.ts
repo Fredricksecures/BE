@@ -1,3 +1,4 @@
+import { ProductType } from 'src/utils/enums';
 import { Orders } from 'src/modules/store/entities/orders.entity';
 import { User } from 'src/modules/user/entity/user.entity';
 import { Cart } from './entities/cart.entity';
@@ -157,6 +158,7 @@ export class StoreService {
 
       const cart = await this.cartRepo.save({
         qyt,
+        productType: ProductType.IMOSETAB,
         product: {
           id: productId,
         },
@@ -355,6 +357,7 @@ export class StoreService {
       const cart = await this.orderRepo.save({
         user,
         orderTotal,
+        productType: ProductType.IMOSETAB,
         orderType,
         deliveryAddress,
         couponCode,

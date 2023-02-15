@@ -164,6 +164,7 @@ export const ModuleConfigs = {
       Ebooks,
       Cart,
       User,
+      Orders,
       Device,
       CountryList,
       LearningPackage,

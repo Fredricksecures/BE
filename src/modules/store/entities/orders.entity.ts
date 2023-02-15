@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { OrderTypes } from 'src/utils/enums';
+import { OrderTypes, ProductType } from 'src/utils/enums';
 @Entity('orders')
 export class Orders {
   constructor(data?: Orders) {
@@ -24,11 +24,14 @@ export class Orders {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   deliveryAddress?: string;
 
-  @Column({ type: 'enum', enum: OrderTypes })
+  @Column({ type: 'enum', enum: OrderTypes, nullable: true })
   orderType?: string;
+
+  @Column({ type: 'enum', enum: ProductType, nullable: true })
+  productType?: string;
 
   @Column({ type: 'varchar' })
   orderTotal?: number;

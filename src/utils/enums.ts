@@ -84,3 +84,8 @@ export enum Subjects {
   SCIENCE = 'SCIENCE',
   MATHEMATICS = 'MATHEMATICS',
 }
+
+export enum ProductType {
+  EBOOK = 'EBOOK',
+  IMOSETAB = 'IMOSETAB',
+}
