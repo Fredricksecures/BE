@@ -9,6 +9,7 @@ import {
   IsNotEmpty,
   IsMobilePhone,
   IsArray,
+  IsNumber,
 } from 'class-validator';
 import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { Device } from 'src/modules/auth/entity/device.entity';
@@ -57,8 +58,9 @@ export class RegisterUserReq {
   email: string;
 
   @IsOptional()
+  @IsNumber()
   @ValidateIf((o) => !o.email || o.phoneNumber)
-  phoneNumber: string;
+  phoneNumber: number;
 
   @IsNotEmpty()
   @IsString()

@@ -14,7 +14,7 @@ import {
 } from './dto/user.dto';
 import { Student } from 'src/modules/user/entity/student.entity';
 import { Parent } from 'src/modules/auth/entity/parent.entity';
-import { userErrors } from 'src/utils/messages';
+import { userErrors, utilityErrors } from 'src/utils/messages';
 import Logger from 'src/utils/logger';
 import { UserTypes, Genders } from 'src/utils/enums';
 import { UtilityService } from '../utility/utility.service';
@@ -273,6 +273,16 @@ export class UserService {
     const country: CountryList = await this.utilityService.getCountryList(
       countryId,
     );
+
+    if (!country) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: utilityErrors.invalidCountry,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
     try {
       createdParent = await this.parentRepo.save({

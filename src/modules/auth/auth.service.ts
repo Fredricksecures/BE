@@ -243,7 +243,7 @@ export class AuthService {
       try {
         duplicatePhoneNumber = await this.parentRepo.findOne({
           where: {
-            phoneNumber,
+            phoneNumber: `${phoneNumber}`,
           },
         });
       } catch (e) {
@@ -300,17 +300,17 @@ export class AuthService {
       }
     }
 
+    password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
+
+    const createdParent = await this.userService.createParentProfile({
+      email,
+      phoneNumber: `${phoneNumber}`,
+      password,
+      countryId,
+    });
+
     //* create user account
     try {
-      password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
-
-      const createdParent = await this.userService.createParentProfile({
-        email,
-        phoneNumber,
-        password,
-        countryId,
-      });
-
       createdUser = await this.userRepo.save({
         firstName: '',
         lastName: '',

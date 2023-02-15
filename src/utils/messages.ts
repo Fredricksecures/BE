@@ -10,6 +10,7 @@ export const utilityErrors = {
   getCountryList: 'failed to fecth country info ',
   seedPackages: 'failed to seed learning packages ',
   getDevice: 'failed to fecth device info ',
+  invalidCountry: 'invalid country id',
 };
 
 export const subscriptionMessages = {
