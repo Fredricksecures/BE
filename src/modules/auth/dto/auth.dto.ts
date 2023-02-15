@@ -43,13 +43,13 @@ class StudentReqObj {
   packages: Array<string>;
 }
 export class RegisterUserReq {
-  @IsNotEmpty()
-  @IsString()
-  firstName: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // firstName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // lastName: string;
 
   @IsOptional()
   @IsString()

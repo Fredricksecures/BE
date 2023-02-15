@@ -1713,8 +1713,8 @@ export class AdminService {
 
           if (Object.keys(excelData.Sheet1[i]).length == originalKeys.length) {
             regResp = await this.authService.registerUser({
-              firstName: excelData.Sheet1[i].firstName,
-              lastName: excelData.Sheet1[i].lastName,
+              // firstName: excelData.Sheet1[i].firstName,
+              // lastName: excelData.Sheet1[i].lastName,
               email: excelData.Sheet1[i].email,
               phoneNumber: excelData.Sheet1[i].phoneNumber,
               password: excelData.Sheet1[i].password,

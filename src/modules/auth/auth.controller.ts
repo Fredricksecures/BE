@@ -26,15 +26,14 @@ import {
   ResetPasswordReq,
   ResetPasswordRes,
 } from 'src/modules/auth/dto/auth.dto';
-import { signUpReq, signInReq, SignInRes } from 'src/modules/auth/dto/socialLogin.dto';
-import { authErrors, authMessages, profileMessages } from 'src/utils/messages';
-import { Middleware, UseMiddleware } from 'src/utils/middleware';
-import { UserTypes } from 'src/utils/enums';
 import {
-  IPaginationOptions,
-  paginate,
-  Pagination,
-} from 'nestjs-typeorm-paginate';
+  signUpReq,
+  signInReq,
+  SignInRes,
+} from 'src/modules/auth/dto/socialLogin.dto';
+import { authErrors, authMessages } from 'src/utils/messages';
+import { Middleware } from 'src/utils/middleware';
+import { UserTypes } from 'src/utils/enums';
 
 @Controller('auth')
 export class AuthController {
@@ -142,128 +141,6 @@ export class AuthController {
       success,
     });
   }
-
-  // @Patch('update-parent')
-  // @UseMiddleware('sessionGuard')
-  // async updateParent(
-  //   @Req() req: Request,
-  //   @Res({ passthrough: true }) resp: Response,
-  // ) {
-  //   let { updatedParent, success }: BasicUpdateRes =
-  //     await this.authService.updateParentProfile({
-  //       ...req.body,
-  //     });
-
-  //   if (success) {
-  //     updatedParent = await this.authService.formatPayload(
-  //       updatedParent,
-  //       UserTypes.PARENT,
-  //     );
-
-  //     resp.json({
-  //       success,
-  //       message: profileMessages.updatedSuccess,
-  //       status: HttpStatus.OK,
-  //       updatedParent,
-  //     });
-  //   } else {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.NOT_FOUND,
-  //         error: authErrors.updateFailed,
-  //       },
-  //       HttpStatus.NOT_FOUND,
-  //     );
-  //   }
-  // }
-
-  // @Post('create-students')
-  // @UseMiddleware('sessionGuard')
-  // async createStudent(
-  //   @Req() req: Request,
-  //   @Res({ passthrough: true }) resp: Response,
-  //   @Body() body: CreateStudentReq,
-  // ) {
-  //   const { success, createdStudents } =
-  //     await this.authService.createStudentProfile(req.body);
-
-  //   if (success) {
-  //     resp.json({
-  //       success,
-  //       message: authMessages.createdStudent,
-  //       status: HttpStatus.CREATED,
-  //       students: createdStudents,
-  //     });
-  //   } else {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.NOT_FOUND,
-  //         error: authErrors.updateFailed,
-  //       },
-  //       HttpStatus.NOT_FOUND,
-  //     );
-  //   }
-  // }
-
-  // @Patch('update-student')
-  // @UseMiddleware('sessionGuard')
-  // async updateStudent(
-  //   @Req() req: Request,
-  //   @Res({ passthrough: true }) resp: Response,
-  //   @Body() body: UpdateStudentReq,
-  // ) {
-  //   const { user, success } = await this.authService.updateStudentProfile(body);
-
-  //   if (success) {
-  //     resp.json({
-  //       success,
-  //       message: profileMessages.updatedSuccess,
-  //       status: HttpStatus.OK,
-  //       user,
-  //     });
-  //   } else {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.NOT_FOUND,
-  //         error: authErrors.updateFailed,
-  //       },
-  //       HttpStatus.NOT_FOUND,
-  //     );
-  //   }
-  // }
-
-  // @Get('students')
-  // @UseMiddleware('sessionGuard')
-  // async getStudents(
-  //   @Req() req: Request,
-  //   @Res({ passthrough: true }) resp: Response,
-  // ) {
-  //   const {
-  //     query: { id },
-  //     body: { user },
-  //   } = req;
-
-  //   const students = await this.authService.getStudents({
-  //     studentId: `${id}`,
-  //     user,
-  //   });
-
-  //   if (students) {
-  //     resp.json({
-  //       message: authMessages.studentsFetchSuccess,
-  //       status: HttpStatus.OK,
-  //       [`student${id ? 's' : ''}`]: students,
-  //     });
-  //   } else {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.NOT_FOUND,
-  //         error: authErrors.getStudentsFailed,
-  //       },
-  //       HttpStatus.NOT_FOUND,
-  //     );
-  //   }
-  // }
 
   @Post('logout/:all?')
   async logout(

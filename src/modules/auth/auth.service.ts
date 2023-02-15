@@ -234,21 +234,17 @@ export class AuthService {
 
   async registerUser(regUserReq: RegisterUserReq) {
     //* Register Basic User Details
-    let { firstName, lastName, phoneNumber, email, password, countryId } =
-      regUserReq;
+    let { phoneNumber, email, password, countryId } = regUserReq;
 
     let duplicatePhoneNumber: User, duplicateEmail: User, createdUser: User;
 
     //* check if phone number is already taken
-    if (isEmpty(phoneNumber)) {
+    if (!isEmpty(phoneNumber)) {
       try {
-        duplicatePhoneNumber = await this.userRepo.findOne({
+        duplicatePhoneNumber = await this.parentRepo.findOne({
           where: {
-            parent: {
-              phoneNumber,
-            },
+            phoneNumber,
           },
-          relations: ['parent'],
         });
       } catch (e) {
         Logger.error(authErrors.dupPNQuery + e).console();
@@ -261,14 +257,12 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-      if (
-        duplicatePhoneNumber &&
-        duplicatePhoneNumber.parent.phoneNumber == phoneNumber
-      ) {
+
+      if (duplicatePhoneNumber) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
-            error: `phone number ( ${phoneNumber} ) is already taken`,
+            error: `phone number: ( ${phoneNumber} ) is already taken`,
           },
           HttpStatus.CONFLICT,
         );
@@ -278,13 +272,10 @@ export class AuthService {
     //* check if email is already taken
     if (!isEmpty(email)) {
       try {
-        duplicateEmail = await this.userRepo.findOne({
+        duplicateEmail = await this.parentRepo.findOne({
           where: {
-            parent: {
-              email,
-            },
+            email,
           },
-          relations: ['parent'],
         });
       } catch {
         Logger.error(authErrors.dupEmailQuery).console();
@@ -297,12 +288,12 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-      //console.log(duplicatePhoneNumber.parent)
-      if (duplicateEmail && duplicateEmail.parent.email == email) {
+
+      if (duplicateEmail) {
         throw new HttpException(
           {
             status: HttpStatus.CONFLICT,
-            error: email + ' : ' + 'email already exists',
+            error: `email: ( ${email} ) is already taken`,
           },
           HttpStatus.CONFLICT,
         );
@@ -319,9 +310,10 @@ export class AuthService {
         password,
         countryId,
       });
+
       createdUser = await this.userRepo.save({
-        firstName,
-        lastName,
+        firstName: '',
+        lastName: '',
         type: UserTypes.PARENT,
         parent: createdParent,
       });
