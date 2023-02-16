@@ -25,7 +25,7 @@ export class UtilityService {
   async updatePriceRate(countryId) {}
 
   async getCountryList(countryId: string) {
-    let country: CountryList;
+    let country: CountryList | Array<CountryList>;
 
     try {
       country = await this.countryLRepo.findOne({

@@ -8,6 +8,7 @@ import {
   OneToMany,
   Column,
   JoinColumn,
+  ManyToMany,
 } from 'typeorm';
 import { CountryList } from '../../utility/entity/countryList.entity';
 import { Session } from './session.entity';
@@ -27,8 +28,8 @@ export class Parent {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @OneToOne(() => CountryList)
-  @JoinColumn()
+  @ManyToMany(() => CountryList)
+  @JoinColumn({ name: 'country' })
   country?: CountryList;
 
   @Column({ type: 'varchar', unique: true, default: null })
