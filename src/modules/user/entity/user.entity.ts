@@ -1,3 +1,4 @@
+import { CartGroup } from './../../store/entities/cart.group.entity';
 import { Cart } from './../../store/entities/cart.entity';
 import {
   Column,
@@ -15,6 +16,7 @@ import { CustomerCare } from '../../admin/entity/customerCare.entity';
 import { Genders, UserTypes } from 'src/utils/enums';
 import { Admin } from '../../admin/entity/admin.entity';
 import { Orders } from 'src/modules/store/entities/orders.entity';
+import { UserEbooks } from 'src/modules/ebook/entities/user.ebook.entity';
 
 @Entity('users')
 export class User {
@@ -66,11 +68,14 @@ export class User {
   @JoinColumn()
   student?: Student;
 
-  @OneToMany(() => Cart, (cart) => cart.user)
-  cart?: Cart;
+  @OneToMany(() => CartGroup, (cartGroup) => cartGroup.user)
+  cartGroup?: CartGroup;
 
   @OneToMany(() => Orders, (orders) => orders.user)
   order?: Orders;
+
+  @OneToMany(() => UserEbooks, (userEbook) => userEbook.user)
+  ebook?: UserEbooks;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

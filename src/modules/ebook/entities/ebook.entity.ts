@@ -1,10 +1,13 @@
+import { UserEbooks } from './user.ebook.entity';
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Cart } from 'src/modules/store/entities/cart.entity';
 @Entity('ebooks')
 export class Ebooks {
   constructor(data?: Ebooks) {
@@ -56,4 +59,10 @@ export class Ebooks {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt?: Date;
+
+  @OneToMany(() => UserEbooks, (userEbook) => userEbook.ebook)
+  user?: UserEbooks;
+
+  @OneToMany(() => Cart, (cart) => cart.ebook)
+  cart?: Cart;
 }

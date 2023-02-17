@@ -1,3 +1,5 @@
+import { CartGroup } from './../modules/store/entities/cart.group.entity';
+import { UserEbooks } from 'src/modules/ebook/entities/user.ebook.entity';
 import { Ebooks } from './../modules/ebook/entities/ebook.entity';
 import { Orders } from './../modules/store/entities/orders.entity';
 import { Cart } from './../modules/store/entities/cart.entity';
@@ -66,6 +68,7 @@ export const ModuleConfigs = {
       Cart,
       Orders,
       Ebooks,
+      CartGroup,
     ],
   },
   utility: {
@@ -157,6 +160,7 @@ export const ModuleConfigs = {
       Subscription,
       Badge,
       Orders,
+      CartGroup,
     ],
   },
   ebook: {
@@ -172,6 +176,8 @@ export const ModuleConfigs = {
       Parent,
       Subscription,
       Badge,
+      UserEbooks,
+      CartGroup,
     ],
   },
 };

@@ -1,7 +1,7 @@
+import { CartGroup } from './cart.group.entity';
+import { Ebooks } from './../../ebook/entities/ebook.entity';
 import { User } from './../../user/entity/user.entity';
 import { Products } from './products.entity';
-import { Subscription } from './../../subscription/entity/subscription.entity';
-import { CountryList } from './../../utility/entity/countryList.entity';
 import {
   Column,
   Entity,
@@ -24,23 +24,20 @@ export class Cart {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   qyt?: number;
 
   @Column({ type: 'varchar' })
   price?: number;
 
-  @Column({ type: 'enum', enum: ProductType })
-  productType?: string;
-
-  @ManyToOne(() => Products, (products) => products.cart)
+  @ManyToOne(() => Products, (products) => products.cart, { nullable: true })
   product?: Products;
 
-  @ManyToOne(() => User, (user) => user.cart)
-  user?: User;
+  @ManyToOne(() => CartGroup, (cartGroup) => cartGroup.cart)
+  cartGroup?: CartGroup;
 
-  @Column({ type: 'bool', default: false })
-  isPaid?: boolean;
+  @ManyToOne(() => Ebooks, (ebooks) => ebooks.cart, { nullable: true })
+  ebook?: Ebooks;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

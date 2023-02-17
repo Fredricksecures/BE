@@ -1,3 +1,4 @@
+import { CartGroup } from './entities/cart.group.entity';
 import { ProductType } from 'src/utils/enums';
 import { Orders } from 'src/modules/store/entities/orders.entity';
 import { User } from 'src/modules/user/entity/user.entity';
@@ -23,6 +24,7 @@ export class StoreService {
     @InjectRepository(Products) private productRepo: Repository<Products>,
     @InjectRepository(Cart) private cartRepo: Repository<Cart>,
     @InjectRepository(Orders) private orderRepo: Repository<Orders>,
+    @InjectRepository(CartGroup) private cartGroupRepo: Repository<CartGroup>,
   ) {}
 
   async createProduct(addProduct: AddProduct): Promise<StoreResponse> {
@@ -155,16 +157,29 @@ export class StoreService {
   async addToCart(addToCart: AddToCart): Promise<StoreResponse> {
     try {
       const { qyt, productId, price, user } = addToCart;
+      let group;
 
+      const groupFind = await this.cartGroupRepo.findOne({
+        where: {
+          user: { id: user.id },
+          isPaid: false,
+          productType: ProductType.IMOSETAB,
+        },
+      });
+      if (!groupFind) {
+        group = await this.cartGroupRepo.save({
+          productType: ProductType.IMOSETAB,
+          user,
+        });
+      } else {
+        group = groupFind;
+      }
       const cart = await this.cartRepo.save({
         qyt,
-        productType: ProductType.IMOSETAB,
-        product: {
-          id: productId,
-        },
         price,
-        user: {
-          id: user.id,
+        product: { id: productId },
+        cartGroup: {
+          id: group.id,
         },
       });
       return {
@@ -222,13 +237,32 @@ export class StoreService {
 
   async getCart(user: User): Promise<StoreResponse> {
     try {
-      let cartFound;
-
-      try {
-        cartFound = await this.cartRepo.findBy({
+      const cartGroup = await this.cartGroupRepo.findOne({
+        where: {
           user: {
             id: user.id,
           },
+          isPaid: false,
+          productType: ProductType.IMOSETAB,
+        },
+      });
+
+      if (!cartGroup) {
+        return {
+          success: true,
+          data: [],
+        };
+      }
+
+      let cartFound;
+      try {
+        cartFound = await this.cartRepo.find({
+          where: {
+            cartGroup: {
+              id: cartGroup.id,
+            },
+          },
+          relations: ['ebook', 'product', 'cartGroup'],
         });
       } catch (e) {
         Logger.error(e);
@@ -312,11 +346,13 @@ export class StoreService {
       try {
         cartFound = await this.cartRepo.find({
           where: {
-            user: {
-              id: user.id,
+            cartGroup: {
+              user: { id: user.id },
+              isPaid: false,
+              productType: ProductType.IMOSETAB,
             },
-            isPaid: false,
           },
+          relations: ['ebook', 'product', 'cartGroup'],
         });
       } catch (e) {
         Logger.error(e);
@@ -354,23 +390,27 @@ export class StoreService {
         const element = cartFound[i];
         orderTotal += Number(element.price);
       }
-      const cart = await this.orderRepo.save({
+
+      const order = await this.orderRepo.save({
         user,
         orderTotal,
         productType: ProductType.IMOSETAB,
         orderType,
         deliveryAddress,
         couponCode,
+        cartGroup: { id: cartFound[0].cartGroup.id },
         salesCode,
       });
-      for (let i = 0; i < cartFound.length; i++) {
-        const element = cartFound[i];
-        await this.cartRepo.update({ id: element.id }, { isPaid: true });
-      }
-      delete cart.user;
+
+      await this.cartGroupRepo.update(
+        { id: cartFound[0].cartGroup.id },
+        { isPaid: true },
+      );
+
+      delete order.user;
       return {
         success: true,
-        data: cart,
+        data: order,
       };
     } catch (e) {
       Logger.error(e);

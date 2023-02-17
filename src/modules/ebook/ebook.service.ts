@@ -1,3 +1,4 @@
+import { UserEbooks } from 'src/modules/ebook/entities/user.ebook.entity';
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import {
   AddEbook,
@@ -15,6 +16,7 @@ import { Cart } from '../store/entities/cart.entity';
 import { ProductType } from 'src/utils/enums';
 import { User } from '../user/entity/user.entity';
 import { Orders } from '../store/entities/orders.entity';
+import { CartGroup } from '../store/entities/cart.group.entity';
 
 @Injectable()
 export class EbookService {
@@ -22,6 +24,8 @@ export class EbookService {
     @InjectRepository(Ebooks) private ebookRepo: Repository<Ebooks>,
     @InjectRepository(Cart) private cartRepo: Repository<Cart>,
     @InjectRepository(Orders) private orderRepo: Repository<Orders>,
+    @InjectRepository(UserEbooks) private userEbookRepo: Repository<UserEbooks>,
+    @InjectRepository(CartGroup) private cartGroupRepo: Repository<CartGroup>,
   ) {}
 
   async addEbook(addEbook: AddEbook): Promise<EbookResponse> {
@@ -139,16 +143,28 @@ export class EbookService {
   async addToCart(addToCart: AddToCart): Promise<EbookResponse> {
     try {
       const { productId, price, user } = addToCart;
+      let group;
 
-      const cart = await this.cartRepo.save({
-        qyt: 1,
-        productType: ProductType.EBOOK,
-        product: {
-          id: productId,
+      const groupFind = await this.cartGroupRepo.findOne({
+        where: {
+          user: { id: user.id },
+          isPaid: false,
+          productType: ProductType.EBOOK,
         },
+      });
+      if (!groupFind) {
+        group = await this.cartGroupRepo.save({
+          productType: ProductType.EBOOK,
+          user,
+        });
+      } else {
+        group = groupFind;
+      }
+      const cart = await this.cartRepo.save({
         price,
-        user: {
-          id: user.id,
+        ebook: { id: productId },
+        cartGroup: {
+          id: group.id,
         },
       });
       return {
@@ -163,13 +179,32 @@ export class EbookService {
 
   async getCart(user: User): Promise<EbookResponse> {
     try {
-      let cartFound;
-
-      try {
-        cartFound = await this.cartRepo.findBy({
+      const cartGroup = await this.cartGroupRepo.findOne({
+        where: {
           user: {
             id: user.id,
           },
+          isPaid: false,
+          productType: ProductType.EBOOK,
+        },
+      });
+
+      if (!cartGroup) {
+        return {
+          success: true,
+          data: [],
+        };
+      }
+
+      let cartFound;
+      try {
+        cartFound = await this.cartRepo.find({
+          where: {
+            cartGroup: {
+              id: cartGroup.id,
+            },
+          },
+          relations: ['ebook', 'product', 'cartGroup'],
         });
       } catch (e) {
         Logger.error(e);
@@ -252,11 +287,13 @@ export class EbookService {
       try {
         cartFound = await this.cartRepo.find({
           where: {
-            user: {
-              id: user.id,
+            cartGroup: {
+              user: { id: user.id },
+              isPaid: false,
+              productType: ProductType.EBOOK,
             },
-            isPaid: false,
           },
+          relations: ['ebook', 'product', 'cartGroup'],
         });
       } catch (e) {
         Logger.error(e);
@@ -294,21 +331,57 @@ export class EbookService {
         const element = cartFound[i];
         orderTotal += Number(element.price);
       }
-      const cart = await this.orderRepo.save({
+
+      const order = await this.orderRepo.save({
         user,
         orderTotal,
         productType: ProductType.EBOOK,
         couponCode,
+        cartGroup: { id: cartFound[0].cartGroup.id },
         salesCode,
       });
+
+      await this.cartGroupRepo.update(
+        { id: cartFound[0].cartGroup.id },
+        { isPaid: true },
+      );
+
       for (let i = 0; i < cartFound.length; i++) {
         const element = cartFound[i];
-        await this.cartRepo.update({ id: element.id }, { isPaid: true });
+        await this.userEbookRepo.save({
+          user: {
+            id: user.id,
+          },
+          ebook: {
+            id: element.ebook.id,
+          },
+        });
       }
-      delete cart.user;
+
+      delete order.user;
       return {
         success: true,
-        data: cart,
+        data: order,
+      };
+    } catch (e) {
+      Logger.error(e);
+      throw new HttpException(e.response, HttpStatus.NOT_IMPLEMENTED);
+    }
+  }
+
+  async getUserEbooks(user: User): Promise<EbookResponse> {
+    try {
+      const products = await this.userEbookRepo.find({
+        where: {
+          user: {
+            id: user.id,
+          },
+        },
+        relations: ['ebook'],
+      });
+      return {
+        success: true,
+        data: products,
       };
     } catch (e) {
       Logger.error(e);

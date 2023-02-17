@@ -230,4 +230,30 @@ export class EbookController {
       );
     }
   }
+
+  @Get('get-user-ebooks')
+  @UseMiddleware('sessionGuard')
+  async getUserEbooks(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const { success, data }: EbookResponse =
+      await this.ebookService.getUserEbooks(req.body.user);
+    if (success) {
+      resp.json({
+        success,
+        data,
+        message: ebookErrors.orderCreated,
+        status: HttpStatus.OK,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: ebookErrors.failedToCreateOrder,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
 }

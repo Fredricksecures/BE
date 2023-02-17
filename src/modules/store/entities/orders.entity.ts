@@ -1,3 +1,4 @@
+import { CartGroup } from './cart.group.entity';
 import { User } from './../../user/entity/user.entity';
 import { Products } from './products.entity';
 import { Subscription } from './../../subscription/entity/subscription.entity';
@@ -35,6 +36,9 @@ export class Orders {
 
   @Column({ type: 'varchar' })
   orderTotal?: number;
+
+  @ManyToOne(() => CartGroup, (cartGroup) => cartGroup.order)
+  cartGroup?: CartGroup;
 
   @Column({ type: 'varchar', nullable: true })
   couponCode?: string;
