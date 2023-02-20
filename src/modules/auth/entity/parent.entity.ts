@@ -32,10 +32,10 @@ export class Parent {
   @JoinColumn({ name: 'country' })
   country?: CountryList;
 
-  @Column({ type: 'varchar', unique: true, default: null })
+  @Column({ type: 'varchar', nullable: true })
   email?: string;
 
-  @Column({ type: 'varchar', unique: true, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   phoneNumber?: string;
 
   @Column({ type: 'varchar' })
