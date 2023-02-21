@@ -378,8 +378,6 @@ export class UserService {
 
     let parent: Parent, student: Student;
 
-    console.log('+++++++', studentId);
-
     if (studentId != 'undefined') {
       student = await this.studentRepo.findOne({
         where: {
@@ -416,7 +414,7 @@ export class UserService {
 
     return {
       success: true,
-      students: parent.students,
+      students: studentId ? student : parent.students,
     };
   }
 
