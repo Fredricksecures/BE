@@ -86,7 +86,7 @@ export class UserService {
   }
 
   async getParentDetails(
-    userId: string,
+    user: User,
     relations: Array<string>,
   ): Promise<Parent> {
     let foundParent: Parent;
@@ -94,7 +94,7 @@ export class UserService {
     try {
       foundParent = await this.parentRepo.findOne({
         where: {
-          user: { id: userId },
+          id: user.parent.id,
         },
         relations,
       });
@@ -165,6 +165,7 @@ export class UserService {
 
       try {
         const { id, date } = await this.jwtService.verifyAsync(token);
+        console.log('🚀 ~ file: user.service.ts:168 ~ UserService ~ id:', id);
 
         decodedId = id;
         decodedDate = date;
@@ -375,25 +376,47 @@ export class UserService {
   async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
     const { studentId, user } = getStudentReq;
 
-    let foundStudents: Student | Array<Student>;
+    let parent: Parent, student: Student;
 
-    const parent = await this.getParentDetails(user.id, ['students']);
+    console.log('+++++++', studentId);
 
-    if (!foundStudents) {
-      Logger.error(userErrors.studentsNotFound).console();
-
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: userErrors.studentsNotFound,
+    if (studentId != 'undefined') {
+      student = await this.studentRepo.findOne({
+        where: {
+          id: studentId,
         },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
+      });
+
+      if (!student) {
+        Logger.error(userErrors.studentNotFound).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: userErrors.studentNotFound,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+    } else {
+      parent = await this.getParentDetails(user, ['students']);
+
+      if (!parent.students) {
+        Logger.error(userErrors.studentsNotFound).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: userErrors.studentsNotFound,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
     }
 
     return {
       success: true,
-      students: foundStudents,
+      students: parent.students,
     };
   }
 

@@ -299,6 +299,7 @@ export const userMessages = {
 };
 export const userErrors = {
   failedToFetchBadge: '',
+  studentNotFound: 'No student record matching id found',
   updateFailed: 'login failed ',
   createdStudent: 'could not create new student ',
   updatingStudent: 'Error querying for updating student ',
@@ -313,7 +314,7 @@ export const userErrors = {
   checkingStudent: 'Error querying for student ',
   parentNotFound: 'could not find parent with id provided ',
   queryingParent: 'could not find parent with user id provided',
-  studentsNotFound: 'could not find students',
+  studentsNotFound: 'could not find students for user',
   userNotFoundById: 'Could not find matching user of given id ',
   checkingParent: 'Error querying for finding parent ',
   updatingParent: 'Error querying for updating parent ',

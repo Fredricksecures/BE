@@ -72,6 +72,7 @@ export class CreateStudentRes {
 
 export class GetStudentReq {
   @IsString()
+  @IsOptional()
   studentId: string;
 
   @IsNotEmpty()
