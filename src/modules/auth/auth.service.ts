@@ -348,7 +348,7 @@ export class AuthService {
     try {
       foundUser = await this.userRepo.findOneOrFail({
         where: { parent: email ? { email } : { phoneNumber } },
-        relations: ['parent'],
+        relations: ['parent', 'parent.students'],
       });
     } catch (exp) {
       Logger.error(exp).console();
