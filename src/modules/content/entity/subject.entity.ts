@@ -9,8 +9,6 @@ import {
 } from 'typeorm';
 import { Chapter } from './chapter.entity';
 import { LearningPackage } from '../../utility/entity/learningPackage.entity';
-import { Lesson } from './lesson.entity';
-import { ReportCard } from '../../user/entity/reportCard.entity';
 
 @Entity('subjects')
 export class Subject {

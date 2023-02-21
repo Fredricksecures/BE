@@ -27,6 +27,7 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { Badge } from 'src/modules/user/entity/badges.entity';
+import { generateRandomHash, isEmpty } from 'src/utils/helpers';
 
 @Injectable()
 export class UserService {
@@ -287,13 +288,11 @@ export class UserService {
 
     try {
       createdParent = await this.parentRepo.save({
-        phoneNumber,
-        email,
+        phoneNumber: isEmpty(phoneNumber) ? null : phoneNumber,
+        email: isEmpty(email) ? null : email,
         password,
-        passwordResetPin: '',
-        address: '',
         country,
-        students: [],
+        verificationToken: generateRandomHash(6),
       });
     } catch (e) {
       Logger.error(userErrors.createdParent + e).console();
@@ -346,6 +345,7 @@ export class UserService {
     }
     return paginate<Badge>(foundBadges, options);
   }
+
   async createStudentProfile(
     createStudentReq: CreateStudentReq,
   ): Promise<CreateStudentRes> {
@@ -367,6 +367,7 @@ export class UserService {
               parent: new Parent({
                 id: user.parent.id,
               }),
+              points: '0',
             }),
           }),
       ),

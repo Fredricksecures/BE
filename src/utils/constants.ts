@@ -471,3 +471,13 @@ export const COUNTRY_SEED: {} = {
   Zimbabwe: { priceRate: 718 },
   'Åland Islands': { priceRate: 577 },
 };
+
+export const CHAPTERS_SEED: {} = {};
+
+export const LESSONS_SEED: {} = {};
+
+export const SUBJECTS_SEED: {} = {
+  English: {
+    icon: '',
+  },
+};

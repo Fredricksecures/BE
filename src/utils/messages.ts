@@ -32,6 +32,8 @@ export const subscriptionError = {
 
 export const authMessages = {
   countries: 'all countries retrieved successfully',
+  tokenResent: 'verification token resent successfully',
+  verificationSuccess: 'account verification successful',
   endpoints: 'authentication endpoints retrieved successfully',
   userCreated: 'user created successfully',
   login: 'login successful',

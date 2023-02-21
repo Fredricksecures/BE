@@ -232,6 +232,100 @@ export class AuthService {
 
   async googleLogin() {}
 
+  async verifyAccount(payload: any) {
+    const { token } = payload;
+
+    let foundUser: User;
+
+    try {
+      foundUser = await this.userRepo.findOne({
+        where: { parent: { verificationToken: token } },
+        relations: ['parent'],
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: 'error querying db',
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'invalid verification token',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    } else {
+      try {
+        await this.parentRepo.save({
+          id: foundUser.parent.id,
+          verified: true,
+        });
+      } catch (e) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_MODIFIED,
+            error: 'error updating parent db',
+          },
+          HttpStatus.NOT_MODIFIED,
+        );
+      }
+    }
+  }
+
+  async resendToken(payload: any): Promise<string> {
+    const { email } = payload;
+
+    let foundUser: User, parent: Parent;
+
+    try {
+      foundUser = await this.userRepo.findOne({
+        where: { parent: { email } },
+        relations: ['parent'],
+      });
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: 'error querying db',
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'user not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    } else {
+      try {
+        parent = await this.parentRepo.save({
+          id: foundUser.parent.id,
+          verificationToken: generateRandomHash(6),
+        });
+      } catch (e) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_MODIFIED,
+            error: 'error updating parent db',
+          },
+          HttpStatus.NOT_MODIFIED,
+        );
+      }
+    }
+
+    return parent.verificationToken;
+  }
+
   async registerUser(regUserReq: RegisterUserReq) {
     //* Register Basic User Details
     let { phoneNumber, email, password, countryId } = regUserReq;

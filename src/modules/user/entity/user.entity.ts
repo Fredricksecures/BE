@@ -32,7 +32,7 @@ export class User {
   @Column({ type: 'varchar' })
   lastName?: string;
 
-  @Column({ type: 'enum', enum: Genders, default: Genders.MALE })
+  @Column({ type: 'enum', enum: Genders, nullable: true })
   gender?: string;
 
   @Column({ type: 'varchar', nullable: true })

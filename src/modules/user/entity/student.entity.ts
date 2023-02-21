@@ -8,6 +8,7 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Column,
 } from 'typeorm';
 import { Class } from '../../liveClass/class.entity';
 import { Parent } from '../../auth/entity/parent.entity';
@@ -37,6 +38,9 @@ export class Student {
 
   @OneToMany(() => ReportCard, (reportCard) => reportCard.student)
   reportCard?: ReportCard[];
+
+  @Column('varchar', { default: '0' })
+  points?: string;
 
   @OneToMany(() => Leaderboard, (leaderboard) => leaderboard.student)
   leaderboard?: Leaderboard[];
