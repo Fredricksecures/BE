@@ -82,7 +82,7 @@ export class GetStudentReq {
 
 export class GetStudentRes {
   success: boolean;
-  students: Student | Array<Student>;
+  students: User | Array<User>;
 }
 export class BasicUpdateRes {
   updatedParent?: Parent;

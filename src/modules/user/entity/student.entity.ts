@@ -28,7 +28,7 @@ export class Student {
     }
   }
 
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id?: string;
 
   @OneToOne(() => User)

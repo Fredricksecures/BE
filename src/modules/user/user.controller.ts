@@ -140,17 +140,21 @@ export class UserController {
       query: { id },
       body: { user },
     } = req;
-    console.log(user);
+
     const students = await this.userService.getStudents({
       studentId: `${id}`,
       user,
     });
+    console.log(
+      '🚀 ~ file: user.controller.ts:148 ~ UserController ~ students:',
+      students,
+    );
 
     if (students) {
       resp.json({
         message: userMessages.studentsFetchSuccess,
         status: HttpStatus.OK,
-        [`student${id ? 's' : ''}`]: students,
+        [`student${id ? '' : 's'}`]: students,
       });
     } else {
       throw new HttpException(

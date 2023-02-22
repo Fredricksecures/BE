@@ -283,7 +283,7 @@ export class ContentService {
     options: IPaginationOptions,
   ): Promise<Pagination<Badge>> {
     let foundReviews;
-    console.log(id);
+    // console.log(id);
     try {
       foundReviews =
         id == undefined

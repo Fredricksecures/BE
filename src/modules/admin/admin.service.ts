@@ -1826,7 +1826,7 @@ export class AdminService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    console.log(foundStudent);
+    // console.log(foundStudent);
     //Finding the class with particular id
     try {
       foundClass = await this.classRepo.findOne({
@@ -2041,7 +2041,7 @@ export class AdminService {
                 excelData.Sheet1[i].content,
               );
             }
-            console.log(templateData);
+            // console.log(templateData);
             mailCreate = await mailer(
               excelData.Sheet1[i].email,
               'Mail sent Successful',

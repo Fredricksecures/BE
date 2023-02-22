@@ -25,7 +25,7 @@ export class Parent {
     }
   }
 
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id?: string;
 
   @ManyToMany(() => CountryList)

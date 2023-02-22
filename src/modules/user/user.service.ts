@@ -166,7 +166,6 @@ export class UserService {
 
       try {
         const { id, date } = await this.jwtService.verifyAsync(token);
-        console.log('🚀 ~ file: user.service.ts:168 ~ UserService ~ id:', id);
 
         decodedId = id;
         decodedDate = date;
@@ -377,14 +376,25 @@ export class UserService {
   async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
     const { studentId, user } = getStudentReq;
 
-    let parent: Parent, student: Student;
+    let parent: Parent, student: User, students: Array<User>;
 
-    if (studentId != 'undefined') {
-      student = await this.studentRepo.findOne({
-        where: {
-          id: studentId,
-        },
-      });
+    if (!isEmpty(studentId)) {
+      try {
+        student = await this.userRepo.findOne({
+          where: {
+            id: studentId,
+          },
+          relations: ['student'],
+        });
+      } catch (exp) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: 'not student with matching id found',
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
 
       if (!student) {
         Logger.error(userErrors.studentNotFound).console();
@@ -397,10 +407,22 @@ export class UserService {
           HttpStatus.NOT_FOUND,
         );
       }
-    } else {
-      parent = await this.getParentDetails(user, ['students']);
 
-      if (!parent.students) {
+      return {
+        success: true,
+        students: student,
+      };
+    } else {
+      // parent = await this.getParentDetails(user, ['students']);
+
+      students = await this.userRepo.find({
+        where: {
+          student: { parent: { id: user.parent.id } },
+        },
+        relations: ['student'],
+      });
+
+      if (!students) {
         Logger.error(userErrors.studentsNotFound).console();
 
         throw new HttpException(
@@ -411,12 +433,12 @@ export class UserService {
           HttpStatus.NOT_FOUND,
         );
       }
-    }
 
-    return {
-      success: true,
-      students: studentId ? student : parent.students,
-    };
+      return {
+        success: true,
+        students,
+      };
+    }
   }
 
   async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
