@@ -141,7 +141,7 @@ export class AuthService {
     try {
       foundUser = await this.userRepo.findOne({
         where: { id: decodedId },
-        relations: ['parent.sessions'],
+        relations: ['parent', 'parent.sessions', 'parent.students'],
       });
 
       if (!foundUser) {

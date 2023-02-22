@@ -25,6 +25,7 @@ import { MockTest } from '../modules/admin/entity/mockTest.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
 import { Settings } from 'src/modules/user/settings.entity';
 import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
+import { LearningJourney } from 'src/modules/user/entity/learningJourney.entity';
 
 config();
 
@@ -58,6 +59,7 @@ export const ModuleConfigs = {
       Review,
       Settings,
       EmailTemplate,
+      LearningJourney,
     ],
   },
   utility: {

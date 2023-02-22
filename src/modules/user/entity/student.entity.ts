@@ -16,6 +16,7 @@ import { Subscription } from '../../subscription/entity/subscription.entity';
 import { User } from './user.entity';
 import { ReportCard } from './reportCard.entity';
 import { Leaderboard } from '../../content/entity/leaderBoard.entity';
+import { LearningJourney } from './learningJourney.entity';
 
 @Entity('students')
 export class Student {
@@ -38,6 +39,12 @@ export class Student {
 
   @OneToMany(() => ReportCard, (reportCard) => reportCard.student)
   reportCard?: ReportCard[];
+
+  @OneToMany(
+    () => LearningJourney,
+    (learningJourney) => learningJourney.student,
+  )
+  learningJournies?: LearningJourney[];
 
   @Column('varchar', { default: '0' })
   points?: string;

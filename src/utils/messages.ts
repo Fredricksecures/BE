@@ -291,6 +291,7 @@ export const liveClassErrors = {
 };
 export const userMessages = {
   badgeFetchSuccess: 'Badge fetch successfully',
+  userFetched: 'user found',
   createdStudent: 'Students Created Successfully',
   studentsFetchSuccess: 'Students Fetched successfully',
   countries: 'all countries retrieved successfully',

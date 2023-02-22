@@ -1,3 +1,4 @@
+import { LearningJourney } from 'src/modules/user/entity/learningJourney.entity';
 import {
   Column,
   Entity,
@@ -31,6 +32,12 @@ export class Chapter {
 
   @OneToMany(() => Lesson, (Lesson) => Lesson.chapter)
   lessons?: Lesson[];
+
+  @OneToMany(
+    () => LearningJourney,
+    (learningJourney) => learningJourney.chapter,
+  )
+  learningJournies?: LearningJourney[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

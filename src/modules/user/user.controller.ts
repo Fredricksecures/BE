@@ -43,6 +43,20 @@ export class UserController {
     });
   }
 
+  @Get('/')
+  @UseMiddleware('sessionGuard')
+  async getParent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    resp.json({
+      success: true,
+      message: userMessages.userFetched,
+      status: HttpStatus.FOUND,
+      user: req.body.user,
+    });
+  }
+
   @Get('badges')
   async getBadges(
     @Req() req: Request,
@@ -126,7 +140,7 @@ export class UserController {
       query: { id },
       body: { user },
     } = req;
-    console.log(user)
+    console.log(user);
     const students = await this.userService.getStudents({
       studentId: `${id}`,
       user,
