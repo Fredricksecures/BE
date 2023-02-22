@@ -383,6 +383,7 @@ export class UserService {
         student = await this.userRepo.findOne({
           where: {
             id: studentId,
+            parent: { id: user.parent.id },
           },
           relations: ['student'],
         });
