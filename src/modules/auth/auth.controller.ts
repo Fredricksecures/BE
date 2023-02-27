@@ -82,6 +82,9 @@ export class AuthController {
 
     if (success) {
       user = await this.authService.formatPayload(user, UserTypes.DEFAULT);
+      const environment = process.env.NODE_ENV;
+      const stagingOrDev =
+        environment === 'development' || environment === 'staging';
 
       //* add new session to user response payload
       user = {
@@ -91,7 +94,11 @@ export class AuthController {
           session,
         },
       };
-      resp.cookie('jwt', user.parent.session.token, { httpOnly: true });
+      resp.cookie('jwt', user.parent.session.token, {
+        secure: stagingOrDev ? false : true,
+        httpOnly: stagingOrDev ? false : true,
+        sameSite: stagingOrDev ? false : 'none',
+      });
 
       resp.json({
         success,
