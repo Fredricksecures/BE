@@ -24,8 +24,14 @@ export class MockTest {
   @Column({ type: 'varchar' })
   mockTestName?: string;
 
-  @Column({ type: 'enum', enum: Subjects, default: Subjects.ENGLISH })
-  subject?: string;
+  @Column({ type: 'array',default:'' })
+  subjects?: Array<String>;
+
+  @Column({ type: 'string',default:'' })
+  minutes?:String;
+
+  @Column({ type: 'string',default:'' })
+  questions?:String;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

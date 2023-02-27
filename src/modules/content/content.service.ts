@@ -64,6 +64,21 @@ export class ContentService {
     }
     return paginate<Chapter>(foundChapters, options);
   }
+    // async addQuestions(options: IPaginationOptions): Promise<Pagination<Chapter>> {
+    //   let foundChapters;
+    //   try {
+    //     foundChapters = await this.chapterRepo.createQueryBuilder('Chapter');
+    //   } catch (exp) {
+    //     throw new HttpException(
+    //       {
+    //         status: HttpStatus.NOT_IMPLEMENTED,
+    //         error: contentErrors.failedToFetchChapter + exp,
+    //       },
+    //       HttpStatus.NOT_IMPLEMENTED,
+    //     );
+    //   }
+    //   return paginate<Chapter>(foundChapters, options);
+    // }
 
   async getLessons(options: IPaginationOptions): Promise<Pagination<Lesson>> {
     let foundLessons;
