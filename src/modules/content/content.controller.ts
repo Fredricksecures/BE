@@ -202,6 +202,33 @@ export class ContentController {
     }
   }
 
+  @Get('mock-test-questions/:id')
+  async getMockTestQuestions(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Param('id') id: string,
+  ) {
+    const { success, data } = await this.contentService.getMockTestQuestions(
+      id,
+    );
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: contentMessages.mockTestFetchSuccess,
+        data,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.checkingMockTest,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
   @Post('add-review')
   async addReview(
     @Req() req: Request,

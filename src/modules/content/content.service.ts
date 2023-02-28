@@ -1,3 +1,4 @@
+import { MockTestQuestions } from 'src/modules/admin/entity/mockTestQuestions.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -41,6 +42,8 @@ export class ContentService {
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
     @InjectRepository(Test) private testRepo: Repository<Test>,
+    @InjectRepository(MockTestQuestions)
+    private mockTestQuestionsRepo: Repository<MockTestQuestions>,
     @InjectRepository(ReportCard)
     private reportCardRepo: Repository<ReportCard>,
     @InjectRepository(Leaderboard)
@@ -257,6 +260,35 @@ export class ContentService {
     let data;
     try {
       data = await this.mockTestRepo.findOneBy({ id });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchMockTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return {
+      data,
+      success: true,
+    };
+  }
+
+  async getMockTestQuestions(id: string) {
+    let data;
+    try {
+      data = await this.mockTestQuestionsRepo.find({
+        where: { mock_test: { id } },
+        select: [
+          'id',
+          'question',
+          'option_a',
+          'option_b',
+          'option_c',
+          'option_d',
+        ],
+      });
     } catch (exp) {
       throw new HttpException(
         {
