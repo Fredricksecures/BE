@@ -24,8 +24,11 @@ export class Subject {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   type?: string;
+
+  @Column({ type: 'varchar' })
+  name?: string;
 
   @ManyToOne(
     () => LearningPackage,

@@ -63,7 +63,7 @@ export const ModuleConfigs = {
     ],
   },
   utility: {
-    entities: [CountryList, LearningPackage, Device],
+    entities: [CountryList, LearningPackage, Device, Subject],
   },
   auth: {
     entities: [
@@ -77,6 +77,10 @@ export const ModuleConfigs = {
       Subscription,
       Settings,
       Badge,
+      LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
   admin: {
@@ -102,6 +106,7 @@ export const ModuleConfigs = {
       Subscription,
       Invoice,
       EmailTemplate,
+      LearningJourney,
     ],
   },
   subscription: {
@@ -136,6 +141,10 @@ export const ModuleConfigs = {
       LearningPackage,
       Subscription,
       Badge,
+      LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
 };
@@ -153,7 +162,19 @@ export const GET_ALL_ENTITIES = () => [
 
 //* LEARNING PACKAGES_______________________________________
 export const learningPackages = {
-  RECEPTION: { name: 'RECEPTION', type: PackageTypes.PRE_SCHOOL, price: 1748 },
+  RECEPTION: {
+    name: 'RECEPTION',
+    type: PackageTypes.PRE_SCHOOL,
+    price: 1748,
+    subjects: {
+      English: {
+        icon: '',
+      },
+      Maths: {
+        icon: '',
+      },
+    },
+  },
 
   GRADE_1: { name: 'GRADE_1', type: PackageTypes.PRIMARY_SCHOOL, price: 2900 },
   GRADE_2: { name: 'GRADE_2', type: PackageTypes.PRIMARY_SCHOOL, price: 4638 },
@@ -472,14 +493,4 @@ export const COUNTRY_SEED: {} = {
   Zambia: { priceRate: 344 },
   Zimbabwe: { priceRate: 718 },
   'Åland Islands': { priceRate: 577 },
-};
-
-export const CHAPTERS_SEED: {} = {};
-
-export const LESSONS_SEED: {} = {};
-
-export const SUBJECTS_SEED: {} = {
-  English: {
-    icon: '',
-  },
 };

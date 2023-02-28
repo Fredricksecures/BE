@@ -10,7 +10,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { UtilityService } from './utility.service';
-import { UtilitySeeder } from './seeder/utility';
+import { UtilitySeeder } from './seeder/utility.seeder';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { Repository } from 'typeorm';

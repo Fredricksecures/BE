@@ -127,3 +127,25 @@ export class UpdateParentReq {
   @IsString()
   address: string;
 }
+
+export class CreateLearningJourneyReq {
+  @IsOptional()
+  @IsString()
+  studentId: string;
+
+  @IsOptional()
+  @IsString()
+  subjectId: string;
+
+  @IsOptional()
+  @IsString()
+  chapterId: string;
+
+  @IsOptional()
+  @IsString()
+  lessonId: string;
+
+  @IsOptional()
+  @IsString()
+  testId: string;
+}

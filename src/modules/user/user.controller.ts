@@ -21,6 +21,7 @@ import {
   UpdateStudentReq,
   CreateStudentReq,
   BasicUpdateRes,
+  CreateLearningJourneyReq,
 } from 'src/modules/user/dto/user.dto';
 import { userErrors, userMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
@@ -101,6 +102,25 @@ export class UserController {
         HttpStatus.NOT_FOUND,
       );
     }
+  }
+
+  @Post('start-journey')
+  @UseMiddleware('sessionGuard')
+  async startLearningJourney(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: CreateLearningJourneyReq,
+  ) {
+    const { success, newJourney } = await this.userService.startLearningJourney(
+      req.body,
+    );
+
+    resp.json({
+      success,
+      message: 'new user journey created',
+      status: HttpStatus.CREATED,
+      journey: newJourney,
+    });
   }
 
   @Patch('update-student')

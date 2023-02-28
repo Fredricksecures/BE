@@ -11,6 +11,7 @@ import {
   CreateStudentRes,
   CreateParentReq,
   UpdateParentReq,
+  CreateLearningJourneyReq,
 } from './dto/user.dto';
 import { Student } from 'src/modules/user/entity/student.entity';
 import { Parent } from 'src/modules/auth/entity/parent.entity';
@@ -28,6 +29,10 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { Badge } from 'src/modules/user/entity/badges.entity';
 import { generateRandomHash, isEmpty } from 'src/utils/helpers';
+import { LearningJourney } from './entity/learningJourney.entity';
+import { Lesson } from '../content/entity/lesson.entity';
+import { Chapter } from '../content/entity/chapter.entity';
+import { Subject } from '../content/entity/subject.entity';
 
 @Injectable()
 export class UserService {
@@ -39,6 +44,14 @@ export class UserService {
     @InjectRepository(Parent) private parentRepo: Repository<Parent>,
     @InjectRepository(LearningPackage)
     private packageRepo: Repository<LearningPackage>,
+    @InjectRepository(LearningJourney)
+    private lJRepo: Repository<LearningJourney>,
+    @InjectRepository(Lesson)
+    private lessonRepo: Repository<Lesson>,
+    @InjectRepository(Chapter)
+    private chapterRepo: Repository<Chapter>,
+    @InjectRepository(Subject)
+    private subjectRepo: Repository<Subject>,
     @InjectRepository(Subscription)
     private subscriptionRepo: Repository<Subscription>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
@@ -385,7 +398,11 @@ export class UserService {
             id: studentId,
             parent: { id: user.parent.id },
           },
-          relations: ['student'],
+          relations: [
+            'student',
+            'student.learningJournies',
+            'student.learningJournies.subject',
+          ],
         });
       } catch (exp) {
         throw new HttpException(
@@ -420,7 +437,11 @@ export class UserService {
         where: {
           student: { parent: { id: user.parent.id } },
         },
-        relations: ['student'],
+        relations: [
+          'student',
+          'student.learningJournies',
+          'student.learningJournies.subject',
+        ],
       });
 
       if (!students) {
@@ -539,6 +560,92 @@ export class UserService {
         {
           status: HttpStatus.NOT_IMPLEMENTED,
           error: userErrors.updatingParent,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async startLearningJourney(payload: CreateLearningJourneyReq) {
+    const { studentId, lessonId, subjectId, chapterId } = payload;
+
+    let foundUser: User,
+      newJourney: LearningJourney,
+      foundContent: Lesson | Subject | Chapter;
+
+    try {
+      foundUser = await this.userRepo.findOne({
+        where: { id: studentId },
+        relations: ['student'],
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.updatingStudent + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: userErrors.studentNotFound,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    let colKey: string = '';
+
+    if (lessonId) {
+      colKey = 'lesson';
+      foundContent = await this.lessonRepo.findOne({
+        where: { id: lessonId },
+      });
+    }
+
+    if (chapterId) {
+      colKey = 'chapter';
+      foundContent = await this.chapterRepo.findOne({
+        where: { id: chapterId },
+      });
+    }
+
+    if (subjectId) {
+      colKey = 'subject';
+      foundContent = await this.subjectRepo.findOne({
+        where: { id: subjectId },
+      });
+    }
+
+    try {
+      newJourney = await this.lJRepo.save({
+        student: foundUser.student,
+        subject: await this.subjectRepo.findOne({
+          where: { id: subjectId },
+          [`${colKey}`]: foundContent,
+        }),
+      });
+
+      // updatedStudent = await this.studentRepo.save({
+      //   { ...foundUser.student,
+      //   email: email ?? foundUser.parent.email,
+      //   phoneNumber: phoneNumber ?? foundUser.parent.phoneNumber,
+      //   address: address ?? foundUser.parent.address,
+      // });
+
+      return {
+        success: true,
+        newJourney,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.updatingStudent,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );

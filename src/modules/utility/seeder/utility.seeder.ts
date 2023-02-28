@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { utilityErrors } from '../../../utils/messages';
 import { COUNTRY_SEED, learningPackages } from '../../../utils/constants';
 import { CountryList } from 'src/modules/utility/entity/countryList.entity';
+import { Subject } from 'src/modules/content/entity/subject.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
 
 @Injectable()
@@ -11,6 +12,8 @@ export class UtilitySeeder {
   constructor(
     @InjectRepository(LearningPackage)
     private lPLRepo: Repository<LearningPackage>,
+    @InjectRepository(Subject)
+    private subjectRepo: Repository<Subject>,
     @InjectRepository(CountryList) private countryRepo: Repository<CountryList>, // @InjectRepository(LearningPackage) // private learningPackageRepo: Repository<LearningPackage>,
   ) {}
 
@@ -63,46 +66,42 @@ export class UtilitySeeder {
   }
 
   async seedPackages() {
-    const packageList = await this.lPLRepo.find({});
+    const foundPackages = await this.lPLRepo.find({});
 
-    if (packageList.length === 0) {
-      console.log('seeding learning package list...............📚📖🏫');
-      let createdPackage: LearningPackage,
-        savedPackages: LearningPackage[] = [];
+    if (!foundPackages) {
+      console.log('seeding Learning Packages...............📦📦📦');
 
-      Object.keys(learningPackages).map((k) => {
-        createdPackage = this.lPLRepo.create({
-          name: learningPackages[k].name,
-          type: learningPackages[k].type,
-          price: learningPackages[k].price,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-        savedPackages.push(createdPackage);
-      });
+      return Promise.all(
+        Object.keys(learningPackages).map(async (k) => {
+          const pkg = await this.lPLRepo.save({
+            name: learningPackages[k].name,
+            type: learningPackages[k].type,
+            price: learningPackages[k].price,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          });
+          console.log(
+            '🚀 ~ file: utility.seeder.ts:78 ~ UtilitySeeder ~ Object.keys ~ pkg:',
+            pkg,
+          );
 
-      console.log(savedPackages);
+          const pkgSubjects = learningPackages[k].subjects;
 
-      try {
-        savedPackages = await this.lPLRepo.save(savedPackages);
-      } catch (e) {
-        Logger.error(utilityErrors.seedPackages + e);
-
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: utilityErrors.seedPackages + e,
-          },
-          HttpStatus.NOT_IMPLEMENTED,
+          if (pkgSubjects) {
+            return Object.keys(pkgSubjects).map(async (sub) => {
+              await this.subjectRepo.save({
+                name: sub,
+                learningPackage: pkg,
+              });
+            });
+          }
+        }),
+      ).then((res: Array<any>) => {
+        console.log(
+          '🚀 ~ file: seeder.service.ts ~ line 85 ~ SeederService ~ seedLearningPackages',
+          res,
         );
-      }
-
-      console.log(
-        '🚀 ~ file: seeder.service.ts ~ line 85 ~ SeederService ~ seedLearningPackages',
-        savedPackages,
-      );
-
-      return savedPackages[0];
-    } else return packageList[0];
+      });
+    }
   }
 }
