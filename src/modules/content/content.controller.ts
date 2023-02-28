@@ -14,7 +14,10 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { updateMockTestReq } from '../admin/dto/admin.dto';
-import { updateLeaderboardReq, addReviewReq } from 'src/modules/content/dto/content.dto';
+import {
+  updateLeaderboardReq,
+  addReviewReq,
+} from 'src/modules/content/dto/content.dto';
 import { Request, Response } from 'express';
 import { contentMessages, contentErrors } from 'src/utils/messages';
 import { ContentService } from 'src/modules/content/content.service';
@@ -174,6 +177,31 @@ export class ContentController {
     });
   }
 
+  @Get('mock-test-details/:id')
+  async getMockTestDetails(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Param('id') id: string,
+  ) {
+    const { success, data } = await this.contentService.getMockTestDetails(id);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: contentMessages.mockTestFetchSuccess,
+        data,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: contentErrors.checkingMockTest,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
   @Post('add-review')
   async addReview(
     @Req() req: Request,
@@ -200,6 +228,7 @@ export class ContentController {
       );
     }
   }
+
   @Get('reviews')
   async getReviews(
     @Req() req: Request,
@@ -217,6 +246,7 @@ export class ContentController {
       meta: reviews.meta,
     });
   }
+
   @Patch('update-mockTest/:id')
   async updateMockTest(
     @Req() req: Request,

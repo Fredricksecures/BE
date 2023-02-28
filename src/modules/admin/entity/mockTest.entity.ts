@@ -24,14 +24,20 @@ export class MockTest {
   @Column({ type: 'varchar' })
   mockTestName?: string;
 
-  @Column({ type: 'array',default:'' })
-  subjects?: Array<String>;
+  @Column({ type: 'text' })
+  image?: string;
 
-  @Column({ type: 'string',default:'' })
-  minutes?:String;
+  @Column({ type: 'text', default: '' })
+  subjects?: string;
 
-  @Column({ type: 'string',default:'' })
-  questions?:String;
+  @Column({ type: 'text', default: '' })
+  minutes?: string;
+
+  @Column({ type: 'text', default: '' })
+  questions?: string;
+
+  @Column({ type: 'text', default: '' })
+  instructions?: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

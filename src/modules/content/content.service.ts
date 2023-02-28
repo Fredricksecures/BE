@@ -64,21 +64,21 @@ export class ContentService {
     }
     return paginate<Chapter>(foundChapters, options);
   }
-    // async addQuestions(options: IPaginationOptions): Promise<Pagination<Chapter>> {
-    //   let foundChapters;
-    //   try {
-    //     foundChapters = await this.chapterRepo.createQueryBuilder('Chapter');
-    //   } catch (exp) {
-    //     throw new HttpException(
-    //       {
-    //         status: HttpStatus.NOT_IMPLEMENTED,
-    //         error: contentErrors.failedToFetchChapter + exp,
-    //       },
-    //       HttpStatus.NOT_IMPLEMENTED,
-    //     );
-    //   }
-    //   return paginate<Chapter>(foundChapters, options);
-    // }
+  // async addQuestions(options: IPaginationOptions): Promise<Pagination<Chapter>> {
+  //   let foundChapters;
+  //   try {
+  //     foundChapters = await this.chapterRepo.createQueryBuilder('Chapter');
+  //   } catch (exp) {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: contentErrors.failedToFetchChapter + exp,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
+  //   return paginate<Chapter>(foundChapters, options);
+  // }
 
   async getLessons(options: IPaginationOptions): Promise<Pagination<Lesson>> {
     let foundLessons;
@@ -233,6 +233,14 @@ export class ContentService {
     let foundMockTests;
     try {
       foundMockTests = await this.mockTestRepo.createQueryBuilder('MockTest');
+      foundMockTests.select([
+        'MockTest.id',
+        'MockTest.mockTestName',
+        'MockTest.image',
+        'MockTest.subjects',
+        'MockTest.minutes',
+        'MockTest.questions',
+      ]);
     } catch (exp) {
       throw new HttpException(
         {
@@ -243,6 +251,25 @@ export class ContentService {
       );
     }
     return paginate<MockTest>(foundMockTests, options);
+  }
+
+  async getMockTestDetails(id: string) {
+    let data;
+    try {
+      data = await this.mockTestRepo.findOneBy({ id });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchMockTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return {
+      data,
+      success: true,
+    };
   }
 
   async addReview(addReviewReq: addReviewReq) {
