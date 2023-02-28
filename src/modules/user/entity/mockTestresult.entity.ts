@@ -5,7 +5,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
   } from 'typeorm';
-  
+  import { MockTest } from 'src/modules/admin/entity/mockTest.entity';
   @Entity('mock-test-results')
   export class MockTestResult {
     constructor(data?: MockTestResult) {
@@ -23,13 +23,13 @@ import {
     studentID?: string;
   
     @Column({ type: 'varchar' })
-    mockTestID?: string;
+    mockTestID?: MockTest;
   
-    @Column({ type: 'array' })
-    totalQuestions?: Array<{ id: string }>;
+    @Column({ type: 'integer' })
+    totalPercentage?: number;
 
-    @Column({ type: 'varchar' })
-    totalTime?: string;
+    @Column({ type: 'integer' })
+    totalTime?: number;
 
     @CreateDateColumn({ type: 'timestamp' })
     createdAt?: Date;

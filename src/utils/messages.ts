@@ -303,11 +303,14 @@ export const userMessages = {
   userCreated: 'user created successfully',
   teacherCreated: 'Teacher profile created successfully',
   profileUpdateSuccessful: 'profile updated successfully',
+  createdResult: 'Result Created Successfully',
 };
 export const userErrors = {
   failedToFetchBadge: '',
+  failToGetResult:"Could not create result",
   updateFailed: 'login failed ',
   createdStudent: 'could not create new student ',
+  createdResult: 'could not create new result ',
   updatingStudent: 'Error querying for updating student ',
   getStudentsFailed: 'failed to fetch students',
   noCookieTokenPassed: 'no token passed via cookies ',

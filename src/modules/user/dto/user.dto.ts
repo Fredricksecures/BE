@@ -17,7 +17,7 @@ import { Session } from 'src/modules/auth/entity/session.entity';
 import { Student } from 'src/modules/user/entity/student.entity';
 import { User } from 'src/modules/user/entity/user.entity';
 import { Match } from 'src/utils/decorators';
-
+import { MockTest } from 'src/modules/admin/entity/mockTest.entity';
 class StudentReqObj {
   @IsNotEmpty()
   @IsString()
@@ -135,7 +135,7 @@ export class mockTestResultReq {
 
   @IsNotEmpty()
   @IsString()
-  mockTestID: string;
+  mockTestID: MockTest;
 
   @IsNotEmpty()
   @IsArray()
@@ -143,5 +143,5 @@ export class mockTestResultReq {
 
   @IsNotEmpty()
   @IsString()
-  totalTime: string;
+  totalTime: number;
 }

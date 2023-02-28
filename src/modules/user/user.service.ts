@@ -23,6 +23,7 @@ import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
 import { Subscription } from 'src/modules/subscription/entity/subscription.entity';
 import { MockTestResult } from 'src/modules/user/entity/mockTestresult.entity';
+import { MockTestQuestions } from 'src/modules/admin/entity/mockTestQuestions.entity';
 import {
   IPaginationOptions,
   paginate,
@@ -43,6 +44,8 @@ export class UserService {
     @InjectRepository(Subscription)
     private subscriptionRepo: Repository<Subscription>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
+    @InjectRepository(MockTestQuestions) private mockTestQuestionsRepo: Repository<MockTestQuestions>,
+    @InjectRepository(MockTestResult) private mockTestResultRepo: Repository<MockTestResult>
   ) {
     this.test();
   }
@@ -505,21 +508,37 @@ export class UserService {
   async getMockTestResult(
     mockTestResultReq: mockTestResultReq
   ) {
-    const { studentID, mockTestID, totalQuestions, totalTime } = mockTestResultReq;
-
+    const { studentID, mockTestID,  totalTime } = mockTestResultReq;
+    let totalMarks = 0,count = 0, addMockTestResult,totalQuestions=mockTestResultReq.totalQuestions;
     try {
-      totalQuestions.forEach((data)=>{
-        let foundQuestion = await this.userRepo.findOne({
-          where: { id: data.id },
+      totalQuestions.forEach(async(data)=>{
+        let foundQuestion = await this.mockTestQuestionsRepo.findOne({
+          where: { id: Object.keys(data).toString()  },
         });
-        if(foundQuestion.)
+        if(foundQuestion.correct_answer == data.id)
+        {
+          count++;
+          totalMarks =totalMarks+count;
+        }
       })
-     
+      let total = await this.mockTestQuestionsRepo.find({where: {mock_test: mockTestID}})
+      let totalMarksPercentage = total.length * totalMarks/100;
+      let totalTimePercentage = 35 * totalTime/100;
+      addMockTestResult = await this.mockTestResultRepo.save({
+        studentID:studentID,
+        mockTestID:mockTestID,
+        totalPercentage:totalMarksPercentage,
+        totalTime:totalTimePercentage
+      });
+      return {
+        success: true,
+        addMockTestResult,
+      };
     } catch (exp) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: userErrors.failedToFetchBadge + exp,
+          error: userErrors.failToGetResult + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );

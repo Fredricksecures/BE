@@ -190,21 +190,21 @@ export class UserController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: mockTestResultReq,
   ) {
-    const { success, result } =
+    const { success, addMockTestResult } =
       await this.userService.getMockTestResult(req.body);
 
     if (success) {
       resp.json({
         success,
-        message: userMessages.createdStudent,
+        message: userMessages.createdResult,
         status: HttpStatus.CREATED,
-        result: result,
+        result: addMockTestResult,
       });
     } else {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: userErrors.createdStudent,
+          error: userErrors.createdResult,
         },
         HttpStatus.NOT_FOUND,
       );
