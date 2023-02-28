@@ -178,6 +178,10 @@ export const adminMessages = {
   failToCreateAttendees: 'Error while creating attendees',
   updatedEmailSuccess: 'Email updated successfully',
   emailTemplateFetchSuccess: 'Email template Fetched successfully',
+  bannerFetched: 'Banners fetched successfully.',
+  bannerAdded: 'Banners Added successfully.',
+  bannerUpdated: 'Banners updated successfully.',
+
 };
 
 export const adminErrors = {
@@ -280,6 +284,9 @@ export const adminErrors = {
   templateNotFound: 'could not find email template with id provided',
   updatingTemplate: 'Error querying for updating email template',
   failedToFetchEmailTemplate: 'error while fetching email template. ',
+  failedToFetchBanner: 'Failed to fetch banners.',
+  failedToUpdateBanner: 'Failed to update banners.',
+  failToAddBanner: 'Failed to add banners.',
 };
 export const liveClassMessages = {
   upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',

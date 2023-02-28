@@ -1,3 +1,4 @@
+import { Banners } from './../modules/admin/entity/banners.entity';
 import { CartGroup } from './../modules/store/entities/cart.group.entity';
 import { UserEbooks } from 'src/modules/ebook/entities/user.ebook.entity';
 import { Ebooks } from './../modules/ebook/entities/ebook.entity';
@@ -69,6 +70,7 @@ export const ModuleConfigs = {
       Orders,
       Ebooks,
       CartGroup,
+      Banners,
     ],
   },
   utility: {
@@ -111,6 +113,7 @@ export const ModuleConfigs = {
       Subscription,
       Invoice,
       EmailTemplate,
+      Banners,
     ],
   },
   subscription: {

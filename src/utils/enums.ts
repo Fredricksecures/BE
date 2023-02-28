@@ -89,3 +89,8 @@ export enum ProductType {
   EBOOK = 'EBOOK',
   IMOSETAB = 'IMOSETAB',
 }
+
+export enum BannerType {
+  INTERNAL = 'INTERNAL',
+  EXTERNAL = 'EXTERNAL',
+}

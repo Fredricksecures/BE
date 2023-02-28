@@ -51,6 +51,8 @@ import {
   bulkEmailReq,
   createEmailTemplateReq,
   updateEmailTemplateReq,
+  AddBanner,
+  UpdateBanner,
 } from './dto/admin.dto';
 import { AdminService } from './admin.service';
 import { UserTypes } from 'src/utils/enums';
@@ -876,11 +878,14 @@ export class AdminController {
     //@Param('id') id,
   ) {
     const {
-     params: {id},
+      params: { id },
       body: { user },
     } = req;
-    
-    const { success, bookedClass } = await this.adminService.bookedClass( {classId: `${id}`, user});
+
+    const { success, bookedClass } = await this.adminService.bookedClass({
+      classId: `${id}`,
+      user,
+    });
     //console.log(studentId.id)
     if (success) {
       resp.json({
@@ -904,14 +909,15 @@ export class AdminController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Body() body: bookAttendeesReq,
-   
   ) {
     const {
-      params: {id},
-       body: { user },
-     } = req;
-    const { success, bookAttendees } =
-      await this.adminService.bookAttendees({classId: `${id}`, user});
+      params: { id },
+      body: { user },
+    } = req;
+    const { success, bookAttendees } = await this.adminService.bookAttendees({
+      classId: `${id}`,
+      user,
+    });
 
     if (success) {
       resp.json({
@@ -929,6 +935,7 @@ export class AdminController {
       );
     }
   }
+
   @Post('bulk-email')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -954,6 +961,7 @@ export class AdminController {
       });
     }
   }
+
   @Post('create-email-template')
   async createEmailTemplate(
     @Req() req: Request,
@@ -979,6 +987,7 @@ export class AdminController {
       );
     }
   }
+
   @Patch('update-email-template/:id')
   async updateEmailTemplate(
     @Req() req: Request,
@@ -1008,6 +1017,7 @@ export class AdminController {
       );
     }
   }
+
   @Get('email-template/:id?')
   async getEmailTemplate(
     @Req() req: Request,
@@ -1023,5 +1033,81 @@ export class AdminController {
       message: adminMessages.emailTemplateFetchSuccess,
       templates: templates,
     });
+  }
+
+  @Post('add-banner')
+  async addBanner(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: AddBanner,
+  ) {
+    const { success, data } = await this.adminService.addBanner(body);
+
+    if (success) {
+      resp.json({
+        status: HttpStatus.OK,
+        message: adminMessages.bannerAdded,
+        data,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.failToAddBanner,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Patch('update-banner')
+  async updateBanner(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: UpdateBanner,
+  ) {
+    const { success, data } = await this.adminService.updateBanner(req.body);
+
+    if (success) {
+      resp.json({
+        success,
+        message: adminMessages.bannerUpdated,
+        status: HttpStatus.OK,
+        data,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.failedToUpdateBanner,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+
+  @Get('get-banners')
+  async getBanners(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const { success, data } = await this.adminService.getBanners();
+
+    if (success) {
+      resp.json({
+        success,
+        message: adminMessages.bannerFetched,
+        status: HttpStatus.OK,
+        data,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: adminErrors.failedToFetchBanner,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }
