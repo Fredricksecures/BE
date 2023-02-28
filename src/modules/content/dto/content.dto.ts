@@ -18,7 +18,7 @@ export class addReviewReq {
 export class updateMockTestReq {
   @IsNotEmpty()
   @IsString()
-  mockTestName: string;
+  name: string;
 
   @IsNotEmpty()
   @IsString()

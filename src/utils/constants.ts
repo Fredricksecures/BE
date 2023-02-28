@@ -32,6 +32,7 @@ import { MockTest } from '../modules/admin/entity/mockTest.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
 import { Settings } from 'src/modules/user/entity/settings.entity';
 import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
+import { MockTestQuestions } from 'src/modules/admin/entity/mockTestQuestions.entity';
 
 config();
 
@@ -71,6 +72,7 @@ export const ModuleConfigs = {
       Ebooks,
       CartGroup,
       Banners,
+      MockTestQuestions,
     ],
   },
   utility: {
@@ -114,6 +116,7 @@ export const ModuleConfigs = {
       Invoice,
       EmailTemplate,
       Banners,
+      MockTestQuestions,
     ],
   },
   subscription: {
@@ -131,6 +134,7 @@ export const ModuleConfigs = {
       Leaderboard,
       MockTest,
       Class,
+      MockTestQuestions,
       Review,
     ],
   },

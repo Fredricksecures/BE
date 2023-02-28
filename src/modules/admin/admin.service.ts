@@ -1142,12 +1142,12 @@ export class AdminService {
   }
 
   async createMockTest(createMockTestReq: createMockTestReq) {
-    const { mockTestName } = createMockTestReq;
+    const { name } = createMockTestReq;
     let mockTestCreated: MockTest;
 
     try {
       mockTestCreated = await this.mockTestRepo.save({
-        mockTestName,
+        name,
       });
     } catch (e) {
       throw new HttpException(
@@ -1170,7 +1170,7 @@ export class AdminService {
     id: string,
     updateMockTestReq: updateMockTestReq,
   ) {
-    const { mockTestName } = updateMockTestReq;
+    const { name } = updateMockTestReq;
     let foundMockTest, updatedMockTest: Badge;
 
     try {
@@ -1200,7 +1200,7 @@ export class AdminService {
     try {
       updatedMockTest = await this.mockTestRepo.save({
         ...foundMockTest,
-        mockTestName: mockTestName ?? foundMockTest.mockTestName,
+        name: name ?? foundMockTest.name,
       });
 
       return {

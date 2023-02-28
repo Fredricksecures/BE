@@ -235,7 +235,7 @@ export class ContentService {
       foundMockTests = await this.mockTestRepo.createQueryBuilder('MockTest');
       foundMockTests.select([
         'MockTest.id',
-        'MockTest.mockTestName',
+        'MockTest.name',
         'MockTest.image',
         'MockTest.subjects',
         'MockTest.minutes',
@@ -346,7 +346,7 @@ export class ContentService {
   }
 
   async updateMockTest(id: string, updateMockTestReq: updateMockTestReq) {
-    const { mockTestName, subject } = updateMockTestReq;
+    const { name, subject } = updateMockTestReq;
 
     let foundMockTest, updatedMockTest: MockTest;
 
@@ -377,7 +377,7 @@ export class ContentService {
     try {
       updatedMockTest = await this.leaderboardRepo.save({
         ...foundMockTest,
-        mockTestName: mockTestName ?? foundMockTest.mockTestName,
+        name: name ?? foundMockTest.name,
         subject: subject ?? foundMockTest.subject,
       });
 

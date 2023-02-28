@@ -94,3 +94,10 @@ export enum BannerType {
   INTERNAL = 'INTERNAL',
   EXTERNAL = 'EXTERNAL',
 }
+
+export enum CorrectAnswer {
+  option_a = 'option_a',
+  option_b = 'option_b',
+  option_c = 'option_c',
+  option_d = 'option_d',
+}

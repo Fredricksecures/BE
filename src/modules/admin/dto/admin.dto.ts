@@ -215,12 +215,12 @@ export class updateTestReq {
 export class createMockTestReq {
   @IsNotEmpty()
   @IsString()
-  mockTestName: string;
+  name: string;
 }
 export class updateMockTestReq {
   @IsNotEmpty()
   @IsString()
-  mockTestName: string;
+  name: string;
 }
 export class createBadgeReq {
   @IsNotEmpty()

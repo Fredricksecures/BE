@@ -1,3 +1,4 @@
+import { MockTestQuestions } from './mockTestQuestions.entity';
 import {
   Column,
   Entity,
@@ -22,22 +23,28 @@ export class MockTest {
   id?: string;
 
   @Column({ type: 'varchar' })
-  mockTestName?: string;
+  name?: string;
 
   @Column({ type: 'text' })
   image?: string;
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'varchar' })
   subjects?: string;
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'varchar' })
   minutes?: string;
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'varchar' })
   questions?: string;
 
   @Column({ type: 'text', default: '' })
   instructions?: string;
+
+  @OneToMany(
+    () => MockTestQuestions,
+    (mockTestQuestions) => mockTestQuestions.mock_test,
+  )
+  question?: MockTestQuestions;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
