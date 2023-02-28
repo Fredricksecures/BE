@@ -126,3 +126,22 @@ export class UpdateParentReq {
   @IsString()
   address: string;
 }
+
+export class mockTestResultReq {
+
+  @IsNotEmpty()
+  @IsString()
+  studentID: string;
+
+  @IsNotEmpty()
+  @IsString()
+  mockTestID: string;
+
+  @IsNotEmpty()
+  @IsArray()
+  totalQuestions: Array<{id:string}>;
+
+  @IsNotEmpty()
+  @IsString()
+  totalTime: string;
+}

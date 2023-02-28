@@ -11,6 +11,7 @@ import {
   CreateStudentRes,
   CreateParentReq,
   UpdateParentReq,
+  mockTestResultReq
 } from './dto/user.dto';
 import { Student } from 'src/modules/user/entity/student.entity';
 import { Parent } from 'src/modules/auth/entity/parent.entity';
@@ -21,6 +22,7 @@ import { UtilityService } from '../utility/utility.service';
 import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
 import { Subscription } from 'src/modules/subscription/entity/subscription.entity';
+import { MockTestResult } from 'src/modules/user/entity/mockTestresult.entity';
 import {
   IPaginationOptions,
   paginate,
@@ -498,5 +500,30 @@ export class UserService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
+  }
+
+  async getMockTestResult(
+    mockTestResultReq: mockTestResultReq
+  ) {
+    const { studentID, mockTestID, totalQuestions, totalTime } = mockTestResultReq;
+
+    try {
+      totalQuestions.forEach((data)=>{
+        let foundQuestion = await this.userRepo.findOne({
+          where: { id: data.id },
+        });
+        if(foundQuestion.)
+      })
+     
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.failedToFetchBadge + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  //return paginate<Badge>(foundBadges, options);
   }
 }

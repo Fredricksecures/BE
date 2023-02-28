@@ -21,6 +21,7 @@ import {
   UpdateStudentReq,
   CreateStudentReq,
   BasicUpdateRes,
+  mockTestResultReq
 } from 'src/modules/user/dto/user.dto';
 import { userErrors, userMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
@@ -177,6 +178,33 @@ export class UserController {
         {
           status: HttpStatus.NOT_FOUND,
           error: userErrors.updateFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Post('get-mock-test-result')
+  @UseMiddleware('sessionGuard')
+  async getMockTestResult(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: mockTestResultReq,
+  ) {
+    const { success, result } =
+      await this.userService.getMockTestResult(req.body);
+
+    if (success) {
+      resp.json({
+        success,
+        message: userMessages.createdStudent,
+        status: HttpStatus.CREATED,
+        result: result,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: userErrors.createdStudent,
         },
         HttpStatus.NOT_FOUND,
       );
