@@ -135,11 +135,11 @@ export class mockTestResultReq {
 
   @IsNotEmpty()
   @IsString()
-  mockTestID: MockTest;
+  mockTestID: string;
 
   @IsNotEmpty()
   @IsArray()
-  totalQuestions: Array<{id:string}>;
+  totalQuestions: Array<{id:string,answer:string}>;
 
   @IsNotEmpty()
   @IsString()

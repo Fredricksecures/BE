@@ -23,12 +23,12 @@ import {
     studentID?: string;
   
     @Column({ type: 'varchar' })
-    mockTestID?: MockTest;
+    mockTestID?: string;
   
-    @Column({ type: 'integer' })
+    @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
     totalPercentage?: number;
 
-    @Column({ type: 'integer' })
+    @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
     totalTime?: number;
 
     @CreateDateColumn({ type: 'timestamp' })

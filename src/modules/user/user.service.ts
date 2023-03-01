@@ -512,36 +512,36 @@ export class UserService {
     const { studentID, mockTestID, totalQuestions, totalTime } =
       mockTestResultReq;
     let totalMarks = 0,
-      addMockTestResult;
+      addMockTestResult,totalMarksPercentage,totalTimePercentage;
     var count = 0;
     try {
       let total = await this.mockTestQuestionsRepo.find({
-        where: { mock_test: mockTestID },
-        relations: ['MockTest'],
+        where: {
+          mock_test: {
+            id: mockTestID,
+          },
+        },
+        relations: ['mock_test'],
       });
-      totalQuestions.forEach( (data) => {
-        Object.keys(data).forEach(async (element) => {
-          let foundQuestion = await this.mockTestQuestionsRepo.findOne({
-            where: { id: element }, //Object.keys(element).toString()
-          });
-          if (foundQuestion.correct_answer == data[element]) {
-            count += 1;
-            totalMarks = totalMarks + 1;
-          }
+     
+      totalQuestions.forEach(async (data) => {
+        let foundQuestion = await this.mockTestQuestionsRepo.findOne({
+          where: { id: data.id },
         });
-        console.log(totalMarks);
+        if (foundQuestion.correct_answer == data.answer) {
+          totalMarks = totalMarks + 1;
+        }
       });
 
-      console.log(count);
-      
-      let totalMarksPercentage = (total.length * totalMarks) / 100;
-      let totalTimePercentage = (35 * totalTime) / 100;
+       totalMarksPercentage = (totalMarks / total.length) * 100;
+       totalTimePercentage = (totalTime / 35) * 100;
       addMockTestResult = await this.mockTestResultRepo.save({
         studentID: studentID,
         mockTestID: mockTestID,
         totalPercentage: totalMarksPercentage,
         totalTime: totalTimePercentage,
       });
+
       return {
         success: true,
         addMockTestResult,
