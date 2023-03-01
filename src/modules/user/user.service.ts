@@ -11,7 +11,7 @@ import {
   CreateStudentRes,
   CreateParentReq,
   UpdateParentReq,
-  mockTestResultReq
+  mockTestResultReq,
 } from './dto/user.dto';
 import { Student } from 'src/modules/user/entity/student.entity';
 import { Parent } from 'src/modules/auth/entity/parent.entity';
@@ -34,6 +34,11 @@ import { Badge } from 'src/modules/user/entity/badges.entity';
 @Injectable()
 export class UserService {
   constructor(
+    @InjectRepository(MockTestQuestions)
+    private mockTestQuestionsRepo: Repository<MockTestQuestions>,
+    @InjectRepository(MockTestResult)
+    private mockTestResultRepo: Repository<MockTestResult>,
+
     private jwtService: JwtService,
     private readonly utilityService: UtilityService,
     @InjectRepository(User) private userRepo: Repository<User>,
@@ -44,8 +49,6 @@ export class UserService {
     @InjectRepository(Subscription)
     private subscriptionRepo: Repository<Subscription>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
-    @InjectRepository(MockTestQuestions) private mockTestQuestionsRepo: Repository<MockTestQuestions>,
-    @InjectRepository(MockTestResult) private mockTestResultRepo: Repository<MockTestResult>
   ) {
     this.test();
   }
@@ -505,30 +508,39 @@ export class UserService {
     }
   }
 
-  async getMockTestResult(
-    mockTestResultReq: mockTestResultReq
-  ) {
-    const { studentID, mockTestID,  totalTime } = mockTestResultReq;
-    let totalMarks = 0,count = 0, addMockTestResult,totalQuestions=mockTestResultReq.totalQuestions;
+  async getMockTestResult(mockTestResultReq: mockTestResultReq) {
+    const { studentID, mockTestID, totalQuestions, totalTime } =
+      mockTestResultReq;
+    let totalMarks = 0,
+      addMockTestResult;
+    var count = 0;
     try {
-      totalQuestions.forEach(async(data)=>{
-        let foundQuestion = await this.mockTestQuestionsRepo.findOne({
-          where: { id: Object.keys(data).toString()  },
+      let total = await this.mockTestQuestionsRepo.find({
+        where: { mock_test: mockTestID },
+        relations: ['MockTest'],
+      });
+      totalQuestions.forEach( (data) => {
+        Object.keys(data).forEach(async (element) => {
+          let foundQuestion = await this.mockTestQuestionsRepo.findOne({
+            where: { id: element }, //Object.keys(element).toString()
+          });
+          if (foundQuestion.correct_answer == data[element]) {
+            count += 1;
+            totalMarks = totalMarks + 1;
+          }
         });
-        if(foundQuestion.correct_answer == data.id)
-        {
-          count++;
-          totalMarks =totalMarks+count;
-        }
-      })
-      let total = await this.mockTestQuestionsRepo.find({where: {mock_test: mockTestID}})
-      let totalMarksPercentage = total.length * totalMarks/100;
-      let totalTimePercentage = 35 * totalTime/100;
+        console.log(totalMarks);
+      });
+
+      console.log(count);
+      
+      let totalMarksPercentage = (total.length * totalMarks) / 100;
+      let totalTimePercentage = (35 * totalTime) / 100;
       addMockTestResult = await this.mockTestResultRepo.save({
-        studentID:studentID,
-        mockTestID:mockTestID,
-        totalPercentage:totalMarksPercentage,
-        totalTime:totalTimePercentage
+        studentID: studentID,
+        mockTestID: mockTestID,
+        totalPercentage: totalMarksPercentage,
+        totalTime: totalTimePercentage,
       });
       return {
         success: true,
@@ -543,6 +555,6 @@ export class UserService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-  //return paginate<Badge>(foundBadges, options);
+    //return paginate<Badge>(foundBadges, options);
   }
 }

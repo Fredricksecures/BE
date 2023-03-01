@@ -184,7 +184,7 @@ export class UserController {
     }
   }
   @Post('get-mock-test-result')
-  @UseMiddleware('sessionGuard')
+  // @UseMiddleware('sessionGuard')
   async getMockTestResult(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,

@@ -1,3 +1,5 @@
+import { MockTestResult } from 'src/modules/user/entity/mockTestresult.entity';
+import { MockTestQuestions } from './../modules/admin/entity/mockTestQuestions.entity';
 import { Banners } from './../modules/admin/entity/banners.entity';
 import { CartGroup } from './../modules/store/entities/cart.group.entity';
 import { UserEbooks } from 'src/modules/ebook/entities/user.ebook.entity';
@@ -32,7 +34,6 @@ import { MockTest } from '../modules/admin/entity/mockTest.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
 import { Settings } from 'src/modules/user/entity/settings.entity';
 import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
-import { MockTestQuestions } from 'src/modules/admin/entity/mockTestQuestions.entity';
 
 config();
 
@@ -73,6 +74,7 @@ export const ModuleConfigs = {
       CartGroup,
       Banners,
       MockTestQuestions,
+      MockTestResult,
     ],
   },
   utility: {
@@ -90,6 +92,8 @@ export const ModuleConfigs = {
       Subscription,
       Settings,
       Badge,
+      MockTestQuestions,
+      MockTestResult,
     ],
   },
   admin: {
@@ -117,6 +121,7 @@ export const ModuleConfigs = {
       EmailTemplate,
       Banners,
       MockTestQuestions,
+      MockTestResult,
     ],
   },
   subscription: {
@@ -135,6 +140,8 @@ export const ModuleConfigs = {
       MockTest,
       Class,
       MockTestQuestions,
+
+      MockTestResult,
       Review,
     ],
   },
@@ -152,6 +159,8 @@ export const ModuleConfigs = {
       LearningPackage,
       Subscription,
       Badge,
+      MockTestQuestions,
+      MockTestResult,
     ],
   },
   store: {
@@ -168,6 +177,9 @@ export const ModuleConfigs = {
       Badge,
       Orders,
       CartGroup,
+      Session,
+      MockTestQuestions,
+      MockTestResult,
     ],
   },
   ebook: {
@@ -185,6 +197,8 @@ export const ModuleConfigs = {
       Badge,
       UserEbooks,
       CartGroup,
+      MockTestQuestions,
+      MockTestResult,
     ],
   },
 };
