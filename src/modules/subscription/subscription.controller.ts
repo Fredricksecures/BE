@@ -33,7 +33,7 @@ export class SubscriptionController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const subscriptions = await this.SubscriptionService.getSubscriptions(
@@ -89,7 +89,7 @@ export class SubscriptionController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number = 1,
     @Query() filters,
     @Param('subscriptionId') subscriptionId,
   ) {
