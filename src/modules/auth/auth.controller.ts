@@ -131,12 +131,17 @@ export class AuthController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: ForgotPasswordReq,
   ) {
-    await this.authService.verifyAccount(body);
+    const session = await this.authService.verifyAccount(body);
+    console.log(
+      '🚀 ~ file: auth.controller.ts:135 ~ AuthController ~ session:',
+      session,
+    );
 
     resp.json({
       message: authMessages.verificationSuccess,
       status: HttpStatus.OK,
       success: true,
+      session,
     });
   }
 

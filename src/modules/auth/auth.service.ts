@@ -236,7 +236,6 @@ export class AuthService {
     const { token } = payload;
 
     let foundUser: User;
-
     try {
       foundUser = await this.userRepo.findOne({
         where: { parent: { verificationToken: token } },
@@ -266,11 +265,13 @@ export class AuthService {
           id: foundUser.parent.id,
           verified: true,
         });
+
+        return await this.createSession(foundUser, {});
       } catch (e) {
         throw new HttpException(
           {
             status: HttpStatus.NOT_MODIFIED,
-            error: 'error updating parent db',
+            error: 'error updating parent db ' + e,
           },
           HttpStatus.NOT_MODIFIED,
         );
