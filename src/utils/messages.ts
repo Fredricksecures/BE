@@ -42,6 +42,8 @@ export const authMessages = {
   logout: 'Logout successfully',
   createdStudent: 'Students Created Successfully',
   studentsFetchSuccess: 'Students Fetched successfully',
+  verificationSuccess : 'Verify Successfully',
+  tokenResent : 'Token resent successfully'
 };
 export const authErrors = {
   noMockDevice: 'could not find mock device for seeder ',
