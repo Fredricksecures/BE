@@ -25,27 +25,33 @@ export class Parent {
     }
   }
 
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id?: string;
 
   @ManyToMany(() => CountryList)
   @JoinColumn({ name: 'country' })
   country?: CountryList;
 
-  @Column({ type: 'varchar', unique: true, default: null })
+  @Column({ type: 'varchar', nullable: true })
   email?: string;
 
-  @Column({ type: 'varchar', unique: true, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   phoneNumber?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   address?: string;
 
   @Column({ type: 'varchar' })
   password?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   passwordResetPin?: string;
+
+  @Column({ type: 'bool', default: false })
+  verified?: boolean;
+
+  @Column({ type: 'varchar', unique: true, nullable: true })
+  verificationToken?: string;
 
   @Column({
     type: 'enum',

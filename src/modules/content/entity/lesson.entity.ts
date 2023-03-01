@@ -12,6 +12,7 @@ import { Material } from './material.entity';
 import { ReportCard } from '../../user/entity/reportCard.entity';
 import { Review } from './review.entity';
 import { Test } from './test.entity';
+import { LearningJourney } from 'src/modules/user/entity/learningJourney.entity';
 
 @Entity('lessons')
 export class Lesson {
@@ -34,6 +35,9 @@ export class Lesson {
 
   @OneToMany(() => Material, (Material) => Material.lesson)
   materials?: Material[];
+
+  @OneToMany(() => LearningJourney, (learningJourney) => learningJourney.lesson)
+  learningJournies?: LearningJourney[];
 
   @OneToMany(() => Test, (test) => test.lesson)
   tests?: Test[];

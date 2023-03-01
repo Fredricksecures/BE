@@ -126,6 +126,36 @@ export class AuthController {
     });
   }
 
+  @Post('verify')
+  async verify(
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: ForgotPasswordReq,
+  ) {
+    const session = await this.authService.verifyAccount(body);
+
+    resp.json({
+      message: authMessages.verificationSuccess,
+      status: HttpStatus.OK,
+      success: true,
+      session,
+    });
+  }
+
+  @Post('resend-token')
+  async resendOTP(
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: ForgotPasswordReq,
+  ) {
+    const token = await this.authService.resendToken(body);
+
+    resp.json({
+      message: authMessages.tokenResent,
+      status: HttpStatus.OK,
+      success: true,
+      token,
+    });
+  }
+
   @Post('reset-password')
   async resetPasswordCtlr(
     @Res({ passthrough: true }) resp: Response,

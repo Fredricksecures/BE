@@ -9,8 +9,7 @@ import {
 } from 'typeorm';
 import { Chapter } from './chapter.entity';
 import { LearningPackage } from '../../utility/entity/learningPackage.entity';
-import { Lesson } from './lesson.entity';
-import { ReportCard } from '../../user/entity/reportCard.entity';
+import { LearningJourney } from 'src/modules/user/entity/learningJourney.entity';
 
 @Entity('subjects')
 export class Subject {
@@ -25,14 +24,23 @@ export class Subject {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   type?: string;
+
+  @Column({ type: 'varchar' })
+  name?: string;
 
   @ManyToOne(
     () => LearningPackage,
     (LearningPackage) => LearningPackage.subjects,
   )
   learningPackage?: LearningPackage;
+
+  @OneToMany(
+    () => LearningJourney,
+    (learningJourney) => learningJourney.subject,
+  )
+  learningJournies?: LearningJourney[];
 
   @OneToMany(() => Chapter, (Chapter) => Chapter.subject)
   chapters?: Chapter[];

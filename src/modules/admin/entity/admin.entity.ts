@@ -21,7 +21,7 @@ export class Admin {
     }
   }
 
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id?: string;
 
   @Column({ type: 'varchar', unique: true })

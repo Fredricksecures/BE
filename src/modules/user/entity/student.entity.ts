@@ -8,6 +8,7 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Column,
 } from 'typeorm';
 import { Class } from '../../liveClass/entity/class.entity';
 import { Parent } from '../../auth/entity/parent.entity';
@@ -15,6 +16,7 @@ import { Subscription } from '../../subscription/entity/subscription.entity';
 import { User } from './user.entity';
 import { ReportCard } from './reportCard.entity';
 import { Leaderboard } from '../../content/entity/leaderBoard.entity';
+import { LearningJourney } from './learningJourney.entity';
 
 @Entity('students')
 export class Student {
@@ -26,7 +28,7 @@ export class Student {
     }
   }
 
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id?: string;
 
   @OneToOne(() => User)
@@ -37,6 +39,15 @@ export class Student {
 
   @OneToMany(() => ReportCard, (reportCard) => reportCard.student)
   reportCard?: ReportCard[];
+
+  @OneToMany(
+    () => LearningJourney,
+    (learningJourney) => learningJourney.student,
+  )
+  learningJournies?: LearningJourney[];
+
+  @Column('varchar', { default: '0' })
+  points?: string;
 
   @OneToMany(() => Leaderboard, (leaderboard) => leaderboard.student)
   leaderboard?: Leaderboard[];
