@@ -512,10 +512,8 @@ export class UserService {
     const { studentID, mockTestID, totalQuestions, totalTime } =
       mockTestResultReq;
     let totalMarks = 0,
-      addMockTestResult,
-      totalMarksPercentage,
-      totalTimePercentage;
-
+      addMockTestResult,totalMarksPercentage,totalTimePercentage;
+    var count = 0;
     try {
       let total = await this.mockTestQuestionsRepo.find({
         where: {
@@ -525,19 +523,18 @@ export class UserService {
         },
         relations: ['mock_test'],
       });
-
-      for (let index = 0; index < totalQuestions.length; index++) {
-        const element = totalQuestions[index];
+     
+      totalQuestions.forEach(async (data) => {
         let foundQuestion = await this.mockTestQuestionsRepo.findOne({
-          where: { id: element.id },
+          where: { id: data.id },
         });
-        if (foundQuestion.correct_answer == element.answer) {
+        if (foundQuestion.correct_answer == data.answer) {
           totalMarks = totalMarks + 1;
         }
-      }
+      });
 
-      totalMarksPercentage = (totalMarks / total.length) * 100;
-      totalTimePercentage = (totalTime / 35) * 100;
+       totalMarksPercentage = (totalMarks / total.length) * 100;
+       totalTimePercentage = (totalTime / 35) * 100;
       addMockTestResult = await this.mockTestResultRepo.save({
         studentID: studentID,
         mockTestID: mockTestID,
@@ -558,5 +555,6 @@ export class UserService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
+    //return paginate<Badge>(foundBadges, options);
   }
 }

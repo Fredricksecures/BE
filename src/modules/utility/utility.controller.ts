@@ -54,7 +54,7 @@ export class UtilityController {
     @Req() req: Request,
     @Res() resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
     @Query('supported') supported,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -87,7 +87,7 @@ export class UtilityController {
     @Req() req: Request,
     @Res() resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number = 1,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit: number = 1,
   ) {
     const id = req.query.id;
     const options: IPaginationOptions = { limit, page };

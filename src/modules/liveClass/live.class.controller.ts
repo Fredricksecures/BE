@@ -28,7 +28,7 @@ export class LiveClassController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
+    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
   ) {
     const options: IPaginationOptions = { limit, page };
     const upcomingClasses = await this.liveClassService.getUpcomingClasses(
