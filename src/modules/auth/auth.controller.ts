@@ -132,10 +132,6 @@ export class AuthController {
     @Body() body: ForgotPasswordReq,
   ) {
     const session = await this.authService.verifyAccount(body);
-    console.log(
-      '🚀 ~ file: auth.controller.ts:135 ~ AuthController ~ session:',
-      session,
-    );
 
     resp.json({
       message: authMessages.verificationSuccess,
