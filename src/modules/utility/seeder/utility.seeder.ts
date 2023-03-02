@@ -59,7 +59,7 @@ export class UtilitySeeder {
 
       console.log(
         '🚀 ~ file: seeder.service.ts ~ line 85 ~ SeederService ~ seedClasses',
-        savedCountries,
+        // savedCountries,
       );
       return savedCountries[0];
     } else return preSavedcountries[0];
@@ -68,7 +68,7 @@ export class UtilitySeeder {
   async seedPackages() {
     const foundPackages = await this.lPLRepo.find({});
 
-    if (!foundPackages || foundPackages.length == 0) {
+    if (foundPackages || foundPackages.length == 0) {
       console.log('seeding Learning Packages...............📦📦📦');
 
       return Promise.all(
