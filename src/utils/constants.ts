@@ -34,7 +34,7 @@ import { MockTest } from '../modules/admin/entity/mockTest.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
 import { Settings } from 'src/modules/user/entity/settings.entity';
 import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
-import { LearningJourney } from '../modules/user/entity/learningJourney.entity'
+import { LearningJourney } from '../modules/user/entity/learningJourney.entity';
 config();
 
 const { JWT_SECRET, JWT_EXPIRATION_TIME } = process.env;
@@ -78,7 +78,7 @@ export const ModuleConfigs = {
     ],
   },
   utility: {
-    entities: [CountryList,Subject, LearningPackage, Device],
+    entities: [CountryList, Subject, LearningPackage, Device],
   },
   auth: {
     entities: [
@@ -161,7 +161,7 @@ export const ModuleConfigs = {
       Badge,
       MockTestQuestions,
       MockTestResult,
-      LearningJourney
+      LearningJourney,
     ],
   },
   store: {
@@ -217,7 +217,19 @@ export const GET_ALL_ENTITIES = () => [
 
 //* LEARNING PACKAGES_______________________________________
 export const learningPackages = {
-  RECEPTION: { name: 'RECEPTION', type: PackageTypes.PRE_SCHOOL, price: 1748 },
+  RECEPTION: {
+    name: 'RECEPTION',
+    type: PackageTypes.PRE_SCHOOL,
+    price: 1748,
+    subjects: {
+      English: {
+        icon: '',
+      },
+      Math: {
+        icon: '',
+      },
+    },
+  },
 
   GRADE_1: { name: 'GRADE_1', type: PackageTypes.PRIMARY_SCHOOL, price: 2900 },
   GRADE_2: { name: 'GRADE_2', type: PackageTypes.PRIMARY_SCHOOL, price: 4638 },
