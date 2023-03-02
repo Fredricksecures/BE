@@ -21,6 +21,11 @@ export enum DeviceTypes {
   UNKNOWN = 'UNKNOWN',
 }
 
+export enum OrderTypes {
+  PICKUP = 'PICKUP',
+  DELIVERY = 'DELIVERY',
+}
+
 export enum BrowserTypes {
   CHROME = 'CHROME',
   EDGE = 'EDGE',
@@ -78,4 +83,21 @@ export enum Subjects {
   ENGLISH = 'ENGLISH',
   SCIENCE = 'SCIENCE',
   MATHEMATICS = 'MATHEMATICS',
+}
+
+export enum ProductType {
+  EBOOK = 'EBOOK',
+  IMOSETAB = 'IMOSETAB',
+}
+
+export enum BannerType {
+  INTERNAL = 'INTERNAL',
+  EXTERNAL = 'EXTERNAL',
+}
+
+export enum CorrectAnswer {
+  option_a = 'option_a',
+  option_b = 'option_b',
+  option_c = 'option_c',
+  option_d = 'option_d',
 }

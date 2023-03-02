@@ -21,7 +21,7 @@ import {
   UpdateStudentReq,
   CreateStudentReq,
   BasicUpdateRes,
-  CreateLearningJourneyReq,
+  mockTestResultReq
 } from 'src/modules/user/dto/user.dto';
 import { userErrors, userMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
@@ -41,20 +41,6 @@ export class UserController {
     await this.userService.verifyToken(req, resp, {
       noTimeout: true,
       useCookies: true,
-    });
-  }
-
-  @Get('/')
-  @UseMiddleware('sessionGuard')
-  async getParent(
-    @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response,
-  ) {
-    resp.json({
-      success: true,
-      message: userMessages.userFetched,
-      status: HttpStatus.FOUND,
-      user: req.body.user,
     });
   }
 
@@ -104,25 +90,6 @@ export class UserController {
     }
   }
 
-  @Post('start-journey')
-  @UseMiddleware('sessionGuard')
-  async startLearningJourney(
-    @Req() req: Request,
-    @Res({ passthrough: true }) resp: Response,
-    @Body() body: CreateLearningJourneyReq,
-  ) {
-    const { success, newJourney } = await this.userService.startLearningJourney(
-      req.body,
-    );
-
-    resp.json({
-      success,
-      message: 'new user journey created',
-      status: HttpStatus.CREATED,
-      journey: newJourney,
-    });
-  }
-
   @Patch('update-student')
   @UseMiddleware('sessionGuard')
   async updateStudent(
@@ -160,21 +127,17 @@ export class UserController {
       query: { id },
       body: { user },
     } = req;
-
+    console.log(user)
     const students = await this.userService.getStudents({
       studentId: `${id}`,
       user,
     });
-    console.log(
-      '🚀 ~ file: user.controller.ts:148 ~ UserController ~ students:',
-      students,
-    );
 
     if (students) {
       resp.json({
         message: userMessages.studentsFetchSuccess,
         status: HttpStatus.OK,
-        [`student${id ? '' : 's'}`]: students,
+        [`student${id ? 's' : ''}`]: students,
       });
     } else {
       throw new HttpException(
@@ -215,6 +178,33 @@ export class UserController {
         {
           status: HttpStatus.NOT_FOUND,
           error: userErrors.updateFailed,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
+  @Post('get-mock-test-result')
+  // @UseMiddleware('sessionGuard')
+  async getMockTestResult(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: mockTestResultReq,
+  ) {
+    const { success, addMockTestResult } =
+      await this.userService.getMockTestResult(req.body);
+
+    if (success) {
+      resp.json({
+        success,
+        message: userMessages.createdResult,
+        status: HttpStatus.CREATED,
+        result: addMockTestResult,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: userErrors.createdResult,
         },
         HttpStatus.NOT_FOUND,
       );

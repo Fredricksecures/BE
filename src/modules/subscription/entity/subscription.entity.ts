@@ -1,3 +1,4 @@
+import { Products } from './../../store/entities/products.entity';
 import { SubscriptionStates } from 'src/utils/enums';
 import {
   Column,
@@ -6,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 import { Student } from '../../user/entity/student.entity';
 
@@ -46,6 +48,9 @@ export class Subscription {
 
   @OneToOne(() => Student)
   student?: Student;
+
+  @OneToMany(() => Products, (products) => products.subscription)
+  store?: Products;
 
   @CreateDateColumn({ type: 'varchar' })
   dueDate?: string;

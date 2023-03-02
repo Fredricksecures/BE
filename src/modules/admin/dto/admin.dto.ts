@@ -28,13 +28,11 @@ export class UsersSessionsReq {
   @IsString()
   sessionId: string;
 }
-
 export class SuspendUserReq {
   @IsNotEmpty()
   @IsString()
   userId: string;
 }
-
 export class CustomerCareAgentReq {
   @IsNotEmpty()
   @IsString()
@@ -105,7 +103,6 @@ export class UpdateCustomerReq {
   @IsNotEmpty()
   profilePicture: string;
 }
-
 export class BasicUpdateCustomerRes {
   updatedCustomer?: CustomerCare;
   success?: boolean;
@@ -155,7 +152,6 @@ export class createAdminReq {
   @IsNumber()
   countryId: number;
 }
-
 export class updateAdminReq {
   @IsOptional()
   @IsString()
@@ -174,7 +170,6 @@ export class BasicRegRes {
   createdUser?: User | undefined;
   success?: boolean;
 }
-
 export class createLessonReq {
   @IsNotEmpty()
   @IsString()
@@ -184,7 +179,6 @@ export class createLessonReq {
   @IsString()
   chapterId: string;
 }
-
 export class createChapterReq {
   @IsNotEmpty()
   @IsString()
@@ -199,7 +193,6 @@ export class updateLessonReq {
   @IsString()
   type: string;
 }
-
 export class updateSubjectReq {
   @IsNotEmpty()
   @IsString()
@@ -214,7 +207,6 @@ export class createTestReq {
   @IsString()
   lessonId: string;
 }
-
 export class updateTestReq {
   @IsNotEmpty()
   @IsString()
@@ -223,12 +215,12 @@ export class updateTestReq {
 export class createMockTestReq {
   @IsNotEmpty()
   @IsString()
-  mockTestName: string;
+  name: string;
 }
 export class updateMockTestReq {
   @IsNotEmpty()
   @IsString()
-  mockTestName: string;
+  name: string;
 }
 export class createBadgeReq {
   @IsNotEmpty()
@@ -280,7 +272,6 @@ export class updateChapterReq {
   @IsString()
   type: string;
 }
-
 export class updateSettingReq {
   @IsNotEmpty()
   @IsString()
@@ -293,7 +284,6 @@ export class SampleDto {
   Phone_No: number;
   Email: string;
 }
-
 export class createClassReq {
   @IsNotEmpty()
   @IsString()
@@ -313,11 +303,10 @@ export class createClassReq {
   @IsNotEmpty()
   endedAt: string;
 }
-
 export class bookedClassReq {
   @IsString()
   classId: string;
-  
+
   @IsNotEmpty()
   @IsString()
   user: User;
@@ -325,7 +314,7 @@ export class bookedClassReq {
 export class bookAttendeesReq {
   @IsString()
   classId: string;
-  
+
   @IsNotEmpty()
   @IsString()
   user: User;
@@ -362,7 +351,48 @@ export class updateEmailTemplateReq {
   @IsBoolean()
   active: boolean;
 }
-// export class createdAdminRes {
-//   createAdmin?: User | undefined;
-//   success?: boolean;
-// }
+
+export class BannerResponse {
+  success: boolean;
+  data: any;
+}
+
+export class AddBanner {
+  @IsNotEmpty()
+  @IsString()
+  bannerType: string;
+
+  @IsNotEmpty()
+  @IsString()
+  url: string;
+
+  @IsNotEmpty()
+  @IsString()
+  redirectUrl: string;
+}
+
+export class UpdateBanner {
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  bannerType: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  url: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  redirectUrl: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsBoolean()
+  active: boolean;
+}
