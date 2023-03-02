@@ -17,7 +17,7 @@ import { Session } from 'src/modules/auth/entity/session.entity';
 import { Student } from 'src/modules/user/entity/student.entity';
 import { User } from 'src/modules/user/entity/user.entity';
 import { Match } from 'src/utils/decorators';
-
+import { MockTest } from 'src/modules/admin/entity/mockTest.entity';
 class StudentReqObj {
   @IsNotEmpty()
   @IsString()
@@ -72,7 +72,6 @@ export class CreateStudentRes {
 
 export class GetStudentReq {
   @IsString()
-  @IsOptional()
   studentId: string;
 
   @IsNotEmpty()
@@ -82,7 +81,7 @@ export class GetStudentReq {
 
 export class GetStudentRes {
   success: boolean;
-  students: User | Array<User>;
+  students: Student | Array<Student>;
 }
 export class BasicUpdateRes {
   updatedParent?: Parent;
@@ -128,24 +127,21 @@ export class UpdateParentReq {
   address: string;
 }
 
-export class CreateLearningJourneyReq {
-  @IsOptional()
-  @IsString()
-  studentId: string;
+export class mockTestResultReq {
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  subjectId: string;
+  studentID: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  chapterId: string;
+  mockTestID: string;
 
-  @IsOptional()
-  @IsString()
-  lessonId: string;
+  @IsNotEmpty()
+  @IsArray()
+  totalQuestions: Array<{id:string,answer:string}>;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  testId: string;
+  totalTime: number;
 }

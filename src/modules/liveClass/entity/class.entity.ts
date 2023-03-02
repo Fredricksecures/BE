@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ClassStates } from 'src/utils/enums';
-import { Student } from '../user/entity/student.entity';
+import { Student } from '../../user/entity/student.entity';
 
 @Entity('classes')
 export class Class {

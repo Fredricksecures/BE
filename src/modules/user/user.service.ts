@@ -11,7 +11,7 @@ import {
   CreateStudentRes,
   CreateParentReq,
   UpdateParentReq,
-  CreateLearningJourneyReq,
+  mockTestResultReq,
 } from './dto/user.dto';
 import { Student } from 'src/modules/user/entity/student.entity';
 import { Parent } from 'src/modules/auth/entity/parent.entity';
@@ -22,21 +22,23 @@ import { UtilityService } from '../utility/utility.service';
 import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
 import { Subscription } from 'src/modules/subscription/entity/subscription.entity';
+import { MockTestResult } from 'src/modules/user/entity/mockTestresult.entity';
+import { MockTestQuestions } from 'src/modules/admin/entity/mockTestQuestions.entity';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { Badge } from 'src/modules/user/entity/badges.entity';
-import { generateRandomHash, isEmpty } from 'src/utils/helpers';
-import { LearningJourney } from './entity/learningJourney.entity';
-import { Lesson } from '../content/entity/lesson.entity';
-import { Chapter } from '../content/entity/chapter.entity';
-import { Subject } from '../content/entity/subject.entity';
 
 @Injectable()
 export class UserService {
   constructor(
+    @InjectRepository(MockTestQuestions)
+    private mockTestQuestionsRepo: Repository<MockTestQuestions>,
+    @InjectRepository(MockTestResult)
+    private mockTestResultRepo: Repository<MockTestResult>,
+
     private jwtService: JwtService,
     private readonly utilityService: UtilityService,
     @InjectRepository(User) private userRepo: Repository<User>,
@@ -44,14 +46,6 @@ export class UserService {
     @InjectRepository(Parent) private parentRepo: Repository<Parent>,
     @InjectRepository(LearningPackage)
     private packageRepo: Repository<LearningPackage>,
-    @InjectRepository(LearningJourney)
-    private lJRepo: Repository<LearningJourney>,
-    @InjectRepository(Lesson)
-    private lessonRepo: Repository<Lesson>,
-    @InjectRepository(Chapter)
-    private chapterRepo: Repository<Chapter>,
-    @InjectRepository(Subject)
-    private subjectRepo: Repository<Subject>,
     @InjectRepository(Subscription)
     private subscriptionRepo: Repository<Subscription>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
@@ -100,7 +94,7 @@ export class UserService {
   }
 
   async getParentDetails(
-    user: User,
+    userId: string,
     relations: Array<string>,
   ): Promise<Parent> {
     let foundParent: Parent;
@@ -108,7 +102,7 @@ export class UserService {
     try {
       foundParent = await this.parentRepo.findOne({
         where: {
-          id: user.parent.id,
+          user: { id: userId },
         },
         relations,
       });
@@ -300,11 +294,13 @@ export class UserService {
 
     try {
       createdParent = await this.parentRepo.save({
-        phoneNumber: isEmpty(phoneNumber) ? null : phoneNumber,
-        email: isEmpty(email) ? null : email,
+        phoneNumber,
+        email,
         password,
+        passwordResetPin: '',
+        address: '',
         country,
-        verificationToken: generateRandomHash(6),
+        students: [],
       });
     } catch (e) {
       Logger.error(userErrors.createdParent + e).console();
@@ -357,7 +353,6 @@ export class UserService {
     }
     return paginate<Badge>(foundBadges, options);
   }
-
   async createStudentProfile(
     createStudentReq: CreateStudentReq,
   ): Promise<CreateStudentRes> {
@@ -379,7 +374,6 @@ export class UserService {
               parent: new Parent({
                 id: user.parent.id,
               }),
-              points: '0',
             }),
           }),
       ),
@@ -389,78 +383,26 @@ export class UserService {
   async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
     const { studentId, user } = getStudentReq;
 
-    let parent: Parent, student: User, students: Array<User>;
+    let foundStudents: Student | Array<Student>;
 
-    if (!isEmpty(studentId)) {
-      try {
-        student = await this.userRepo.findOne({
-          where: {
-            id: studentId,
-            parent: { id: user.parent.id },
-          },
-          relations: [
-            'student',
-            'student.learningJournies',
-            'student.learningJournies.subject',
-          ],
-        });
-      } catch (exp) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: 'not student with matching id found',
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
+    const parent = await this.getParentDetails(user.id, ['students']);
 
-      if (!student) {
-        Logger.error(userErrors.studentNotFound).console();
+    if (!foundStudents) {
+      Logger.error(userErrors.studentsNotFound).console();
 
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: userErrors.studentNotFound,
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return {
-        success: true,
-        students: student,
-      };
-    } else {
-      // parent = await this.getParentDetails(user, ['students']);
-
-      students = await this.userRepo.find({
-        where: {
-          student: { parent: { id: user.parent.id } },
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.studentsNotFound,
         },
-        relations: [
-          'student',
-          'student.learningJournies',
-          'student.learningJournies.subject',
-        ],
-      });
-
-      if (!students) {
-        Logger.error(userErrors.studentsNotFound).console();
-
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: userErrors.studentsNotFound,
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return {
-        success: true,
-        students,
-      };
+        HttpStatus.NOT_IMPLEMENTED,
+      );
     }
+
+    return {
+      success: true,
+      students: foundStudents,
+    };
   }
 
   async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
@@ -566,89 +508,53 @@ export class UserService {
     }
   }
 
-  async startLearningJourney(payload: CreateLearningJourneyReq) {
-    const { studentId, lessonId, subjectId, chapterId } = payload;
-
-    let foundUser: User,
-      newJourney: LearningJourney,
-      foundContent: Lesson | Subject | Chapter;
-
+  async getMockTestResult(mockTestResultReq: mockTestResultReq) {
+    const { studentID, mockTestID, totalQuestions, totalTime } =
+      mockTestResultReq;
+    let totalMarks = 0,
+      addMockTestResult,totalMarksPercentage,totalTimePercentage;
+    var count = 0;
     try {
-      foundUser = await this.userRepo.findOne({
-        where: { id: studentId },
-        relations: ['student'],
+      let total = await this.mockTestQuestionsRepo.find({
+        where: {
+          mock_test: {
+            id: mockTestID,
+          },
+        },
+        relations: ['mock_test'],
       });
+     
+      totalQuestions.forEach(async (data) => {
+        let foundQuestion = await this.mockTestQuestionsRepo.findOne({
+          where: { id: data.id },
+        });
+        if (foundQuestion.correct_answer == data.answer) {
+          totalMarks = totalMarks + 1;
+        }
+      });
+
+       totalMarksPercentage = (totalMarks / total.length) * 100;
+       totalTimePercentage = (totalTime / 35) * 100;
+      addMockTestResult = await this.mockTestResultRepo.save({
+        studentID: studentID,
+        mockTestID: mockTestID,
+        totalPercentage: totalMarksPercentage,
+        totalTime: totalTimePercentage,
+      });
+
+      return {
+        success: true,
+        addMockTestResult,
+      };
     } catch (exp) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_IMPLEMENTED,
-          error: userErrors.updatingStudent + exp,
+          error: userErrors.failToGetResult + exp,
         },
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
-    if (!foundUser) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: userErrors.studentNotFound,
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    let colKey: string = '';
-
-    if (lessonId) {
-      colKey = 'lesson';
-      foundContent = await this.lessonRepo.findOne({
-        where: { id: lessonId },
-      });
-    }
-
-    if (chapterId) {
-      colKey = 'chapter';
-      foundContent = await this.chapterRepo.findOne({
-        where: { id: chapterId },
-      });
-    }
-
-    if (subjectId) {
-      colKey = 'subject';
-      foundContent = await this.subjectRepo.findOne({
-        where: { id: subjectId },
-      });
-    }
-
-    try {
-      newJourney = await this.lJRepo.save({
-        student: foundUser.student,
-        subject: await this.subjectRepo.findOne({
-          where: { id: subjectId },
-          [`${colKey}`]: foundContent,
-        }),
-      });
-
-      // updatedStudent = await this.studentRepo.save({
-      //   { ...foundUser.student,
-      //   email: email ?? foundUser.parent.email,
-      //   phoneNumber: phoneNumber ?? foundUser.parent.phoneNumber,
-      //   address: address ?? foundUser.parent.address,
-      // });
-
-      return {
-        success: true,
-        newJourney,
-      };
-    } catch (e) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: userErrors.updatingStudent,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
+    //return paginate<Badge>(foundBadges, options);
   }
 }

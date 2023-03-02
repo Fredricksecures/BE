@@ -1,3 +1,5 @@
+import { Banners } from './entity/banners.entity';
+import { AddBanner, BannerResponse, UpdateBanner } from './dto/admin.dto';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { learningPackages } from '../../utils/constants';
 import {
@@ -71,10 +73,10 @@ import { UserTypes } from 'src/utils/enums';
 import { UtilityService } from '../utility/utility.service';
 import { AuthService } from '../auth/auth.service';
 import { CountryList } from 'src/modules/utility/entity/countryList.entity';
-import { Class } from 'src/modules/liveClass/class.entity';
+import { Class } from 'src/modules/liveClass/entity/class.entity';
 import { ReportCard } from 'src/modules/user/entity/reportCard.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
-import { Settings } from 'src/modules/user/settings.entity';
+import { Settings } from 'src/modules/user/entity/settings.entity';
 import { SubscriptionService } from '../subscription/subscription.service';
 import * as excelToJson from 'convert-excel-to-json';
 import { Parser } from 'json2csv';
@@ -111,6 +113,7 @@ export class AdminService {
     private learningPackageRepo: Repository<LearningPackage>,
     @InjectRepository(Settings) private settingRepo: Repository<Settings>,
     @InjectRepository(Class) private classRepo: Repository<Class>,
+    @InjectRepository(Banners) private bannersRepo: Repository<Banners>,
     @InjectRepository(EmailTemplate)
     private emailRepo: Repository<EmailTemplate>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>,
   ) {}
@@ -1139,12 +1142,12 @@ export class AdminService {
   }
 
   async createMockTest(createMockTestReq: createMockTestReq) {
-    const { mockTestName } = createMockTestReq;
+    const { name } = createMockTestReq;
     let mockTestCreated: MockTest;
 
     try {
       mockTestCreated = await this.mockTestRepo.save({
-        mockTestName,
+        name,
       });
     } catch (e) {
       throw new HttpException(
@@ -1167,7 +1170,7 @@ export class AdminService {
     id: string,
     updateMockTestReq: updateMockTestReq,
   ) {
-    const { mockTestName } = updateMockTestReq;
+    const { name } = updateMockTestReq;
     let foundMockTest, updatedMockTest: Badge;
 
     try {
@@ -1197,7 +1200,7 @@ export class AdminService {
     try {
       updatedMockTest = await this.mockTestRepo.save({
         ...foundMockTest,
-        mockTestName: mockTestName ?? foundMockTest.mockTestName,
+        name: name ?? foundMockTest.name,
       });
 
       return {
@@ -2200,5 +2203,64 @@ export class AdminService {
       );
     }
     return results;
+  }
+
+  async addBanner(addBanner: AddBanner): Promise<BannerResponse> {
+    try {
+      const { bannerType, url, redirectUrl } = addBanner;
+      const data = await this.bannersRepo.save({
+        bannerType,
+        url,
+        redirectUrl,
+      });
+      return { success: true, data };
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failToAddBanner + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async updateBanner(updateBanner: UpdateBanner): Promise<BannerResponse> {
+    try {
+      const { id, bannerType, url, redirectUrl, active } = updateBanner;
+      await this.bannersRepo.update(
+        { id },
+        {
+          bannerType,
+          url,
+          redirectUrl,
+          active,
+        },
+      );
+      return { success: true, data: await this.bannersRepo.findOneBy({ id }) };
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToUpdateBanner + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+  }
+
+  async getBanners(): Promise<BannerResponse> {
+    try {
+      const data = await this.bannersRepo.find();
+      return { success: true, data };
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: adminErrors.failedToFetchAdmin + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
   }
 }

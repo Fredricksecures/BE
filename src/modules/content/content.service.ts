@@ -1,3 +1,4 @@
+import { MockTestQuestions } from 'src/modules/admin/entity/mockTestQuestions.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,7 +31,7 @@ import { ReportCard } from 'src/modules/user/entity/reportCard.entity';
 import { Leaderboard } from 'src/modules/content/entity/leaderBoard.entity';
 import { Badge } from 'src/modules/user/entity/badges.entity';
 import { MockTest } from 'src/modules/admin/entity/mockTest.entity';
-import { Class } from 'src/modules/liveClass/class.entity';
+import { Class } from 'src/modules/liveClass/entity/class.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
 
 @Injectable()
@@ -41,6 +42,8 @@ export class ContentService {
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
     @InjectRepository(Test) private testRepo: Repository<Test>,
+    @InjectRepository(MockTestQuestions)
+    private mockTestQuestionsRepo: Repository<MockTestQuestions>,
     @InjectRepository(ReportCard)
     private reportCardRepo: Repository<ReportCard>,
     @InjectRepository(Leaderboard)
@@ -64,6 +67,21 @@ export class ContentService {
     }
     return paginate<Chapter>(foundChapters, options);
   }
+  // async addQuestions(options: IPaginationOptions): Promise<Pagination<Chapter>> {
+  //   let foundChapters;
+  //   try {
+  //     foundChapters = await this.chapterRepo.createQueryBuilder('Chapter');
+  //   } catch (exp) {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: contentErrors.failedToFetchChapter + exp,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
+  //   return paginate<Chapter>(foundChapters, options);
+  // }
 
   async getLessons(options: IPaginationOptions): Promise<Pagination<Lesson>> {
     let foundLessons;
@@ -218,6 +236,14 @@ export class ContentService {
     let foundMockTests;
     try {
       foundMockTests = await this.mockTestRepo.createQueryBuilder('MockTest');
+      foundMockTests.select([
+        'MockTest.id',
+        'MockTest.name',
+        'MockTest.image',
+        'MockTest.subjects',
+        'MockTest.minutes',
+        'MockTest.questions',
+      ]);
     } catch (exp) {
       throw new HttpException(
         {
@@ -228,6 +254,54 @@ export class ContentService {
       );
     }
     return paginate<MockTest>(foundMockTests, options);
+  }
+
+  async getMockTestDetails(id: string) {
+    let data;
+    try {
+      data = await this.mockTestRepo.findOneBy({ id });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchMockTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return {
+      data,
+      success: true,
+    };
+  }
+
+  async getMockTestQuestions(id: string) {
+    let data;
+    try {
+      data = await this.mockTestQuestionsRepo.find({
+        where: { mock_test: { id } },
+        select: [
+          'id',
+          'question',
+          'option_a',
+          'option_b',
+          'option_c',
+          'option_d',
+        ],
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: contentErrors.failedToFetchMockTest + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    return {
+      data,
+      success: true,
+    };
   }
 
   async addReview(addReviewReq: addReviewReq) {
@@ -304,7 +378,7 @@ export class ContentService {
   }
 
   async updateMockTest(id: string, updateMockTestReq: updateMockTestReq) {
-    const { mockTestName, subject } = updateMockTestReq;
+    const { name, subject } = updateMockTestReq;
 
     let foundMockTest, updatedMockTest: MockTest;
 
@@ -335,7 +409,7 @@ export class ContentService {
     try {
       updatedMockTest = await this.leaderboardRepo.save({
         ...foundMockTest,
-        mockTestName: mockTestName ?? foundMockTest.mockTestName,
+        name: name ?? foundMockTest.name,
         subject: subject ?? foundMockTest.subject,
       });
 

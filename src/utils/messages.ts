@@ -32,8 +32,6 @@ export const subscriptionError = {
 
 export const authMessages = {
   countries: 'all countries retrieved successfully',
-  tokenResent: 'verification token resent successfully',
-  verificationSuccess: 'account verification successful',
   endpoints: 'authentication endpoints retrieved successfully',
   userCreated: 'user created successfully',
   login: 'login successful',
@@ -44,6 +42,8 @@ export const authMessages = {
   logout: 'Logout successfully',
   createdStudent: 'Students Created Successfully',
   studentsFetchSuccess: 'Students Fetched successfully',
+  verificationSuccess : 'Verify Successfully',
+  tokenResent : 'Token resent successfully'
 };
 export const authErrors = {
   noMockDevice: 'could not find mock device for seeder ',
@@ -180,6 +180,10 @@ export const adminMessages = {
   failToCreateAttendees: 'Error while creating attendees',
   updatedEmailSuccess: 'Email updated successfully',
   emailTemplateFetchSuccess: 'Email template Fetched successfully',
+  bannerFetched: 'Banners fetched successfully.',
+  bannerAdded: 'Banners Added successfully.',
+  bannerUpdated: 'Banners updated successfully.',
+
 };
 
 export const adminErrors = {
@@ -282,6 +286,9 @@ export const adminErrors = {
   templateNotFound: 'could not find email template with id provided',
   updatingTemplate: 'Error querying for updating email template',
   failedToFetchEmailTemplate: 'error while fetching email template. ',
+  failedToFetchBanner: 'Failed to fetch banners.',
+  failedToUpdateBanner: 'Failed to update banners.',
+  failToAddBanner: 'Failed to add banners.',
 };
 export const liveClassMessages = {
   upcomingClassesFetchSuccess: 'Upcoming classes fetch successfully',
@@ -291,7 +298,6 @@ export const liveClassErrors = {
 };
 export const userMessages = {
   badgeFetchSuccess: 'Badge fetch successfully',
-  userFetched: 'user found',
   createdStudent: 'Students Created Successfully',
   studentsFetchSuccess: 'Students Fetched successfully',
   countries: 'all countries retrieved successfully',
@@ -299,12 +305,14 @@ export const userMessages = {
   userCreated: 'user created successfully',
   teacherCreated: 'Teacher profile created successfully',
   profileUpdateSuccessful: 'profile updated successfully',
+  createdResult: 'Result Created Successfully',
 };
 export const userErrors = {
   failedToFetchBadge: '',
-  studentNotFound: 'No student record matching id found',
+  failToGetResult:"Could not create result",
   updateFailed: 'login failed ',
   createdStudent: 'could not create new student ',
+  createdResult: 'could not create new result ',
   updatingStudent: 'Error querying for updating student ',
   getStudentsFailed: 'failed to fetch students',
   noCookieTokenPassed: 'no token passed via cookies ',
@@ -317,8 +325,55 @@ export const userErrors = {
   checkingStudent: 'Error querying for student ',
   parentNotFound: 'could not find parent with id provided ',
   queryingParent: 'could not find parent with user id provided',
-  studentsNotFound: 'could not find students for user',
+  studentsNotFound: 'could not find students',
   userNotFoundById: 'Could not find matching user of given id ',
   checkingParent: 'Error querying for finding parent ',
   updatingParent: 'Error querying for updating parent ',
+};
+
+export const storeErrors = {
+  failedToAddProduct: 'Failed to add product',
+  productAddedSuccess: 'product added successfully',
+  failedToFetchProduct: 'Failed to fetch product',
+  productFetchedSuccess: 'product fetched successfully',
+  failedToUpdateProduct: 'Failed to update product',
+  productUpdatedSuccess: 'product updated successfully',
+  productNotFound: 'product not found',
+  failedToFindProduct: 'error while finding product',
+  failedToAddProductInCart: 'failed to add product in cart',
+  productAddedToCart: 'Product added to cart',
+  errorWhileFindingCart: 'Error while finding cart.',
+  cartNotFound: 'Cart not found.',
+  cartIsEmpty: 'Cart is empty.',
+  cartUpdated: 'Cart updated.',
+  cartDeleted: 'Cart deleted.',
+  failedToUpdateCart: 'Failed to update cart.',
+  failedToDeleteCart: 'Failed to delete cart.',
+  cartFetched: 'Cart fetched successfully.',
+  failedToFetchCart: 'Failed to fetch cart.',
+  orderCreated: 'Order created successfully.',
+  failedToCreateOrder: 'Failed to create order.',
+};
+
+export const ebookErrors = {
+  failedToAddEbook: 'Failed to add ebook',
+  ebookAddedSuccess: 'ebook added successfully',
+  failedToFetchEbook: 'Failed to fetch ebook',
+  ebookFetchedSuccess: 'ebook fetched successfully',
+  failedToUpdateEbook: 'Failed to update ebook',
+  ebookUpdatedSuccess: 'ebook updated successfully',
+  ebookNotFound: 'ebook not found',
+  failedToFindEbook: 'error while finding ebook',
+  failedToAddEbookInCart: 'failed to add ebook in cart',
+  ebookAddedToCart: 'Ebook added to cart',
+  cartFetched: 'Cart fetched successfully.',
+  failedToFetchCart: 'Failed to fetch cart.',
+  errorWhileFindingCart: 'Error while finding cart.',
+  cartNotFound: 'Cart not found.',
+  cartIsEmpty: 'Cart is empty.',
+  cartDeleted: 'Cart deleted.',
+  failedToUpdateCart: 'Failed to update cart.',
+  failedToDeleteCart: 'Failed to delete cart.',
+  orderCreated: 'Order created successfully.',
+  failedToCreateOrder: 'Failed to create order.',
 };

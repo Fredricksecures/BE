@@ -1,3 +1,12 @@
+import { MockTestResult } from 'src/modules/user/entity/mockTestresult.entity';
+import { MockTestQuestions } from './../modules/admin/entity/mockTestQuestions.entity';
+import { Banners } from './../modules/admin/entity/banners.entity';
+import { CartGroup } from './../modules/store/entities/cart.group.entity';
+import { UserEbooks } from 'src/modules/ebook/entities/user.ebook.entity';
+import { Ebooks } from './../modules/ebook/entities/ebook.entity';
+import { Orders } from './../modules/store/entities/orders.entity';
+import { Cart } from './../modules/store/entities/cart.entity';
+import { Products } from '../modules/store/entities/products.entity';
 import { config } from 'dotenv';
 import { DeviceTypes, Genders, PackageTypes, UserTypes } from './enums';
 import { JwtModule } from '@nestjs/jwt';
@@ -17,16 +26,15 @@ import { Lesson } from '../modules/content/entity/lesson.entity';
 import { Material } from '../modules/content/entity/material.entity';
 import { Chapter } from '../modules/content/entity/chapter.entity';
 import { Test } from '../modules/content/entity/test.entity';
-import { Class } from '../modules/liveClass/class.entity';
+import { Class } from '../modules/liveClass/entity/class.entity';
 import { ReportCard } from '../modules/user/entity/reportCard.entity';
 import { Leaderboard } from '../modules/content/entity/leaderBoard.entity';
 import { Badge } from '../modules/user/entity/badges.entity';
 import { MockTest } from '../modules/admin/entity/mockTest.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
-import { Settings } from 'src/modules/user/settings.entity';
+import { Settings } from 'src/modules/user/entity/settings.entity';
 import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
-import { LearningJourney } from 'src/modules/user/entity/learningJourney.entity';
-
+import { LearningJourney } from '../modules/user/entity/learningJourney.entity'
 config();
 
 const { JWT_SECRET, JWT_EXPIRATION_TIME } = process.env;
@@ -59,11 +67,18 @@ export const ModuleConfigs = {
       Review,
       Settings,
       EmailTemplate,
-      LearningJourney,
+      Products,
+      Cart,
+      Orders,
+      Ebooks,
+      CartGroup,
+      Banners,
+      MockTestQuestions,
+      MockTestResult,
     ],
   },
   utility: {
-    entities: [CountryList, LearningPackage, Device, Subject],
+    entities: [CountryList,Subject, LearningPackage, Device],
   },
   auth: {
     entities: [
@@ -77,10 +92,8 @@ export const ModuleConfigs = {
       Subscription,
       Settings,
       Badge,
-      LearningJourney,
-      Subject,
-      Lesson,
-      Chapter,
+      MockTestQuestions,
+      MockTestResult,
     ],
   },
   admin: {
@@ -106,7 +119,9 @@ export const ModuleConfigs = {
       Subscription,
       Invoice,
       EmailTemplate,
-      LearningJourney,
+      Banners,
+      MockTestQuestions,
+      MockTestResult,
     ],
   },
   subscription: {
@@ -124,6 +139,9 @@ export const ModuleConfigs = {
       Leaderboard,
       MockTest,
       Class,
+      MockTestQuestions,
+
+      MockTestResult,
       Review,
     ],
   },
@@ -141,10 +159,47 @@ export const ModuleConfigs = {
       LearningPackage,
       Subscription,
       Badge,
-      LearningJourney,
-      Subject,
-      Lesson,
-      Chapter,
+      MockTestQuestions,
+      MockTestResult,
+      LearningJourney
+    ],
+  },
+  store: {
+    entities: [
+      Products,
+      Cart,
+      User,
+      Device,
+      CountryList,
+      LearningPackage,
+      Student,
+      Parent,
+      Subscription,
+      Badge,
+      Orders,
+      CartGroup,
+      Session,
+      MockTestQuestions,
+      MockTestResult,
+    ],
+  },
+  ebook: {
+    entities: [
+      Ebooks,
+      Cart,
+      User,
+      Orders,
+      Device,
+      CountryList,
+      LearningPackage,
+      Student,
+      Parent,
+      Subscription,
+      Badge,
+      UserEbooks,
+      CartGroup,
+      MockTestQuestions,
+      MockTestResult,
     ],
   },
 };
@@ -162,19 +217,7 @@ export const GET_ALL_ENTITIES = () => [
 
 //* LEARNING PACKAGES_______________________________________
 export const learningPackages = {
-  RECEPTION: {
-    name: 'RECEPTION',
-    type: PackageTypes.PRE_SCHOOL,
-    price: 1748,
-    subjects: {
-      English: {
-        icon: '',
-      },
-      Maths: {
-        icon: '',
-      },
-    },
-  },
+  RECEPTION: { name: 'RECEPTION', type: PackageTypes.PRE_SCHOOL, price: 1748 },
 
   GRADE_1: { name: 'GRADE_1', type: PackageTypes.PRIMARY_SCHOOL, price: 2900 },
   GRADE_2: { name: 'GRADE_2', type: PackageTypes.PRIMARY_SCHOOL, price: 4638 },
