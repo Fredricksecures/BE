@@ -68,7 +68,7 @@ export class UtilitySeeder {
   async seedPackages() {
     const foundPackages = await this.lPLRepo.find({});
 
-    if (!foundPackages) {
+    if (!foundPackages || foundPackages.length == 0) {
       console.log('seeding Learning Packages...............📦📦📦');
 
       return Promise.all(
@@ -80,26 +80,31 @@ export class UtilitySeeder {
             createdAt: new Date(),
             updatedAt: new Date(),
           });
-          console.log(
-            '🚀 ~ file: utility.seeder.ts:78 ~ UtilitySeeder ~ Object.keys ~ pkg:',
-            pkg,
-          );
 
           const pkgSubjects = learningPackages[k].subjects;
 
-          if (pkgSubjects) {
-            return Object.keys(pkgSubjects).map(async (sub) => {
-              await this.subjectRepo.save({
-                name: sub,
-                learningPackage: pkg,
-              });
+          if (pkgSubjects != null) {
+            let pkgSubjectList: Array<Subject> = [];
+
+            Object.keys(pkgSubjects).map(async (sub) => {
+              if (sub) {
+                pkgSubjectList.push(
+                  this.subjectRepo.create({
+                    name: sub,
+                    learningPackage: pkg,
+                  }),
+                );
+              }
             });
+
+            const savedPKGs = await this.subjectRepo.save(pkgSubjectList);
+            return savedPKGs;
           }
         }),
       ).then((res: Array<any>) => {
         console.log(
           '🚀 ~ file: seeder.service.ts ~ line 85 ~ SeederService ~ seedLearningPackages',
-          res,
+          res.map((e) => (e != undefined ? e : {})),
         );
       });
     }
