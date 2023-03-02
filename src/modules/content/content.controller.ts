@@ -32,7 +32,7 @@ export class ContentController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
     const chapters = await this.contentService.getChapters(options);
@@ -49,7 +49,7 @@ export class ContentController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
     const lessons = await this.contentService.getLessons(options);
@@ -66,7 +66,7 @@ export class ContentController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
     const subjects = await this.contentService.getSubjects(options);
@@ -83,7 +83,7 @@ export class ContentController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
     const tests = await this.contentService.getTests(options);
@@ -100,7 +100,7 @@ export class ContentController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
     const tests = await this.contentService.getReportCard(options);
@@ -147,7 +147,7 @@ export class ContentController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
     @Query('id') id,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -165,7 +165,7 @@ export class ContentController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
     const mockTests = await this.contentService.getMockTest(options);
@@ -261,7 +261,7 @@ export class ContentController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
     @Query('id') id,
   ) {
     const options: IPaginationOptions = { limit, page };
