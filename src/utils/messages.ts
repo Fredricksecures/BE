@@ -377,3 +377,15 @@ export const ebookErrors = {
   orderCreated: 'Order created successfully.',
   failedToCreateOrder: 'Failed to create order.',
 };
+
+export const settingErrors = {
+  checkingStudents: 'Failed to get students',
+  failedToFetchStudent: 'Failed to fetch students',
+  studentNotFound: 'Student not found',
+  updatingStudent: 'Error querying for updating student'
+}
+
+export const settingMessages = {
+  studentFetchedSuccess: 'Students Fetched Successfully....',
+  studentUpdated: 'Students Updated Successfully....'
+}

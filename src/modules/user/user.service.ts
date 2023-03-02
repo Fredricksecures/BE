@@ -353,32 +353,32 @@ export class UserService {
     }
     return paginate<Badge>(foundBadges, options);
   }
-  async createStudentProfile(
-    createStudentReq: CreateStudentReq,
-  ): Promise<CreateStudentRes> {
-    const { user, children } = createStudentReq;
+  // async createStudentProfile(
+  //   createStudentReq: CreateStudentReq,
+  // ): Promise<CreateStudentRes> {
+  //   const { user, children } = createStudentReq;
 
-    return Promise.all(
-      children.map(
-        async (child: any) =>
-          await this.userRepo.save({
-            firstName: child.firstName,
-            lastName: child.lastName,
-            gender: Genders[child.gender?.toUpperCase()],
-            type: UserTypes.STUDENT,
-            student: await this.studentRepo.save({
-              subscription: await this.subscriptionRepo.save({
-                learningPackages: child.packages,
-                price: await this.collateSubscriptionCost(child.packages),
-              }),
-              parent: new Parent({
-                id: user.parent.id,
-              }),
-            }),
-          }),
-      ),
-    ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
-  }
+  //   return Promise.all(
+  //     children.map(
+  //       async (child: any) =>
+  //         await this.userRepo.save({
+  //           firstName: child.firstName,
+  //           lastName: child.lastName,
+  //           gender: Genders[child.gender?.toUpperCase()],
+  //           type: UserTypes.STUDENT,
+  //           student: await this.studentRepo.save({
+  //             subscription: await this.subscriptionRepo.save({
+  //               learningPackages: child.packages,
+  //               price: await this.collateSubscriptionCost(child.packages),
+  //             }),
+  //             parent: new Parent({
+  //               id: user.parent.id,
+  //             }),
+  //           }),
+  //         }),
+  //     ),
+  //   ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
+  // }
 
   async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
     const { studentId, user } = getStudentReq;
