@@ -6,9 +6,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  ManyToOne,
+  JoinColumn,
+  OneToMany
 } from 'typeorm';
 import { Session } from './session.entity';
-
+import { Parent } from 'src/modules/auth/entity/parent.entity';
+import { AccountSecurities } from 'src/modules/setting/entities/setting.security.entity';
 @Entity('devices')
 export class Device {
   constructor(data?: Device) {
@@ -36,6 +40,13 @@ export class Device {
 
   @OneToOne(() => Session)
   session?: Session;
+
+  @ManyToOne(() => Parent, (Parent) => Parent.devices)
+  @JoinColumn()
+  parent?: Parent;
+
+  @OneToMany(() => AccountSecurities, (AccountSecurities) => AccountSecurities.devices)
+  accountSecurity?: AccountSecurities[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

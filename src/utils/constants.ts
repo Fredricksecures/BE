@@ -35,6 +35,9 @@ import { Review } from 'src/modules/content/entity/review.entity';
 import { Settings } from 'src/modules/user/entity/settings.entity';
 import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
 import { LearningJourney } from '../modules/user/entity/learningJourney.entity';
+import { AccountNotification } from 'src/modules/setting/entities/setting.notification.entity';
+import { AccountSecurities } from 'src/modules/setting/entities/setting.security.entity';
+import { settingDisplay } from 'src/modules/setting/entities/setting.display.entity';
 config();
 
 const { JWT_SECRET, JWT_EXPIRATION_TIME } = process.env;
@@ -75,6 +78,9 @@ export const ModuleConfigs = {
       Banners,
       MockTestQuestions,
       MockTestResult,
+      AccountNotification,
+      AccountSecurities,
+      settingDisplay,
     ],
   },
   utility: {
@@ -202,6 +208,15 @@ export const ModuleConfigs = {
       MockTestResult,
     ],
   },
+  setting:{
+    entities:[
+      AccountNotification,
+      AccountSecurities,
+      settingDisplay,
+      Parent,
+      Student
+  ],
+}
 };
 
 export const GET_ALL_ENTITIES = () => [

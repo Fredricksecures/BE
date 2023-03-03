@@ -7,7 +7,7 @@ import { jwtConfig, ModuleConfigs } from 'src/utils/constants';
 @Module({
   imports: [
     jwtConfig,
-    TypeOrmModule.forFeature(ModuleConfigs['content'].entities),
+    TypeOrmModule.forFeature(ModuleConfigs['setting'].entities),
   ],
   controllers: [SettingController],
   providers: [SettingService],

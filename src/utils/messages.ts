@@ -382,10 +382,25 @@ export const settingErrors = {
   checkingStudents: 'Failed to get students',
   failedToFetchStudent: 'Failed to fetch students',
   studentNotFound: 'Student not found',
-  updatingStudent: 'Error querying for updating student'
+  updatingStudent: 'Error querying for updating student',
+  checkingParent: 'Error querying for finding parent ',
+  failedToFetchParent: 'Failed to fetch parent',
+  saveStudent: 'Failed to create Student',
+  parentNotFound: 'Parent not found',
+  updatingSecurity: 'Error querying for updating security',
+  failedToFetchSecurity:'Failed to fetch security',
+  updatingDisplay: 'Error querying for updating display setting',
+  failedToFetchDisplay: 'Failed to fetch display setting',
+  failedToFetchNotification: 'Failed to fetch notification',
+  updatingNotification: 'Error querying for updating notification'
 }
 
 export const settingMessages = {
   studentFetchedSuccess: 'Students Fetched Successfully....',
-  studentUpdated: 'Students Updated Successfully....'
+  studentUpdated: 'Students Updated Successfully....',
+  securityUpdated: 'Security Updated Successfully....',
+  securityFetchedSuccess: 'Security Fetched Successfully....',
+  displayFetchedSuccess: 'Display setting updated successfully',
+  NotificationUpdated: 'Notification Updated Successfully',
+  NotificationFetchedSuccess: 'Notification Fetched Successfully'
 }
