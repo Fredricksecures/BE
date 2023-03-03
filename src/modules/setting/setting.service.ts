@@ -35,14 +35,14 @@ export class SettingService {
     let foundStudent;
     try {
         foundStudent = await this.studentRepo.find({
-          where: { parent: parentID },
+          where: { parent: {id: parentID }},
           relations: ['parent'],
         });
       } catch (exp) {
         throw new HttpException(
           {
             status: HttpStatus.NOT_IMPLEMENTED,
-            error: settingErrors.checkingStudents + exp,
+            error: settingErrors.checkingStudents,
           },
           HttpStatus.NOT_IMPLEMENTED,
         );
@@ -55,12 +55,13 @@ export class SettingService {
  
   async updateStudentProfile(studentID,updateStudentProfileReq: updateStudentProfileReq,) {
     const { imageURL, firstName, lastName, gender, dateOfBirth } = updateStudentProfileReq;
-    let foundStudent;
+    let foundStudent: Student[];
     let  updatedStudent: Student;
     try {
         foundStudent = await this.studentRepo.find({
           where: { id: studentID }
         });
+        console.log(foundStudent[0].id)
       } catch (exp) {
         throw new HttpException(
           {
@@ -70,7 +71,7 @@ export class SettingService {
           HttpStatus.NOT_IMPLEMENTED,
         );
       }
-      if (!foundStudent) {
+      if (foundStudent.length == 0) {
         throw new HttpException(
           {
             status: HttpStatus.NOT_IMPLEMENTED,
@@ -82,14 +83,14 @@ export class SettingService {
   
       try {
         updatedStudent = await this.studentRepo.save({
-          ...foundStudent,
-          imageURL: imageURL ?? foundStudent.imageURL,
-          firstName: firstName ?? foundStudent.firstName,
-          lastName: lastName ?? foundStudent.lastName,
-          gender: gender ?? foundStudent.gender,
-          dateOfBirth: dateOfBirth ?? foundStudent.dateOfBirth,
+          ...foundStudent[0],
+          imageURL: imageURL ?? foundStudent[0].Image,
+          firstName: firstName ?? foundStudent[0].firstName,
+          lastName: lastName ?? foundStudent[0].lastName,
+          gender: gender ?? foundStudent[0].Gender,
+          dateOfBirth: dateOfBirth ?? foundStudent[0].dateOfBirth,
         });
-  
+        console.log(updatedStudent)
         return {
           success: true,
           updatedStudent,

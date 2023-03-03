@@ -97,7 +97,7 @@ export class UserController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: UpdateStudentReq,
   ) {
-    const { user, success } = await this.userService.updateStudentProfile(body);
+    const { user, success } = await this.userService.updateStudentProfile(req.body);
 
     if (success) {
       resp.json({
@@ -122,14 +122,17 @@ export class UserController {
   async getStudents(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
+    @Query() student_id : string
   ) {
     const {
       query: { id },
       body: { user },
     } = req;
     console.log(user)
-    const students = await this.userService.getStudents({
-      studentId: `${id}`,
+    console.log(id)
+    console.log(req.query.student_id)
+    const students = await this.userService.getStudents(req.query.student_id,{
+      parentId: `${id}`,
       user,
     });
 

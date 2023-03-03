@@ -210,6 +210,16 @@ export const ModuleConfigs = {
   },
   setting:{
     entities:[
+      User,
+      Device,
+      CountryList,
+      Session,
+      LearningPackage,
+      Subscription,
+      Badge,
+      MockTestQuestions,
+      MockTestResult,
+      LearningJourney,
       AccountNotification,
       AccountSecurities,
       settingDisplay,

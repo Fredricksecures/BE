@@ -19,8 +19,15 @@ import { Student } from '../user/entity/student.entity';
 import { SettingService } from 'src/modules/setting/setting.service';
 @Controller('setting')
 export class SettingController {
-  constructor(private readonly settingService: SettingService) {}
+  constructor(private readonly settingService: SettingService,private readonly userService: UserService,) {}
 
+  @Middleware
+  async sessionGuard(req, resp) {
+    await this.userService.verifyToken(req, resp, {
+      noTimeout: true,
+      useCookies: true,
+    });
+  }
   //Profile 
   @Get('get-students/:parentID')
   async getStudents(
@@ -50,11 +57,17 @@ export class SettingController {
   }
   
   @Patch('update-student-profile/:studentID')
+  @UseMiddleware('sessionGuard')
   async updateStudentProfile(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Param('studentID') studentID,
   ) {
+    const {
+      query: { id },
+      body: { user },
+    } = req;
+    console.log(user)
     const { success, updatedStudent } =
       await this.settingService.updateStudentProfile(studentID,req.body);
 
@@ -77,10 +90,16 @@ export class SettingController {
   }
 
   @Post('create-student-profile')
+  @UseMiddleware('sessionGuard')
   async createStudentProfile(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
   ) {
+    const {
+      query: { id },
+      body: { user },
+    } = req;
+    console.log(user)
     const { success, studentCreated } =
       await this.settingService.createStudentProfile(req.body);
 
