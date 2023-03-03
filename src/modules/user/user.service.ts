@@ -384,7 +384,6 @@ export class UserService {
     const { parentId, user } = getStudentReq;
 
     let foundStudents: Student | Array<Student>;
-   console.log(student_id)
     if(student_id)
     {
         foundStudents = await this.studentRepo.find({
@@ -400,7 +399,6 @@ export class UserService {
       });
   }
     
-    console.log(user.parent.id)
     //const parent = await this.getParentDetails(user.id, ['students']);
 
     if (!foundStudents) {

@@ -128,9 +128,6 @@ export class UserController {
       query: { id },
       body: { user },
     } = req;
-    console.log(user)
-    console.log(id)
-    console.log(req.query.student_id)
     const students = await this.userService.getStudents(req.query.student_id,{
       parentId: `${id}`,
       user,

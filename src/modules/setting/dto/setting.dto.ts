@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, IsNumber, IsDate, IsOptional, IsBoolean } from 'class-validator';
+import { User } from 'src/modules/user/entity/user.entity';
 export class updateStudentProfileReq {
     
     @IsString()
@@ -17,6 +18,16 @@ export class updateStudentProfileReq {
     dateOfBirth: Date;
   }
   
+  export class GetStudentReq {
+    @IsString()
+    parentId: string;
+  
+    @IsNotEmpty()
+    @IsString()
+    user: User;
+  }
+
+
   export class createStudentProfileReq {
     
     @IsOptional()
@@ -38,10 +49,6 @@ export class updateStudentProfileReq {
     @IsNotEmpty()
     @IsDate()
     dateOfBirth: Date;
-
-    @IsNotEmpty()
-    @IsDate()
-    parentID: string;
 
   }
   export class updateAccountSecuirtyReq
