@@ -1,3 +1,4 @@
+import { SettingModule } from './modules/setting/setting.module';
 import { EbookModule } from './modules/ebook/ebook.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -26,6 +27,7 @@ import { StoreModule } from './modules/store/store.module';
     UserModule,
     StoreModule,
     EbookModule,
+    SettingModule
   ],
   controllers: [AppController],
   providers: [AppService],

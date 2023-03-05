@@ -353,39 +353,53 @@ export class UserService {
     }
     return paginate<Badge>(foundBadges, options);
   }
-  async createStudentProfile(
-    createStudentReq: CreateStudentReq,
-  ): Promise<CreateStudentRes> {
-    const { user, children } = createStudentReq;
+  // async createStudentProfile(
+  //   createStudentReq: CreateStudentReq,
+  // ): Promise<CreateStudentRes> {
+  //   const { user, children } = createStudentReq;
 
-    return Promise.all(
-      children.map(
-        async (child: any) =>
-          await this.userRepo.save({
-            firstName: child.firstName,
-            lastName: child.lastName,
-            gender: Genders[child.gender?.toUpperCase()],
-            type: UserTypes.STUDENT,
-            student: await this.studentRepo.save({
-              subscription: await this.subscriptionRepo.save({
-                learningPackages: child.packages,
-                price: await this.collateSubscriptionCost(child.packages),
-              }),
-              parent: new Parent({
-                id: user.parent.id,
-              }),
-            }),
-          }),
-      ),
-    ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
-  }
+  //   return Promise.all(
+  //     children.map(
+  //       async (child: any) =>
+  //         await this.userRepo.save({
+  //           firstName: child.firstName,
+  //           lastName: child.lastName,
+  //           gender: Genders[child.gender?.toUpperCase()],
+  //           type: UserTypes.STUDENT,
+  //           student: await this.studentRepo.save({
+  //             subscription: await this.subscriptionRepo.save({
+  //               learningPackages: child.packages,
+  //               price: await this.collateSubscriptionCost(child.packages),
+  //             }),
+  //             parent: new Parent({
+  //               id: user.parent.id,
+  //             }),
+  //           }),
+  //         }),
+  //     ),
+  //   ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
+  // }
 
-  async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
-    const { studentId, user } = getStudentReq;
+  async getStudents(student_id,getStudentReq: GetStudentReq): Promise<GetStudentRes> {
+    const { parentId, user } = getStudentReq;
 
     let foundStudents: Student | Array<Student>;
-
-    const parent = await this.getParentDetails(user.id, ['students']);
+    if(student_id)
+    {
+        foundStudents = await this.studentRepo.find({
+          where: { id: student_id },
+          relations: ['parent'],
+        });
+    }
+    else
+    {
+      foundStudents = await this.studentRepo.find({
+        where: { parent: {id: user.parent.id }},
+        relations: ['parent'],
+      });
+  }
+    
+    //const parent = await this.getParentDetails(user.id, ['students']);
 
     if (!foundStudents) {
       Logger.error(userErrors.studentsNotFound).console();
@@ -406,16 +420,17 @@ export class UserService {
   }
 
   async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
-    const { id, firstName, lastName, dateOfBirth } = updateStudentReq;
+    const { id, firstName, lastName, dateOfBirth, gender } = updateStudentReq;
 
     let foundUser: Student;
-
+    console.log(firstName)
     try {
       foundUser = await this.studentRepo.findOne({
         where: {
           id,
         },
       });
+      console.log(foundUser)
     } catch (exp) {
       throw new HttpException(
         {
@@ -437,7 +452,12 @@ export class UserService {
 
     try {
       const user = await this.studentRepo.save({
-        id,
+        ...foundUser,
+        firstName: firstName ?? foundUser.firstName,
+        lastName: lastName ?? foundUser.lastName,
+        gender: gender ?? foundUser.Gender,
+        dateOfBirth: dateOfBirth ?? foundUser.dateOfBirth,
+       
         // dateOfBirth: dateOfBirth || foundUser.dateOfBirth,
         // parent: foundUser.parent,
       });
@@ -461,10 +481,12 @@ export class UserService {
 
     let foundUser: User, updatedParent: Parent;
     try {
+      console.log(user)
       foundUser = await this.userRepo.findOne({
         where: { id: user.id },
         relations: ['parent'],
       });
+      console.log(foundUser)
     } catch (exp) {
       throw new HttpException(
         {
