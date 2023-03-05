@@ -45,18 +45,19 @@ export class UpdateStudentReq {
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   firstName: string;
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   lastName: string;
 
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   dateOfBirth: string;
+
+  @IsOptional()
+  @IsString()
+  gender: string;
 }
 export class CreateStudentReq {
   user: User;
@@ -72,7 +73,7 @@ export class CreateStudentRes {
 
 export class GetStudentReq {
   @IsString()
-  studentId: string;
+  parentId: string;
 
   @IsNotEmpty()
   @IsString()

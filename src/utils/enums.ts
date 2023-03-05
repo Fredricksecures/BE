@@ -101,3 +101,17 @@ export enum CorrectAnswer {
   option_c = 'option_c',
   option_d = 'option_d',
 }
+
+export enum Appearence {
+  light_theme = 'Light_theme',
+  dark_theme = 'Dark_theme',
+  auto = 'Auto'
+  
+}
+
+export enum Resolution {
+  reso_480 = '480_P',
+  reso_1080 = '1080_P',
+  reso_4K = '4_K',
+  
+}

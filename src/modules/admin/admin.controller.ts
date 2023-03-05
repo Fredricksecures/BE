@@ -82,7 +82,7 @@ export class AdminController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
     @Query() query,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -160,7 +160,7 @@ export class AdminController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
     @Query() params,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -262,7 +262,7 @@ export class AdminController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
     const users = await this.adminService.getCustomers(options);
@@ -305,7 +305,7 @@ export class AdminController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
     const users = await this.adminService.getAdmin(options);
@@ -356,7 +356,7 @@ export class AdminController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
     @Query() params,
   ) {
     const options: IPaginationOptions = { limit, page };
@@ -803,7 +803,7 @@ export class AdminController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(1), ParseIntPipe) limit = 1,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
     @Query() params,
   ) {
     const options: IPaginationOptions = { limit, page };

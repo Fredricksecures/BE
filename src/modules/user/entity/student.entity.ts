@@ -17,7 +17,7 @@ import { User } from './user.entity';
 import { ReportCard } from './reportCard.entity';
 import { Leaderboard } from '../../content/entity/leaderBoard.entity';
 import { LearningJourney } from './learningJourney.entity';
-
+import { Genders } from 'src/utils/enums';
 @Entity('students')
 export class Student {
   constructor(data?: Student) {
@@ -46,8 +46,23 @@ export class Student {
   )
   learningJournies?: LearningJourney[];
 
-  @Column('varchar', { default: '0' })
+  @Column({type:'varchar', default: '0' })
   points?: string;
+
+  @Column({type:'varchar', default: '0' })
+  Image?: string;
+
+  @Column({type:'varchar', default: '0' })
+  firstName?: string;
+
+  @Column({type:'varchar', default: '0' })
+  lastName?: string;
+
+  @Column({type: 'enum', enum: Genders, default: Genders.MALE })
+  Gender?: string;
+
+  @Column({type:'varchar', default: '0' })
+  dateOfBirth?: Date;
 
   @OneToMany(() => Leaderboard, (leaderboard) => leaderboard.student)
   leaderboard?: Leaderboard[];
