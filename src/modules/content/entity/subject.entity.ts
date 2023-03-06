@@ -10,6 +10,7 @@ import {
 import { Chapter } from './chapter.entity';
 import { LearningPackage } from '../../utility/entity/learningPackage.entity';
 import { LearningJourney } from 'src/modules/user/entity/learningJourney.entity';
+import { Student } from 'src/modules/user/entity/student.entity';
 
 @Entity('subjects')
 export class Subject {

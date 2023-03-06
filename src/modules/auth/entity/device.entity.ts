@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { Session } from './session.entity';
 import { Parent } from 'src/modules/auth/entity/parent.entity';
-import { AccountSecurities } from 'src/modules/setting/entities/setting.security.entity';
+import { settings } from 'src/modules/setting/entity/settings.entity';
 @Entity('devices')
 export class Device {
   constructor(data?: Device) {
@@ -45,8 +45,8 @@ export class Device {
   @JoinColumn()
   parent?: Parent;
 
-  @OneToMany(() => AccountSecurities, (AccountSecurities) => AccountSecurities.devices)
-  accountSecurity?: AccountSecurities[];
+  @OneToMany(() => settings, (settings) => settings.devices)
+  settings?: settings[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

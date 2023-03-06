@@ -15,9 +15,7 @@ import { Session } from './session.entity';
 import { Student } from '../../user/entity/student.entity';
 import { User } from '../../user/entity/user.entity';
 import { Device } from './device.entity';
-import { AccountSecurities } from 'src/modules/setting/entities/setting.security.entity';
-import { settingDisplay } from 'src/modules/setting/entities/setting.display.entity';
-import { AccountNotification } from 'src/modules/setting/entities/setting.notification.entity';
+import { settings } from 'src/modules/setting/entity/settings.entity';
 
 @Entity('parents')
 export class Parent {
@@ -76,14 +74,8 @@ export class Parent {
   @OneToMany(() => Device, (Device) => Device.parent)
   devices?: Device[];
 
-  @OneToMany(() => AccountSecurities, (AccountSecurities) => AccountSecurities.parent)
-  accountSecurity?: AccountSecurities[];
-
-  @OneToMany(() => settingDisplay, (settingDisplay) => settingDisplay.parent)
-  settingDisplay?: settingDisplay[];
-
-  @OneToMany(() => AccountNotification, (AccountNotification) => AccountNotification.parent)
-  accountNotification?: AccountNotification[];
+  @OneToMany(() => settings, (settings) => settings.parent)
+  settings?: settings[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
