@@ -195,6 +195,10 @@ export const ModuleConfigs = {
       Session,
       MockTestQuestions,
       MockTestResult,
+      LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
   ebook: {
@@ -214,6 +218,10 @@ export const ModuleConfigs = {
       CartGroup,
       MockTestQuestions,
       MockTestResult,
+      LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
   setting:{
@@ -232,7 +240,10 @@ export const ModuleConfigs = {
       AccountSecurities,
       settingDisplay,
       Parent,
-      Student
+      Student,
+      Subject,
+      Lesson,
+      Chapter,
   ],
 }
 };
