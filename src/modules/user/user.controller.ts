@@ -63,33 +63,33 @@ export class UserController {
     });
   }
 
-  // @Post('create-students')
-  // @UseMiddleware('sessionGuard')
-  // async createStudent(
-  //   @Req() req: Request,
-  //   @Res({ passthrough: true }) resp: Response,
-  //   @Body() body: CreateStudentReq,
-  // ) {
-  //   const { success, createdStudents } =
-  //     await this.userService.createStudentProfile(req.body);
+  @Post('create-students')
+  @UseMiddleware('sessionGuard')
+  async createStudent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: CreateStudentReq,
+  ) {
+    const { success, createdStudents } =
+      await this.userService.createStudentProfile(req.body);
 
-  //   if (success) {
-  //     resp.json({
-  //       success,
-  //       message: userMessages.createdStudent,
-  //       status: HttpStatus.CREATED,
-  //       students: createdStudents,
-  //     });
-  //   } else {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.NOT_FOUND,
-  //         error: userErrors.createdStudent,
-  //       },
-  //       HttpStatus.NOT_FOUND,
-  //     );
-  //   }
-  // }
+    if (success) {
+      resp.json({
+        success,
+        message: userMessages.createdStudent,
+        status: HttpStatus.CREATED,
+        students: createdStudents,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: userErrors.createdStudent,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
 
   @Patch('update-student')
   @UseMiddleware('sessionGuard')
@@ -161,7 +161,6 @@ export class UserController {
       query: { id },
       body: { user },
     } = req;
-
     const { success, students } = await this.userService.getStudents({
       studentId: `${id}`,
       user,

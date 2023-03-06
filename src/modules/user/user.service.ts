@@ -367,32 +367,32 @@ export class UserService {
     }
     return paginate<Badge>(foundBadges, options);
   }
-  // async createStudentProfile(
-  //   createStudentReq: CreateStudentReq,
-  // ): Promise<CreateStudentRes> {
-  //   const { user, children } = createStudentReq;
+  async createStudentProfile(
+    createStudentReq: CreateStudentReq,
+  ): Promise<CreateStudentRes> {
+    const { user, children } = createStudentReq;
 
-  //   return Promise.all(
-  //     children.map(
-  //       async (child: any) =>
-  //         await this.userRepo.save({
-  //           firstName: child.firstName,
-  //           lastName: child.lastName,
-  //           gender: Genders[child.gender?.toUpperCase()],
-  //           type: UserTypes.STUDENT,
-  //           student: await this.studentRepo.save({
-  //             subscription: await this.subscriptionRepo.save({
-  //               learningPackages: child.packages,
-  //               price: await this.collateSubscriptionCost(child.packages),
-  //             }),
-  //             parent: new Parent({
-  //               id: user.parent.id,
-  //             }),
-  //           }),
-  //         }),
-  //     ),
-  //   ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
-  // }
+    return Promise.all(
+      children.map(
+        async (child: any) =>
+          await this.userRepo.save({
+            firstName: child.firstName,
+            lastName: child.lastName,
+            gender: Genders[child.gender?.toUpperCase()],
+            type: UserTypes.STUDENT,
+            student: await this.studentRepo.save({
+              subscription: await this.subscriptionRepo.save({
+                learningPackages: child.packages,
+                price: await this.collateSubscriptionCost(child.packages),
+              }),
+              parent: new Parent({
+                id: user.parent.id,
+              }),
+            }),
+          }),
+      ),
+    ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
+  }
 
   // async getStudents(student_id,getStudentReq: GetStudentReq): Promise<GetStudentRes> {
   //   const { parentId, user } = getStudentReq;
@@ -513,10 +513,9 @@ export class UserService {
   }
 
   async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
-    const { id, firstName, lastName, dateOfBirth, gender } = updateStudentReq;
+    const { id, points } = updateStudentReq;
 
     let foundUser: Student;
-    console.log(firstName)
     try {
       foundUser = await this.studentRepo.findOne({
         where: {
@@ -545,14 +544,10 @@ export class UserService {
 
     try {
       const user = await this.studentRepo.save({
-        ...foundUser,
-        firstName: firstName ?? foundUser.firstName,
-        lastName: lastName ?? foundUser.lastName,
-        gender: gender ?? foundUser.Gender,
-        dateOfBirth: dateOfBirth ?? foundUser.dateOfBirth,
-       
+        ...foundUser[0],
+        points: points ?? foundUser[0].points,
         // dateOfBirth: dateOfBirth || foundUser.dateOfBirth,
-        // parent: foundUser.parent,
+        //parent: foundUser.parent,
       });
       return {
         success: true,

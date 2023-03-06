@@ -1,3 +1,4 @@
+
 export const utlityMessages = {
   learningPackages: 'learning packages fetched successfully',
   devices: 'Devcies successfully fetched',
@@ -380,20 +381,10 @@ export const ebookErrors = {
 };
 
 export const settingErrors = {
-  checkingStudents: 'Failed to get students',
-  failedToFetchStudent: 'Failed to fetch students',
-  studentNotFound: 'Student not found',
-  updatingStudent: 'Error querying for updating student',
   checkingParent: 'Error querying for finding parent ',
-  failedToFetchParent: 'Failed to fetch parent',
-  saveStudent: 'Failed to create Student',
   parentNotFound: 'Parent not found',
-  updatingSecurity: 'Error querying for updating security',
-  failedToFetchSecurity:'Failed to fetch security',
-  updatingDisplay: 'Error querying for updating display setting',
-  failedToFetchDisplay: 'Failed to fetch display setting',
-  failedToFetchNotification: 'Failed to fetch notification',
-  updatingNotification: 'Error querying for updating notification'
+  updatingSetings: 'Error querying for updating settings',
+  failedToFetchSettings: 'Failed to fetch settings'
 }
 
 export const settingMessages = {
@@ -404,4 +395,11 @@ export const settingMessages = {
   displayFetchedSuccess: 'Display setting updated successfully',
   NotificationUpdated: 'Notification Updated Successfully',
   NotificationFetchedSuccess: 'Notification Fetched Successfully'
+}
+
+export const dashboardMessages = {
+  studentFetchedSuccess: 'Students Fetched Successfully....',
+}
+export const dashboardErrors = {
+  failedToFetchStudent: 'error while fetching students. ',
 }
