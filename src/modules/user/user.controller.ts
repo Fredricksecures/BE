@@ -223,6 +223,7 @@ export class UserController {
       );
     }
   }
+
   @Post('get-mock-test-result')
   // @UseMiddleware('sessionGuard')
   async getMockTestResult(
@@ -250,6 +251,7 @@ export class UserController {
       );
     }
   }
+
   @Post('start-journey')
   @UseMiddleware('sessionGuard')
   async startLearningJourney(

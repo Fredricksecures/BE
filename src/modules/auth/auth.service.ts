@@ -443,7 +443,11 @@ export class AuthService {
     try {
       foundUser = await this.userRepo.findOneOrFail({
         where: { parent: email ? { email } : { phoneNumber } },
-        relations: ['parent', 'parent.students'],
+        relations: [
+          'parent',
+          'parent.students',
+          'parent.students.learningJournies',
+        ],
       });
     } catch (exp) {
       Logger.error(exp).console();

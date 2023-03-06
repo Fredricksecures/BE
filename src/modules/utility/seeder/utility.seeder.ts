@@ -88,12 +88,20 @@ export class UtilitySeeder {
 
             Object.keys(pkgSubjects).map(async (sub) => {
               if (sub) {
-                // const savedPKGs = await this.subjectRepo.save(pkgSubjectDocs);
+                const savedSubjectDoc = await this.subjectRepo.save({
+                  name: sub,
+                  learningPackage: pkg,
+                });
+
+                const subjectLessons = learningPackages[k].subjects[sub];
+
+                Object.keys;
+
                 // pkgSubjectDocs.push(
-                //   this.subjectRepo.create({
-                //     name: sub,
-                //     learningPackage: pkg,
-                //   }),
+                // this.subjectRepo.create({
+                //   name: sub,
+                //   learningPackage: pkg,
+                // }),
                 // );
               }
             });

@@ -127,7 +127,7 @@ export const ModuleConfigs = {
       Banners,
       MockTestQuestions,
       MockTestResult,
-      LearningJourney
+      LearningJourney,
     ],
   },
   subscription: {
@@ -219,8 +219,8 @@ export const ModuleConfigs = {
       Chapter,
     ],
   },
-  setting:{
-    entities:[
+  setting: {
+    entities: [
       User,
       Device,
       CountryList,
@@ -236,9 +236,9 @@ export const ModuleConfigs = {
       Subject,
       Lesson,
       Chapter,
-      settings
-  ],
-}
+      settings,
+    ],
+  },
 };
 
 export const GET_ALL_ENTITIES = () => [
@@ -258,14 +258,19 @@ export const learningPackages = {
     name: 'RECEPTION',
     type: PackageTypes.PRE_SCHOOL,
     price: 1748,
-    subjects: {
-      English: {
+    subjects: [
+      {
+        title: 'English',
         icon: '',
+        chapters: [
+          {
+            title: '',
+            lessons: [''],
+          },
+        ],
       },
-      Math: {
-        icon: '',
-      },
-    },
+      { title: 'Math', icon: '' },
+    ],
   },
 
   GRADE_1: { name: 'GRADE_1', type: PackageTypes.PRIMARY_SCHOOL, price: 2900 },
