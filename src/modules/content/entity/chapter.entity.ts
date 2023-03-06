@@ -25,7 +25,7 @@ export class Chapter {
   id?: string;
 
   @Column({ type: 'varchar' })
-  type?: string;
+  title?: string;
 
   @ManyToOne(() => Subject, (Subject) => Subject.chapters)
   subject?: Subject;

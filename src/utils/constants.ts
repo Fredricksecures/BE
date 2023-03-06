@@ -79,7 +79,15 @@ export const ModuleConfigs = {
     ],
   },
   utility: {
-    entities: [CountryList, Subject, LearningPackage, Device],
+    entities: [
+      CountryList,
+      Subject,
+      LearningPackage,
+      Device,
+      Lesson,
+      Chapter,
+      Subject,
+    ],
   },
   auth: {
     entities: [
@@ -264,8 +272,24 @@ export const learningPackages = {
         icon: '',
         chapters: [
           {
-            title: '',
-            lessons: [''],
+            title: 'Learning Your ABCs',
+            lessons: [
+              {
+                title: 'Introduction',
+                video: {
+                  thumbNail: '',
+                  url: 'https://www.youtube.com/watch?v=drlIUqRYM-w&ab_channel=KiddosWorldTV',
+                },
+              },
+            ],
+          },
+          {
+            title: 'Names Of Places',
+            lessons: [
+              {
+                title: 'title 2',
+              },
+            ],
           },
         ],
       },

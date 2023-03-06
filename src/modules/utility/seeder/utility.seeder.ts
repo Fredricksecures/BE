@@ -6,6 +6,8 @@ import { COUNTRY_SEED, learningPackages } from '../../../utils/constants';
 import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { Subject } from 'src/modules/content/entity/subject.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
+import { Chapter } from 'src/modules/content/entity/chapter.entity';
+import { Lesson } from 'src/modules/content/entity/lesson.entity';
 
 @Injectable()
 export class UtilitySeeder {
@@ -14,7 +16,9 @@ export class UtilitySeeder {
     private lPLRepo: Repository<LearningPackage>,
     @InjectRepository(Subject)
     private subjectRepo: Repository<Subject>,
-    @InjectRepository(CountryList) private countryRepo: Repository<CountryList>, // @InjectRepository(LearningPackage) // private learningPackageRepo: Repository<LearningPackage>,
+    @InjectRepository(CountryList) private countryRepo: Repository<CountryList>,
+    @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
+    @InjectRepository(Lesson) private lessonRepo: Repository<Lesson>,
   ) {}
 
   async onApplicationBootstrap() {
@@ -68,12 +72,12 @@ export class UtilitySeeder {
   async seedPackages() {
     const foundPackages = await this.lPLRepo.find({});
 
-    if (!foundPackages || foundPackages.length == 0) {
+    if (foundPackages || foundPackages.length == 0) {
       console.log('seeding Learning Packages...............📦📦📦');
 
       return Promise.all(
         Object.keys(learningPackages).map(async (k) => {
-          const pkg = await this.lPLRepo.save({
+          const dbPKG = await this.lPLRepo.save({
             name: learningPackages[k].name,
             type: learningPackages[k].type,
             price: learningPackages[k].price,
@@ -81,33 +85,59 @@ export class UtilitySeeder {
             updatedAt: new Date(),
           });
 
-          const pkgSubjects = learningPackages[k].subjects;
-
-          if (pkgSubjects != null) {
-            let pkgSubjectDocs: Array<Subject> = [];
-
-            Object.keys(pkgSubjects).map(async (sub) => {
-              if (sub) {
-                const savedSubjectDoc = await this.subjectRepo.save({
-                  name: sub,
-                  learningPackage: pkg,
-                });
-
-                const subjectLessons = learningPackages[k].subjects[sub];
-
-                Object.keys;
-
-                // pkgSubjectDocs.push(
-                // this.subjectRepo.create({
-                //   name: sub,
-                //   learningPackage: pkg,
-                // }),
-                // );
-              }
+          //? seed subjects for each package
+          learningPackages[k]?.subjects?.map(async (subject) => {
+            const dbSBJ = await this.subjectRepo.save({
+              title: subject.title,
+              learningPackage: dbPKG,
             });
 
-            // return savedPKGs;
-          }
+            //? seed chapters for each subject
+            subject?.chapters?.map(async (chapter) => {
+              const dbCHPT = await this.chapterRepo.save({
+                title: chapter.title,
+                subject: dbSBJ,
+              });
+
+              //? seed lessons for each chapter
+              chapter?.lessons?.map(async (lesson) => {
+                const dbLESS = await this.lessonRepo.save({
+                  title: lesson.title,
+                  chapter: dbCHPT,
+                });
+
+                console.log('dbLESS', dbLESS);
+              });
+            });
+          });
+
+          // const pkgSubjects = learningPackages[k].subjects;
+
+          // if (pkgSubjects != null) {
+          //   let pkgSubjectDocs: Array<Subject> = [];
+
+          //   Object.keys(pkgSubjects).map(async (sub) => {
+          //     if (sub) {
+          // const savedSubjectDoc = await this.subjectRepo.save({
+          //   name: sub,
+          //   learningPackage: pkg,
+          // });
+
+          //       const subjectLessons = learningPackages[k].subjects[sub];
+
+          //       Object.keys;
+
+          //       // pkgSubjectDocs.push(
+          //       // this.subjectRepo.create({
+          //       //   name: sub,
+          //       //   learningPackage: pkg,
+          //       // }),
+          //       // );
+          //     }
+          //   });
+
+          //   // return savedPKGs;
+          // }
         }),
       ).then((res: Array<any>) => {
         console.log(
