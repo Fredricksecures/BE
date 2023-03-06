@@ -450,6 +450,7 @@ export class UserService {
       });
 
       foundStudents = foundParent?.students;
+
       // console.log(
       //   '🚀 ~ file: user.service.ts:456 ~ getStudents ~ foundParent:',
       //   foundParent.students,
