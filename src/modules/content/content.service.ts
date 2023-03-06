@@ -52,10 +52,18 @@ export class ContentService {
     @InjectRepository(Review) private reviewRepo: Repository<Review>, // @InjectRepository(Parent) private parentRepo: Repository<Parent>, // @InjectRepository(User) private userRepo: Repository<User>, // @InjectRepository(Session) private sessionRepo: Repository<Session>, // @InjectRepository(Student) private studentRepo: Repository<Student>,
   ) {}
 
-  async getChapters(options: IPaginationOptions): Promise<Pagination<Chapter>> {
+  async getChapters(
+    subjectId,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Chapter>> {
     let foundChapters;
     try {
-      foundChapters = await this.chapterRepo.createQueryBuilder('Chapter');
+      foundChapters = this.chapterRepo.createQueryBuilder('Chapter');
+      if (subjectId) {
+        foundChapters = foundChapters.where('Lesson.subjectId = :subjectId', {
+          subjectId,
+        });
+      }
     } catch (exp) {
       throw new HttpException(
         {
@@ -67,6 +75,7 @@ export class ContentService {
     }
     return paginate<Chapter>(foundChapters, options);
   }
+
   // async addQuestions(options: IPaginationOptions): Promise<Pagination<Chapter>> {
   //   let foundChapters;
   //   try {
@@ -83,10 +92,20 @@ export class ContentService {
   //   return paginate<Chapter>(foundChapters, options);
   // }
 
-  async getLessons(options: IPaginationOptions): Promise<Pagination<Lesson>> {
+  async getLessons(
+    chapterId,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Lesson>> {
     let foundLessons;
+
     try {
       foundLessons = await this.lessonRepo.createQueryBuilder('Lesson');
+
+      if (chapterId) {
+        foundLessons = foundLessons.where('Lesson.chapterId = :chapterId', {
+          chapterId,
+        });
+      }
     } catch (exp) {
       throw new HttpException(
         {

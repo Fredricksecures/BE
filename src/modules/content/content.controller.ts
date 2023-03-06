@@ -35,7 +35,11 @@ export class ContentController {
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const chapters = await this.contentService.getChapters(options);
+    const {
+      query: { subjectId },
+    } = req;
+
+    const chapters = await this.contentService.getChapters(subjectId, options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.chaptersFetchSuccess,
@@ -52,7 +56,11 @@ export class ContentController {
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit = 20,
   ) {
     const options: IPaginationOptions = { limit, page };
-    const lessons = await this.contentService.getLessons(options);
+    const {
+      query: { chapterId },
+    } = req;
+
+    const lessons = await this.contentService.getLessons(chapterId, options);
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.lessonsFetchSuccess,
