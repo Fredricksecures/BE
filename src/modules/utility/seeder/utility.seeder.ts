@@ -72,7 +72,7 @@ export class UtilitySeeder {
   async seedPackages() {
     const foundPackages = await this.lPLRepo.find({});
 
-    if (foundPackages || foundPackages.length == 0) {
+    if (!foundPackages || foundPackages.length == 0) {
       console.log('seeding Learning Packages...............📦📦📦');
 
       return Promise.all(
