@@ -380,25 +380,37 @@ export class UserService {
   //   ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
   // }
 
-  async getStudents(student_id,getStudentReq: GetStudentReq): Promise<GetStudentRes> {
+  async getStudents(
+    student_id,
+    getStudentReq: GetStudentReq,
+  ): Promise<GetStudentRes> {
     const { parentId, user } = getStudentReq;
 
     let foundStudents: Student | Array<Student>;
-    if(student_id)
-    {
-        foundStudents = await this.studentRepo.find({
-          where: { id: student_id },
-          relations: ['parent'],
-        });
-    }
-    else
-    {
+
+    if (student_id) {
       foundStudents = await this.studentRepo.find({
-        where: { parent: {id: user.parent.id }},
+        where: { id: student_id },
         relations: ['parent'],
       });
-  }
-    
+    } else {
+      foundStudents = await this.parentRepo
+        .findOne({
+          where: { id: user.parent.id },
+          relations: ['students'],
+        })
+        .then((par: Parent) => par.students);
+
+      // foundStudents = foundParent.students
+
+      // console.log('🚀 ~ file: user.service.ts:401 ~ UserService ~ beuh:', beuh);
+
+      // foundStudents = await this.studentRepo.find({
+      //   where: { parent: { id: user.parent.id } },
+      //   relations: ['parent'],
+      // });
+    }
+
     //const parent = await this.getParentDetails(user.id, ['students']);
 
     if (!foundStudents) {
@@ -423,14 +435,14 @@ export class UserService {
     const { id, firstName, lastName, dateOfBirth, gender } = updateStudentReq;
 
     let foundUser: Student;
-    console.log(firstName)
+    console.log(firstName);
     try {
       foundUser = await this.studentRepo.findOne({
         where: {
           id,
         },
       });
-      console.log(foundUser)
+      console.log(foundUser);
     } catch (exp) {
       throw new HttpException(
         {
@@ -457,7 +469,7 @@ export class UserService {
         lastName: lastName ?? foundUser.lastName,
         gender: gender ?? foundUser.Gender,
         dateOfBirth: dateOfBirth ?? foundUser.dateOfBirth,
-       
+
         // dateOfBirth: dateOfBirth || foundUser.dateOfBirth,
         // parent: foundUser.parent,
       });
@@ -481,12 +493,12 @@ export class UserService {
 
     let foundUser: User, updatedParent: Parent;
     try {
-      console.log(user)
+      console.log(user);
       foundUser = await this.userRepo.findOne({
         where: { id: user.id },
         relations: ['parent'],
       });
-      console.log(foundUser)
+      console.log(foundUser);
     } catch (exp) {
       throw new HttpException(
         {
@@ -534,7 +546,9 @@ export class UserService {
     const { studentID, mockTestID, totalQuestions, totalTime } =
       mockTestResultReq;
     let totalMarks = 0,
-      addMockTestResult,totalMarksPercentage,totalTimePercentage;
+      addMockTestResult,
+      totalMarksPercentage,
+      totalTimePercentage;
     var count = 0;
     try {
       let total = await this.mockTestQuestionsRepo.find({
@@ -545,7 +559,7 @@ export class UserService {
         },
         relations: ['mock_test'],
       });
-     
+
       totalQuestions.forEach(async (data) => {
         let foundQuestion = await this.mockTestQuestionsRepo.findOne({
           where: { id: data.id },
@@ -555,8 +569,8 @@ export class UserService {
         }
       });
 
-       totalMarksPercentage = (totalMarks / total.length) * 100;
-       totalTimePercentage = (totalTime / 35) * 100;
+      totalMarksPercentage = (totalMarks / total.length) * 100;
+      totalTimePercentage = (totalTime / 35) * 100;
       addMockTestResult = await this.mockTestResultRepo.save({
         studentID: studentID,
         mockTestID: mockTestID,

@@ -84,21 +84,21 @@ export class UtilitySeeder {
           const pkgSubjects = learningPackages[k].subjects;
 
           if (pkgSubjects != null) {
-            let pkgSubjectList: Array<Subject> = [];
+            let pkgSubjectDocs: Array<Subject> = [];
 
             Object.keys(pkgSubjects).map(async (sub) => {
               if (sub) {
-                pkgSubjectList.push(
-                  this.subjectRepo.create({
-                    name: sub,
-                    learningPackage: pkg,
-                  }),
-                );
+                // const savedPKGs = await this.subjectRepo.save(pkgSubjectDocs);
+                // pkgSubjectDocs.push(
+                //   this.subjectRepo.create({
+                //     name: sub,
+                //     learningPackage: pkg,
+                //   }),
+                // );
               }
             });
 
-            const savedPKGs = await this.subjectRepo.save(pkgSubjectList);
-            return savedPKGs;
+            // return savedPKGs;
           }
         }),
       ).then((res: Array<any>) => {
