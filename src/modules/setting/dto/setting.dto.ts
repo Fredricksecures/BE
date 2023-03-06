@@ -51,17 +51,8 @@ export class updateStudentProfileReq {
     dateOfBirth: Date;
 
   }
-  export class updateAccountSecuirtyReq
-  {
-    @IsOptional()
-    @IsBoolean()
-    informationCollection: boolean;
-
-    @IsOptional()
-    @IsBoolean()
-    twoFactorAuth: boolean;
-  }
-  export class updateAccountDisplayReq
+  
+  export class updateAccountSettingsReq
   {
     @IsOptional()
     @IsString()
@@ -70,10 +61,15 @@ export class updateStudentProfileReq {
     @IsOptional()
     @IsString()
     resolution: string;
-  }
 
-  export class updateAccountNotificationReq
-  {
+    @IsOptional()
+    @IsBoolean()
+    informationCollection: boolean;
+
+    @IsOptional()
+    @IsBoolean()
+    twoFactorAuth: boolean;
+
     @IsOptional()
     @IsBoolean()
     bonusNotification: boolean;
@@ -86,3 +82,5 @@ export class updateStudentProfileReq {
     @IsBoolean()
     emailNotification: boolean;
   }
+
+ 

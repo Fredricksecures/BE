@@ -9,6 +9,7 @@ import {
   IsNotEmpty,
   IsMobilePhone,
   IsArray,
+  IsNumber,
 } from 'class-validator';
 import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { Device } from 'src/modules/auth/entity/device.entity';
@@ -43,21 +44,9 @@ export class UpdateStudentReq {
   @IsNotEmpty()
   id: string;
 
+  @IsNumber()
   @IsOptional()
-  @IsString()
-  firstName: string;
-
-  @IsOptional()
-  @IsString()
-  lastName: string;
-
-  @IsOptional()
-  @IsString()
-  dateOfBirth: string;
-
-  @IsOptional()
-  @IsString()
-  gender: string;
+  points:number
 }
 export class CreateStudentReq {
   user: User;
@@ -73,7 +62,7 @@ export class CreateStudentRes {
 
 export class GetStudentReq {
   @IsString()
-  parentId: string;
+  studentId: string;
 
   @IsNotEmpty()
   @IsString()
@@ -145,4 +134,26 @@ export class mockTestResultReq {
   @IsNotEmpty()
   @IsString()
   totalTime: number;
+}
+
+export class CreateLearningJourneyReq {
+  @IsOptional()
+  @IsString()
+  studentId: string;
+
+  @IsOptional()
+  @IsString()
+  subjectId: string;
+
+  @IsOptional()
+  @IsString()
+  chapterId: string;
+
+  @IsOptional()
+  @IsString()
+  lessonId: string;
+
+  @IsOptional()
+  @IsString()
+  testId: string;
 }

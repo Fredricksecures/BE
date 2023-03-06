@@ -32,12 +32,10 @@ import { Leaderboard } from '../modules/content/entity/leaderBoard.entity';
 import { Badge } from '../modules/user/entity/badges.entity';
 import { MockTest } from '../modules/admin/entity/mockTest.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
-import { Settings } from 'src/modules/user/entity/settings.entity';
+import { settings } from 'src/modules/setting/entity/settings.entity';
 import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
 import { LearningJourney } from '../modules/user/entity/learningJourney.entity';
-import { AccountNotification } from 'src/modules/setting/entities/setting.notification.entity';
-import { AccountSecurities } from 'src/modules/setting/entities/setting.security.entity';
-import { settingDisplay } from 'src/modules/setting/entities/setting.display.entity';
+
 config();
 
 const { JWT_SECRET, JWT_EXPIRATION_TIME } = process.env;
@@ -68,7 +66,7 @@ export const ModuleConfigs = {
       Badge,
       MockTest,
       Review,
-      Settings,
+      settings,
       EmailTemplate,
       Products,
       Cart,
@@ -78,9 +76,6 @@ export const ModuleConfigs = {
       Banners,
       MockTestQuestions,
       MockTestResult,
-      AccountNotification,
-      AccountSecurities,
-      settingDisplay,
     ],
   },
   utility: {
@@ -96,10 +91,14 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
-      Settings,
+      settings,
       Badge,
       MockTestQuestions,
       MockTestResult,
+      LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
   admin: {
@@ -121,13 +120,14 @@ export const ModuleConfigs = {
       Badge,
       MockTest,
       Class,
-      Settings,
+      settings,
       Subscription,
       Invoice,
       EmailTemplate,
       Banners,
       MockTestQuestions,
       MockTestResult,
+      LearningJourney
     ],
   },
   subscription: {
@@ -168,6 +168,9 @@ export const ModuleConfigs = {
       MockTestQuestions,
       MockTestResult,
       LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
   store: {
@@ -187,6 +190,10 @@ export const ModuleConfigs = {
       Session,
       MockTestQuestions,
       MockTestResult,
+      LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
   ebook: {
@@ -206,6 +213,10 @@ export const ModuleConfigs = {
       CartGroup,
       MockTestQuestions,
       MockTestResult,
+      LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
   setting:{
@@ -220,11 +231,12 @@ export const ModuleConfigs = {
       MockTestQuestions,
       MockTestResult,
       LearningJourney,
-      AccountNotification,
-      AccountSecurities,
-      settingDisplay,
       Parent,
-      Student
+      Student,
+      Subject,
+      Lesson,
+      Chapter,
+      settings
   ],
 }
 };

@@ -21,7 +21,8 @@ import {
   UpdateStudentReq,
   CreateStudentReq,
   BasicUpdateRes,
-  mockTestResultReq
+  mockTestResultReq,
+  CreateLearningJourneyReq,
 } from 'src/modules/user/dto/user.dto';
 import { userErrors, userMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
@@ -62,33 +63,33 @@ export class UserController {
     });
   }
 
-  // @Post('create-students')
-  // @UseMiddleware('sessionGuard')
-  // async createStudent(
-  //   @Req() req: Request,
-  //   @Res({ passthrough: true }) resp: Response,
-  //   @Body() body: CreateStudentReq,
-  // ) {
-  //   const { success, createdStudents } =
-  //     await this.userService.createStudentProfile(req.body);
+  @Post('create-students')
+  @UseMiddleware('sessionGuard')
+  async createStudent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: CreateStudentReq,
+  ) {
+    const { success, createdStudents } =
+      await this.userService.createStudentProfile(req.body);
 
-  //   if (success) {
-  //     resp.json({
-  //       success,
-  //       message: userMessages.createdStudent,
-  //       status: HttpStatus.CREATED,
-  //       students: createdStudents,
-  //     });
-  //   } else {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.NOT_FOUND,
-  //         error: userErrors.createdStudent,
-  //       },
-  //       HttpStatus.NOT_FOUND,
-  //     );
-  //   }
-  // }
+    if (success) {
+      resp.json({
+        success,
+        message: userMessages.createdStudent,
+        status: HttpStatus.CREATED,
+        students: createdStudents,
+      });
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: userErrors.createdStudent,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
 
   @Patch('update-student')
   @UseMiddleware('sessionGuard')
@@ -97,7 +98,9 @@ export class UserController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: UpdateStudentReq,
   ) {
-    const { user, success } = await this.userService.updateStudentProfile(req.body);
+    const { user, success } = await this.userService.updateStudentProfile(
+      req.body,
+    );
 
     if (success) {
       resp.json({
@@ -117,27 +120,64 @@ export class UserController {
     }
   }
 
+  // @Get('students')
+  // @UseMiddleware('sessionGuard')
+  // async getStudents(
+  //   @Req() req: Request,
+  //   @Res({ passthrough: true }) resp: Response,
+  //   @Query() student_id : string
+  // ) {
+  //   const {
+  //     query: { id },
+  //     body: { user },
+  //   } = req;
+  //   const students = await this.userService.getStudents(req.query.student_id,{
+  //     parentId: `${id}`,
+  //     user,
+  //   });
+
+  //   if (students) {
+  //     resp.json({
+  //       message: userMessages.studentsFetchSuccess,
+  //       status: HttpStatus.OK,
+  //       [`student${id ? 's' : ''}`]: students,
+  //     });
+  //   } else {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_FOUND,
+  //         error: userErrors.getStudentsFailed,
+  //       },
+  //       HttpStatus.NOT_FOUND,
+  //     );
+  //   }
+  // }
+
   @Get('students')
   @UseMiddleware('sessionGuard')
   async getStudents(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
-    @Query() student_id : string
   ) {
     const {
       query: { id },
       body: { user },
     } = req;
-    const students = await this.userService.getStudents(req.query.student_id,{
-      parentId: `${id}`,
+
+    const { success, students } = await this.userService.getStudents({
+      studentId: `${id}`,
       user,
     });
+    console.log(
+      '🚀 ~ file: user.controller.ts:148 ~ UserController ~ students:',
+      students,
+    );
 
     if (students) {
       resp.json({
         message: userMessages.studentsFetchSuccess,
         status: HttpStatus.OK,
-        [`student${id ? 's' : ''}`]: students,
+        [`student${id ? '' : 's'}`]: students,
       });
     } else {
       throw new HttpException(
@@ -209,5 +249,23 @@ export class UserController {
         HttpStatus.NOT_FOUND,
       );
     }
+  }
+  @Post('start-journey')
+  @UseMiddleware('sessionGuard')
+  async startLearningJourney(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+    @Body() body: CreateLearningJourneyReq,
+  ) {
+    const { success, newJourney } = await this.userService.startLearningJourney(
+      req.body,
+    );
+
+    resp.json({
+      success,
+      message: 'new user journey created',
+      status: HttpStatus.CREATED,
+      journey: newJourney,
+    });
   }
 }
