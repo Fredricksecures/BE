@@ -329,6 +329,7 @@ export const userErrors = {
   userNotFoundById: 'Could not find matching user of given id ',
   checkingParent: 'Error querying for finding parent ',
   updatingParent: 'Error querying for updating parent ',
+  studentNotFound: 'could not find student with id provided'
 };
 
 export const storeErrors = {

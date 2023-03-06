@@ -73,7 +73,7 @@ export class CreateStudentRes {
 
 export class GetStudentReq {
   @IsString()
-  parentId: string;
+  studentId: string;
 
   @IsNotEmpty()
   @IsString()
@@ -145,4 +145,26 @@ export class mockTestResultReq {
   @IsNotEmpty()
   @IsString()
   totalTime: number;
+}
+
+export class CreateLearningJourneyReq {
+  @IsOptional()
+  @IsString()
+  studentId: string;
+
+  @IsOptional()
+  @IsString()
+  subjectId: string;
+
+  @IsOptional()
+  @IsString()
+  chapterId: string;
+
+  @IsOptional()
+  @IsString()
+  lessonId: string;
+
+  @IsOptional()
+  @IsString()
+  testId: string;
 }

@@ -12,6 +12,7 @@ import {
   CreateParentReq,
   UpdateParentReq,
   mockTestResultReq,
+  CreateLearningJourneyReq
 } from './dto/user.dto';
 import { Student } from 'src/modules/user/entity/student.entity';
 import { Parent } from 'src/modules/auth/entity/parent.entity';
@@ -24,12 +25,17 @@ import { LearningPackage } from 'src/modules/utility/entity/learningPackage.enti
 import { Subscription } from 'src/modules/subscription/entity/subscription.entity';
 import { MockTestResult } from 'src/modules/user/entity/mockTestresult.entity';
 import { MockTestQuestions } from 'src/modules/admin/entity/mockTestQuestions.entity';
+import { LearningJourney } from './entity/learningJourney.entity';
+import { Lesson } from '../content/entity/lesson.entity';
+import { Chapter } from '../content/entity/chapter.entity';
+import { Subject } from '../content/entity/subject.entity';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { Badge } from 'src/modules/user/entity/badges.entity';
+import { isEmpty } from 'class-validator';
 
 @Injectable()
 export class UserService {
@@ -49,6 +55,14 @@ export class UserService {
     @InjectRepository(Subscription)
     private subscriptionRepo: Repository<Subscription>,
     @InjectRepository(Badge) private badgeRepo: Repository<Badge>,
+    @InjectRepository(LearningJourney)
+    private lJRepo: Repository<LearningJourney>,
+    @InjectRepository(Lesson)
+    private lessonRepo: Repository<Lesson>,
+    @InjectRepository(Chapter)
+    private chapterRepo: Repository<Chapter>,
+    @InjectRepository(Subject)
+    private subjectRepo: Repository<Subject>,
   ) {
     this.test();
   }
@@ -380,43 +394,122 @@ export class UserService {
   //   ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
   // }
 
-  async getStudents(student_id,getStudentReq: GetStudentReq): Promise<GetStudentRes> {
-    const { parentId, user } = getStudentReq;
+  // async getStudents(student_id,getStudentReq: GetStudentReq): Promise<GetStudentRes> {
+  //   const { parentId, user } = getStudentReq;
 
-    let foundStudents: Student | Array<Student>;
-    if(student_id)
-    {
-        foundStudents = await this.studentRepo.find({
-          where: { id: student_id },
-          relations: ['parent'],
-        });
-    }
-    else
-    {
-      foundStudents = await this.studentRepo.find({
-        where: { parent: {id: user.parent.id }},
-        relations: ['parent'],
-      });
-  }
+  //   let foundStudents: Student | Array<Student>;
+  //   if(student_id)
+  //   {
+  //       foundStudents = await this.studentRepo.find({
+  //         where: { id: student_id },
+  //         relations: ['parent'],
+  //       });
+  //   }
+  //   else
+  //   {
+  //     foundStudents = await this.studentRepo.find({
+  //       where: { parent: {id: user.parent.id }},
+  //       relations: ['parent'],
+  //     });
+  // }
     
-    //const parent = await this.getParentDetails(user.id, ['students']);
+  //   //const parent = await this.getParentDetails(user.id, ['students']);
 
-    if (!foundStudents) {
-      Logger.error(userErrors.studentsNotFound).console();
+  //   if (!foundStudents) {
+  //     Logger.error(userErrors.studentsNotFound).console();
 
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: userErrors.studentsNotFound,
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.NOT_IMPLEMENTED,
+  //         error: userErrors.studentsNotFound,
+  //       },
+  //       HttpStatus.NOT_IMPLEMENTED,
+  //     );
+  //   }
+
+  //   return {
+  //     success: true,
+  //     students: foundStudents,
+  //   };
+  // }
+  async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
+    const { studentId, user } = getStudentReq;
+
+    // let parent: Parent, student: User, students: Array<User>;
+    let parent: Parent, student, students;
+
+    if (!isEmpty(studentId)) {
+      try {
+        student = await this.userRepo.findOne({
+          where: {
+            id: studentId,
+            parent: { id: user.parent.id },
+          },
+         // relations: ['student'],
+          relations: [
+            'student',
+            'student.learningJournies',
+            'student.learningJournies.subject',
+          ],
+        });
+      } catch (exp) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_IMPLEMENTED,
+            error: 'not student with matching id found',
+          },
+          HttpStatus.NOT_IMPLEMENTED,
+        );
+      }
+
+      if (!student) {
+        Logger.error(userErrors.studentNotFound).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: userErrors.studentNotFound,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return {
+        success: true,
+        students: student,
+      };
+    } else {
+      // parent = await this.getParentDetails(user, ['students']);
+
+      students = await this.userRepo.find({
+        where: {
+          student: { parent: { id: user.parent.id } },
         },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
+       // relations: ['student'],
+        relations: [
+          'student',
+          'student.learningJournies',
+          'student.learningJournies.subject',
+        ],
+      });
 
-    return {
-      success: true,
-      students: foundStudents,
-    };
+      if (!students) {
+        Logger.error(userErrors.studentsNotFound).console();
+
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: userErrors.studentsNotFound,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return {
+        success: true,
+        students,
+      };
+    }
   }
 
   async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
@@ -578,5 +671,91 @@ export class UserService {
       );
     }
     //return paginate<Badge>(foundBadges, options);
+  }
+
+  async startLearningJourney(payload: CreateLearningJourneyReq) {
+    const { studentId, lessonId, subjectId, chapterId } = payload;
+
+    let foundUser: User,
+      newJourney: LearningJourney,
+      foundContent: Lesson | Subject | Chapter;
+
+    try {
+      foundUser = await this.userRepo.findOne({
+        where: { id: studentId },
+        relations: ['student'],
+      });
+    } catch (exp) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.updatingStudent + exp,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: userErrors.studentNotFound,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    let colKey: string = '';
+
+    if (lessonId) {
+      colKey = 'lesson';
+      foundContent = await this.lessonRepo.findOne({
+        where: { id: lessonId },
+      });
+    }
+
+    if (chapterId) {
+      colKey = 'chapter';
+      foundContent = await this.chapterRepo.findOne({
+        where: { id: chapterId },
+      });
+    }
+
+    if (subjectId) {
+      colKey = 'subject';
+      foundContent = await this.subjectRepo.findOne({
+        where: { id: subjectId },
+      });
+    }
+
+    try {
+      newJourney = await this.lJRepo.save({
+        student: foundUser.student,
+        subject: await this.subjectRepo.findOne({
+          where: { id: subjectId },
+          [`${colKey}`]: foundContent,
+        }),
+      });
+
+      // updatedStudent = await this.studentRepo.save({
+      //   { ...foundUser.student,
+      //   email: email ?? foundUser.parent.email,
+      //   phoneNumber: phoneNumber ?? foundUser.parent.phoneNumber,
+      //   address: address ?? foundUser.parent.address,
+      // });
+
+      return {
+        success: true,
+        newJourney,
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.updatingStudent,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
   }
 }

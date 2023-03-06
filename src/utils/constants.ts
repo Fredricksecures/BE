@@ -100,6 +100,10 @@ export const ModuleConfigs = {
       Badge,
       MockTestQuestions,
       MockTestResult,
+      LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
   admin: {
@@ -128,6 +132,7 @@ export const ModuleConfigs = {
       Banners,
       MockTestQuestions,
       MockTestResult,
+      LearningJourney
     ],
   },
   subscription: {
@@ -168,6 +173,9 @@ export const ModuleConfigs = {
       MockTestQuestions,
       MockTestResult,
       LearningJourney,
+      Subject,
+      Lesson,
+      Chapter,
     ],
   },
   store: {
