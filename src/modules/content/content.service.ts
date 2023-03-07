@@ -60,7 +60,7 @@ export class ContentService {
     try {
       foundChapters = this.chapterRepo.createQueryBuilder('Chapter');
       if (subjectId) {
-        foundChapters = foundChapters.where('Lesson.subjectId = :subjectId', {
+        foundChapters = foundChapters.where('Chapter.subjectId = :subjectId', {
           subjectId,
         });
       }
