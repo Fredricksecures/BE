@@ -27,23 +27,5 @@ export class DashboardService {
     private jwtService: JwtService,
     @InjectRepository(Student) private studentRepo: Repository<Student>,
   ) {}
-  async getStudentDetails(id: string) {
-    let data;
-    try {
-      data = await this.studentRepo.findOneBy({ id 
-      });
-    } catch (exp) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_IMPLEMENTED,
-          error: dashboardErrors.failedToFetchStudent + exp,
-        },
-        HttpStatus.NOT_IMPLEMENTED,
-      );
-    }
-    return {
-      data,
-      success: true,
-    };
-  }
+ 
   }

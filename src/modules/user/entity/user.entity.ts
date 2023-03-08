@@ -17,6 +17,7 @@ import { Genders, UserTypes } from 'src/utils/enums';
 import { Admin } from '../../admin/entity/admin.entity';
 import { Orders } from 'src/modules/store/entities/orders.entity';
 import { UserEbooks } from 'src/modules/ebook/entities/user.ebook.entity';
+import { Settings } from 'src/modules/setting/entity/settings.entity';
 
 @Entity('users')
 export class User {
@@ -67,6 +68,9 @@ export class User {
   @OneToOne(() => Student)
   @JoinColumn()
   student?: Student;
+
+  @OneToOne(() => Settings, (Settings) => Settings.users)
+  Settings?: Settings[];
 
   @OneToMany(() => CartGroup, (cartGroup) => cartGroup.user)
   cartGroup?: CartGroup;

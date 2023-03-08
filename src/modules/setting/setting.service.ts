@@ -10,13 +10,16 @@ import {
   updateAccountSettingsReq,
   GetStudentReq,
 } from 'src/modules/setting/dto/setting.dto';
-import { settings } from './entity/settings.entity';
+import { Settings } from './entity/settings.entity';
+import { User } from '../user/entity/user.entity';
 @Injectable()
 export class SettingService {
   constructor(
     private jwtService: JwtService,
-    @InjectRepository(settings)
-    private settingsRepo: Repository<settings>,
+    @InjectRepository(Settings)
+    private settingsRepo: Repository<Settings>,
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
   ) {}
 
   async updateAccountSettings(
@@ -34,11 +37,12 @@ export class SettingService {
       twoFactorAuth,
     } = updateAccountSettingsReq;
     let foundAccountSetings;
-    let updatedAccountSettings: settings;
+    let updatedAccountSettings: Settings;
     try {
+      console.log(user)
       foundAccountSetings = await this.settingsRepo.find({
-        where: { parent: { id: user.parent.id } },
-        relations: ['parent'],
+        where: { users: { id: user.id } },
+        relations: ['user'],
       });
       console.log(foundAccountSetings[0]);
     } catch (exp) {
@@ -95,8 +99,8 @@ export class SettingService {
     let foundAccountSetings;
     try {
       foundAccountSetings = await this.settingsRepo.find({
-        where: { parent: { id: user.parent.id } },
-        relations: ['parent'],
+        where: { users: { id: user.id } },
+        relations: ['user'],
       });
     } catch (exp) {
       throw new HttpException(

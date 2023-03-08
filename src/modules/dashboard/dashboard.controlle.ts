@@ -25,20 +25,6 @@ import {
   export class DashboardController {
     constructor(private readonly dashboardService: DashboardService) {}
     
-    @Get('student-details/:id')
-    async getChapters(
-      @Req() req: Request,
-      @Res({ passthrough: true }) resp: Response,
-      @Param('id') id
-    ) {
-     
-      const students = await this.dashboardService.getStudentDetails(id);
-      resp.json({
-        status: HttpStatus.OK,
-        message: dashboardMessages.studentFetchedSuccess,
-        students: students,
-       
-      });
-    }
+    
     }
   

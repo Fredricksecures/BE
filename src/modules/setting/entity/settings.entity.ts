@@ -7,14 +7,16 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  OneToOne
 } from 'typeorm';
 import { Appearence, Resolution } from 'src/utils/enums';
 import { Parent } from 'src/modules/auth/entity/parent.entity';
 import { Device } from 'src/modules/auth/entity/device.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity('settings')
-export class settings {
-  constructor(data?: settings) {
+export class Settings {
+  constructor(data?: Settings) {
     if (typeof data === 'object') {
       Object.keys(data).forEach((index) => {
         this[index] = data[index];
@@ -46,13 +48,16 @@ export class settings {
   @Column({ type: 'bool', default: false })
   twoFactorAuth?: boolean;
 
-  @ManyToOne(() => Device, (Device) => Device.settings)
+  @ManyToOne(() => Device, (Device) => Device.Settings)
   @JoinColumn()
   devices?: Device;
 
-  @ManyToOne(() => Parent, (Parent) => Parent.settings)
+  // @ManyToOne(() => User, (user) => user.Settings)
+  // users?: User;
+
+  @OneToOne(() => User)
   @JoinColumn()
-  parent?: Parent;
+  users?: User;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;
