@@ -114,6 +114,7 @@ export const ModuleConfigs = {
       Subject,
       Lesson,
       Chapter,
+      Settings
     ],
   },
   admin: {

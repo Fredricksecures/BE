@@ -26,6 +26,7 @@ import { UserTypes } from 'src/utils/enums';
 import { UtilityService } from '../utility/utility.service';
 import { mailer } from 'src/utils/mailer';
 import { UserService } from '../user/user.service';
+import { Settings } from '../setting/entity/settings.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -39,6 +40,7 @@ export class AuthService {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Parent) private parentRepo: Repository<Parent>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
+    @InjectRepository(Settings) private settingRepo: Repository<Settings>,
   ) {}
 
   async generateToken(user: User): Promise<string> {
@@ -424,6 +426,18 @@ export class AuthService {
       );
     }
 
+    const settings = await this.settingRepo.save({
+      user: { id: createdUser.id },
+    });
+    createdUser.setting = createdUser.setting = {
+      appearence: settings.appearence,
+      resolution: settings.resolution,
+      bonusNotification: settings.bonusNotification,
+      practiceReminder: settings.practiceReminder,
+      emailNotification: settings.emailNotification,
+      informationCollection: settings.informationCollection,
+      twoFactorAuth: settings.twoFactorAuth,
+    };
     // mailer(createdUser.parent.email, 'Registration Successful', {
     //   text: `An action to change your password was successful`,
     // });
@@ -447,6 +461,7 @@ export class AuthService {
           'parent',
           'parent.students',
           'parent.students.learningJournies',
+          'setting'
         ],
       });
     } catch (exp) {
@@ -802,12 +817,15 @@ export class AuthService {
     //* create user account
     try {
       let password = generateRandomHash(6);
+      password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
+
       const createdParent = await this.userService.createParentProfile({
         email,
-        phoneNumber,
+        phoneNumber: `${phoneNumber}`,
         password,
         countryId,
       });
+
       createdUser = await this.userRepo.save({
         firstName,
         lastName,
@@ -825,10 +843,21 @@ export class AuthService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
-    mailer(createdUser.parent.email, 'Registration Successful', {
-      text: `An action to change your password was successful`,
+    const settings = await this.settingRepo.save({
+      user: { id: createdUser.id },
     });
+    createdUser.setting = {
+      appearence: settings.appearence,
+      resolution: settings.resolution,
+      bonusNotification: settings.bonusNotification,
+      practiceReminder: settings.practiceReminder,
+      emailNotification: settings.emailNotification,
+      informationCollection: settings.informationCollection,
+      twoFactorAuth: settings.twoFactorAuth,
+    };
+    // mailer(createdUser.parent.email, 'Registration Successful', {
+    //   text: `An action to change your password was successful`,
+    // });
 
     return {
       createdUser,

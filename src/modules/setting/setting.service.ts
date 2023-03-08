@@ -39,12 +39,12 @@ export class SettingService {
     let foundAccountSetings;
     let updatedAccountSettings: Settings;
     try {
-      console.log(user)
+      
       foundAccountSetings = await this.settingsRepo.find({
         where: { user: { id: user.id } },
         relations: ['user'],
       });
-      console.log(foundAccountSetings);
+     
     } catch (exp) {
       throw new HttpException(
         {
@@ -82,7 +82,7 @@ export class SettingService {
 
       return {
         success: true,
-        updatedAccountSettings,
+        setting:updatedAccountSettings,
       };
     } catch (e) {
       throw new HttpException(
@@ -101,7 +101,14 @@ export class SettingService {
     try {
       foundAccountSetings = await this.settingsRepo.find({
         where: { user: { id: user.id } },
-        relations: ['user'],
+        select:[ "id",
+        "appearence",
+        "resolution",
+        "bonusNotification",
+        "practiceReminder",
+        "emailNotification",
+        "informationCollection",
+        "twoFactorAuth",]
       });
     } catch (exp) {
       throw new HttpException(
@@ -123,7 +130,7 @@ export class SettingService {
     }
     return {
       success: true,
-      foundAccountSetings,
+      settings:foundAccountSetings,
     };
   }
 }
