@@ -127,7 +127,7 @@ export const ModuleConfigs = {
       Banners,
       MockTestQuestions,
       MockTestResult,
-      LearningJourney
+      LearningJourney,
     ],
   },
   subscription: {
@@ -219,8 +219,8 @@ export const ModuleConfigs = {
       Chapter,
     ],
   },
-  setting:{
-    entities:[
+  setting: {
+    entities: [
       User,
       Device,
       CountryList,
@@ -236,9 +236,9 @@ export const ModuleConfigs = {
       Subject,
       Lesson,
       Chapter,
-      settings
-  ],
-}
+      settings,
+    ],
+  },
 };
 
 export const GET_ALL_ENTITIES = () => [

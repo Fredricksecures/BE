@@ -30,7 +30,8 @@ export class DashboardService {
   async getStudentDetails(id: string) {
     let data;
     try {
-      data = await this.studentRepo.findOneBy({ id });
+      data = await this.studentRepo.findOneBy({ id 
+      });
     } catch (exp) {
       throw new HttpException(
         {
