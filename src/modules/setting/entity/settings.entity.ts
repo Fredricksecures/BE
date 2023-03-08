@@ -52,12 +52,13 @@ export class Settings {
   @JoinColumn()
   devices?: Device;
 
-  // @ManyToOne(() => User, (user) => user.Settings)
-  // users?: User;
-
-  @OneToOne(() => User)
+  @OneToOne(() => User, (user) => user.setting)
   @JoinColumn()
-  users?: User;
+  user?: User;
+
+//   @OneToOne(() => User)
+//  // @JoinColumn()
+//   users?: User;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt?: Date;

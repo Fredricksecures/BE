@@ -41,10 +41,10 @@ export class SettingService {
     try {
       console.log(user)
       foundAccountSetings = await this.settingsRepo.find({
-        where: { users: { id: user.id } },
+        where: { user: { id: user.id } },
         relations: ['user'],
       });
-      console.log(foundAccountSetings[0]);
+      console.log(foundAccountSetings);
     } catch (exp) {
       throw new HttpException(
         {
@@ -77,6 +77,7 @@ export class SettingService {
         informationCollection:
           informationCollection ?? foundAccountSetings[0].informationCollection,
         twoFactorAuth: twoFactorAuth ?? foundAccountSetings[0].twoFactorAuth,
+        user : {id:user.id}
       });
 
       return {
@@ -99,7 +100,7 @@ export class SettingService {
     let foundAccountSetings;
     try {
       foundAccountSetings = await this.settingsRepo.find({
-        where: { users: { id: user.id } },
+        where: { user: { id: user.id } },
         relations: ['user'],
       });
     } catch (exp) {

@@ -69,8 +69,9 @@ export class User {
   @JoinColumn()
   student?: Student;
 
-  @OneToOne(() => Settings, (Settings) => Settings.users)
-  Settings?: Settings[];
+  @OneToOne(() => Settings, (settings) => settings.user)
+  setting?: Settings;
+
 
   @OneToMany(() => CartGroup, (cartGroup) => cartGroup.user)
   cartGroup?: CartGroup;
