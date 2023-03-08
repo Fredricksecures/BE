@@ -26,6 +26,7 @@ import { UserTypes } from 'src/utils/enums';
 import { UtilityService } from '../utility/utility.service';
 import { mailer } from 'src/utils/mailer';
 import { UserService } from '../user/user.service';
+import { Settings } from '../setting/entity/settings.entity';
 
 config();
 const { BCRYPT_SALT } = process.env;
@@ -39,6 +40,7 @@ export class AuthService {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Parent) private parentRepo: Repository<Parent>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
+    @InjectRepository(Settings) private settingRepo: Repository<Settings>,
   ) {}
 
   async generateToken(user: User): Promise<string> {
@@ -424,6 +426,10 @@ export class AuthService {
       );
     }
 
+    const settings = await this.settingRepo.save({
+      user: { id: createdUser.id },
+    });
+    createdUser.setting = settings;
     // mailer(createdUser.parent.email, 'Registration Successful', {
     //   text: `An action to change your password was successful`,
     // });
@@ -825,7 +831,10 @@ export class AuthService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-
+    const settings = await this.settingRepo.save({
+      user: { id: createdUser.id },
+    });
+    createdUser.setting = settings;
     mailer(createdUser.parent.email, 'Registration Successful', {
       text: `An action to change your password was successful`,
     });
