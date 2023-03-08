@@ -292,7 +292,7 @@ export const learningPackages = {
                     url: 'https://www.youtube.com/watch?v=drlIUqRYM-w&ab_channel=KiddosWorldTV',
                   },
                   {
-                    title: 'intro_vid1.mp4',
+                    title: 'intro_vid2.mp4',
                     cover: '',
                     type: MaterialTypes.EBOOK,
                     content: '',

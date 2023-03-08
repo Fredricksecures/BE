@@ -61,10 +61,12 @@ export class ContentController {
     } = req;
 
     const lessons = await this.contentService.getLessons(chapterId, options);
+
     resp.json({
       status: HttpStatus.OK,
       message: contentMessages.lessonsFetchSuccess,
-      lessons: lessons.items,
+      // lessons: lessons.items,
+      lessons,
       meta: lessons.meta,
     });
   }

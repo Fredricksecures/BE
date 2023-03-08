@@ -33,6 +33,7 @@ import { Badge } from 'src/modules/user/entity/badges.entity';
 import { MockTest } from 'src/modules/admin/entity/mockTest.entity';
 import { Class } from 'src/modules/liveClass/entity/class.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
+import { Material } from './entity/material.entity';
 
 @Injectable()
 export class ContentService {
@@ -98,14 +99,34 @@ export class ContentService {
   ): Promise<Pagination<Lesson>> {
     let foundLessons;
 
-    try {
-      foundLessons = await this.lessonRepo.createQueryBuilder('Lesson');
+    // try {
+    //   foundLessons = this.lessonRepo
+    //     .createQueryBuilder('Lesson')
+    //   // .leftJoinAndSelect('lesson.materials', 'Material');
 
-      if (chapterId) {
-        foundLessons = foundLessons.where('Lesson.chapterId = :chapterId', {
-          chapterId,
-        });
-      }
+    //   if (chapterId) {
+    //     foundLessons = foundLessons.where('Lesson.chapterId = :chapterId', {
+    //       chapterId,
+    //     });
+    //   }
+    // } catch (exp) {
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.NOT_IMPLEMENTED,
+    //       error: adminErrors.failedToFetchLessons + exp,
+    //     },
+    //     HttpStatus.NOT_IMPLEMENTED,
+    //   );
+    // }
+    // return paginate<Lesson>(foundLessons, options);
+
+    try {
+      foundLessons = await this.lessonRepo.find({
+        where: {
+          chapter: { id: chapterId },
+        },
+        relations: ['materials'],
+      });
     } catch (exp) {
       throw new HttpException(
         {
@@ -115,7 +136,8 @@ export class ContentService {
         HttpStatus.NOT_IMPLEMENTED,
       );
     }
-    return paginate<Lesson>(foundLessons, options);
+
+    return foundLessons;
   }
 
   async getSubjects(options: IPaginationOptions): Promise<Pagination<Subject>> {
