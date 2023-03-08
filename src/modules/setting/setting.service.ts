@@ -82,7 +82,7 @@ export class SettingService {
 
       return {
         success: true,
-        updatedAccountSettings,
+        setting:updatedAccountSettings,
       };
     } catch (e) {
       throw new HttpException(

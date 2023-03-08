@@ -43,7 +43,7 @@ export class SettingController {
       query: { id },
       body: { user },
     } = req;
-    const { success, updatedAccountSettings } =
+    const { success, setting } =
       await this.settingService.updateAccountSettings(
         {
           parentId: `${id}`,
@@ -55,7 +55,7 @@ export class SettingController {
     if (success) {
       resp.json({
         success,
-        updatedAccountSettings,
+        setting,
         message: settingMessages.NotificationUpdated,
         status: HttpStatus.OK,
       });

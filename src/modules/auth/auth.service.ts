@@ -461,6 +461,7 @@ export class AuthService {
           'parent',
           'parent.students',
           'parent.students.learningJournies',
+          'setting'
         ],
       });
     } catch (exp) {
