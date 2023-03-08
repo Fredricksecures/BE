@@ -81,7 +81,7 @@ export class SettingController {
       query: { id },
       body: { user },
     } = req;
-    const { success, foundAccountSetings } =
+    const { success, settings } =
       await this.settingService.getSettingsDetails({
         parentId: `${id}`,
         user,
@@ -90,7 +90,7 @@ export class SettingController {
     if (success) {
       resp.json({
         success,
-        foundAccountSetings,
+        settings,
         message: settingMessages.studentFetchedSuccess,
         status: HttpStatus.OK,
       });

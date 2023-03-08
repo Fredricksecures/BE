@@ -101,7 +101,14 @@ export class SettingService {
     try {
       foundAccountSetings = await this.settingsRepo.find({
         where: { user: { id: user.id } },
-        relations: ['user'],
+        select:[ "id",
+        "appearence",
+        "resolution",
+        "bonusNotification",
+        "practiceReminder",
+        "emailNotification",
+        "informationCollection",
+        "twoFactorAuth",]
       });
     } catch (exp) {
       throw new HttpException(
@@ -123,7 +130,7 @@ export class SettingService {
     }
     return {
       success: true,
-      foundAccountSetings,
+      settings:foundAccountSetings,
     };
   }
 }
