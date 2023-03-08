@@ -354,6 +354,7 @@ export class ContentService {
           id: lessonId,
         },
       });
+      
     } catch (exp) {
       throw new HttpException(
         {
@@ -373,8 +374,9 @@ export class ContentService {
       );
     }
     try {
+     
       reviewCreated = await this.reviewRepo.save({
-        lessonReview,
+        review:lessonReview,
         lesson: foundLessonId,
       });
     } catch (e) {
@@ -398,14 +400,14 @@ export class ContentService {
     options: IPaginationOptions,
   ): Promise<Pagination<Badge>> {
     let foundReviews;
-    // console.log(id);
+   
     try {
       foundReviews =
         id == undefined
           ? await this.reviewRepo.createQueryBuilder('Review')
           : await this.reviewRepo
               .createQueryBuilder('Review')
-              .where('Review.id = :id', { id });
+              .where('Review.lesson.id = :id', { id });
     } catch (exp) {
       throw new HttpException(
         {
