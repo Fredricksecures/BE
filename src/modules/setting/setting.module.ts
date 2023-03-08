@@ -12,6 +12,6 @@ import { UtilityService } from '../utility/utility.service';
     TypeOrmModule.forFeature(ModuleConfigs['setting'].entities),
   ],
   controllers: [SettingController],
-  providers: [SettingService,UserService,UtilityService],
+  providers: [SettingService, UserService, UtilityService],
 })
 export class SettingModule {}

@@ -38,7 +38,7 @@ import { Leaderboard } from '../modules/content/entity/leaderBoard.entity';
 import { Badge } from '../modules/user/entity/badges.entity';
 import { MockTest } from '../modules/admin/entity/mockTest.entity';
 import { Review } from 'src/modules/content/entity/review.entity';
-import { settings } from 'src/modules/setting/entity/settings.entity';
+import { Settings } from 'src/modules/setting/entity/settings.entity';
 import { EmailTemplate } from 'src/modules/admin/entity/email.template.entity';
 import { LearningJourney } from '../modules/user/entity/learningJourney.entity';
 
@@ -72,7 +72,7 @@ export const ModuleConfigs = {
       Badge,
       MockTest,
       Review,
-      settings,
+      Settings,
       EmailTemplate,
       Products,
       Cart,
@@ -106,7 +106,7 @@ export const ModuleConfigs = {
       Session,
       LearningPackage,
       Subscription,
-      settings,
+      Settings,
       Badge,
       MockTestQuestions,
       MockTestResult,
@@ -135,7 +135,7 @@ export const ModuleConfigs = {
       Badge,
       MockTest,
       Class,
-      settings,
+      Settings,
       Subscription,
       Invoice,
       EmailTemplate,
@@ -251,7 +251,8 @@ export const ModuleConfigs = {
       Subject,
       Lesson,
       Chapter,
-      settings,
+      Settings,
+
     ],
   },
 };

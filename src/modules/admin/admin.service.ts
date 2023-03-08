@@ -76,7 +76,7 @@ import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { Class } from 'src/modules/liveClass/entity/class.entity';
 import { ReportCard } from 'src/modules/user/entity/reportCard.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
-import { settings } from 'src/modules/setting/entity/settings.entity';
+import { Settings } from 'src/modules/setting/entity/settings.entity';
 import { SubscriptionService } from '../subscription/subscription.service';
 import * as excelToJson from 'convert-excel-to-json';
 import { Parser } from 'json2csv';
@@ -111,7 +111,7 @@ export class AdminService {
     private customerCareRepo: Repository<CustomerCare>,
     @InjectRepository(LearningPackage)
     private learningPackageRepo: Repository<LearningPackage>,
-    @InjectRepository(settings) private settingRepo: Repository<settings>,
+    @InjectRepository(Settings) private settingRepo: Repository<Settings>,
     @InjectRepository(Class) private classRepo: Repository<Class>,
     @InjectRepository(Banners) private bannersRepo: Repository<Banners>,
     @InjectRepository(EmailTemplate)
@@ -1571,7 +1571,7 @@ export class AdminService {
 
   async updateSetting(id: string, updateSettingReq: updateSettingReq) {
     const { type } = updateSettingReq;
-    let foundSetting, updatedSetting: settings;
+    let foundSetting, updatedSetting: Settings;
 
     try {
       foundSetting = await this.settingRepo.findOne({
@@ -1621,7 +1621,7 @@ export class AdminService {
   async getUserSetting(
     id: string,
     options: IPaginationOptions,
-  ): Promise<Pagination<settings>> {
+  ): Promise<Pagination<Settings>> {
     let results, total;
 
     try {
@@ -1639,7 +1639,7 @@ export class AdminService {
       );
     }
 
-    return paginate<settings>(results, options);
+    return paginate<Settings>(results, options);
   }
 
   async BulkRegistration(params, file) {
