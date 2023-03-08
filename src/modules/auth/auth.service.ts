@@ -429,7 +429,15 @@ export class AuthService {
     const settings = await this.settingRepo.save({
       user: { id: createdUser.id },
     });
-    createdUser.setting = settings;
+    createdUser.setting = createdUser.setting = {
+      appearence: settings.appearence,
+      resolution: settings.resolution,
+      bonusNotification: settings.bonusNotification,
+      practiceReminder: settings.practiceReminder,
+      emailNotification: settings.emailNotification,
+      informationCollection: settings.informationCollection,
+      twoFactorAuth: settings.twoFactorAuth,
+    };
     // mailer(createdUser.parent.email, 'Registration Successful', {
     //   text: `An action to change your password was successful`,
     // });
@@ -808,12 +816,15 @@ export class AuthService {
     //* create user account
     try {
       let password = generateRandomHash(6);
+      password = await bcrypt.hash(password, parseInt(BCRYPT_SALT));
+
       const createdParent = await this.userService.createParentProfile({
         email,
-        phoneNumber,
+        phoneNumber: `${phoneNumber}`,
         password,
         countryId,
       });
+
       createdUser = await this.userRepo.save({
         firstName,
         lastName,
@@ -834,10 +845,18 @@ export class AuthService {
     const settings = await this.settingRepo.save({
       user: { id: createdUser.id },
     });
-    createdUser.setting = settings;
-    mailer(createdUser.parent.email, 'Registration Successful', {
-      text: `An action to change your password was successful`,
-    });
+    createdUser.setting = {
+      appearence: settings.appearence,
+      resolution: settings.resolution,
+      bonusNotification: settings.bonusNotification,
+      practiceReminder: settings.practiceReminder,
+      emailNotification: settings.emailNotification,
+      informationCollection: settings.informationCollection,
+      twoFactorAuth: settings.twoFactorAuth,
+    };
+    // mailer(createdUser.parent.email, 'Registration Successful', {
+    //   text: `An action to change your password was successful`,
+    // });
 
     return {
       createdUser,

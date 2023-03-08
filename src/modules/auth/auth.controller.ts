@@ -82,14 +82,14 @@ export class AuthController {
 
     if (success) {
       user = await this.authService.formatPayload(user, UserTypes.DEFAULT);
-      
+
       //* add new session to user response payload
       user = {
         ...user,
         parent: {
           ...user.parent,
           session,
-        }
+        },
       };
       resp.cookie('jwt', user.parent.session.token, { httpOnly: true });
 

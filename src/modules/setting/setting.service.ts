@@ -39,12 +39,12 @@ export class SettingService {
     let foundAccountSetings;
     let updatedAccountSettings: Settings;
     try {
-      console.log(user)
+      
       foundAccountSetings = await this.settingsRepo.find({
         where: { user: { id: user.id } },
         relations: ['user'],
       });
-      console.log(foundAccountSetings);
+     
     } catch (exp) {
       throw new HttpException(
         {
