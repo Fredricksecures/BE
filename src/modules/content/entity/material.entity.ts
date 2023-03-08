@@ -22,8 +22,23 @@ export class Material {
   @PrimaryGeneratedColumn()
   id?: string;
 
-  @Column({ type: 'varchar', default: MaterialTypes.VIDEO })
-  type?: string;
+  @Column({ type: 'enum', enum: MaterialTypes, default: MaterialTypes.VIDEO })
+  type?: MaterialTypes;
+
+  @Column('varchar', { nullable: true })
+  url?: string;
+
+  @Column('varchar', { nullable: true })
+  content?: string;
+
+  @Column('varchar')
+  title?: string;
+
+  @Column('varchar', { nullable: true })
+  cover?: string;
+
+  @Column('varchar', { nullable: true })
+  thumbNail?: string;
 
   @ManyToOne(() => Lesson, (Lesson) => Lesson.materials)
   lesson?: Lesson;

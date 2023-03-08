@@ -12,7 +12,7 @@ import {
   CreateParentReq,
   UpdateParentReq,
   mockTestResultReq,
-  CreateLearningJourneyReq
+  CreateLearningJourneyReq,
 } from './dto/user.dto';
 import { Student } from 'src/modules/user/entity/student.entity';
 import { Parent } from 'src/modules/auth/entity/parent.entity';
@@ -394,14 +394,14 @@ export class UserService {
     ).then((res: Array<User>) => ({ success: true, createdStudents: res }));
   }
 
-  // async getStudents(student_id,getStudentReq: GetStudentReq): Promise<GetStudentRes> {
+  // async getStudents(studentId,getStudentReq: GetStudentReq): Promise<GetStudentRes> {
   //   const { parentId, user } = getStudentReq;
 
   //   let foundStudents: Student | Array<Student>;
-  //   if(student_id)
+  //   if(studentId)
   //   {
   //       foundStudents = await this.studentRepo.find({
-  //         where: { id: student_id },
+  //         where: { id: studentId },
   //         relations: ['parent'],
   //       });
   //   }
@@ -412,7 +412,7 @@ export class UserService {
   //       relations: ['parent'],
   //     });
   // }
-    
+
   //   //const parent = await this.getParentDetails(user.id, ['students']);
 
   //   if (!foundStudents) {
@@ -432,84 +432,57 @@ export class UserService {
   //     students: foundStudents,
   //   };
   // }
+
   async getStudents(getStudentReq: GetStudentReq): Promise<GetStudentRes> {
     const { studentId, user } = getStudentReq;
 
-    // let parent: Parent, student: User, students: Array<User>;
-    let parent: Parent, student, students;
+    let foundStudents: Student | Array<Student>;
 
-    if (!isEmpty(studentId)) {
-      try {
-        student = await this.userRepo.findOne({
-          where: {
-            id: studentId,
-            parent: { id: user.parent.id },
-          },
-         // relations: ['student'],
-          relations: [
-            'student',
-            'student.learningJournies',
-            'student.learningJournies.subject',
-          ],
-        });
-      } catch (exp) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_IMPLEMENTED,
-            error: 'not student with matching id found',
-          },
-          HttpStatus.NOT_IMPLEMENTED,
-        );
-      }
-
-      if (!student) {
-        Logger.error(userErrors.studentNotFound).console();
-
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: userErrors.studentNotFound,
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return {
-        success: true,
-        students: student,
-      };
+    if (studentId.length == 0) {
+      foundStudents = await this.studentRepo.find({
+        where: { id: studentId },
+        relations: ['parent'],
+      });
     } else {
-      // parent = await this.getParentDetails(user, ['students']);
-
-      students = await this.userRepo.find({
-        where: {
-          student: { parent: { id: user.parent.id } },
-        },
-       // relations: ['student'],
-        relations: [
-          'student',
-          'student.learningJournies',
-          'student.learningJournies.subject',
-        ],
+      const foundParent = await this.parentRepo.findOne({
+        where: { id: user.parent.id },
+        relations: ['students'],
       });
 
-      if (!students) {
-        Logger.error(userErrors.studentsNotFound).console();
+      foundStudents = foundParent?.students;
 
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: userErrors.studentsNotFound,
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
+      // console.log(
+      //   '🚀 ~ file: user.service.ts:456 ~ getStudents ~ foundParent:',
+      //   foundParent.students,
+      // );
 
-      return {
-        success: true,
-        students,
-      };
+      //   .then((par: Parent) => par.students);
+      // foundStudents = foundParent.students
+      // console.log('🚀 ~ file: user.service.ts:401 ~ UserService ~ beuh:', beuh);
+      // foundStudents = await this.studentRepo.find({
+      //   where: { parent: { id: user.parent.id } },
+      //   // relations: ['parent'],
+      // });
     }
+
+    //const parent = await this.getParentDetails(user.id, ['students']);
+
+    if (!foundStudents) {
+      Logger.error(userErrors.studentsNotFound).console();
+
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_IMPLEMENTED,
+          error: userErrors.studentsNotFound,
+        },
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+
+    return {
+      success: true,
+      students: foundStudents,
+    };
   }
 
   async updateStudentProfile(updateStudentReq: UpdateStudentReq) {
@@ -522,7 +495,7 @@ export class UserService {
           id,
         },
       });
-      console.log(foundUser)
+      console.log(foundUser);
     } catch (exp) {
       throw new HttpException(
         {
@@ -569,12 +542,12 @@ export class UserService {
 
     let foundUser: User, updatedParent: Parent;
     try {
-      console.log(user)
+      console.log(user);
       foundUser = await this.userRepo.findOne({
         where: { id: user.id },
         relations: ['parent'],
       });
-      console.log(foundUser)
+      console.log(foundUser);
     } catch (exp) {
       throw new HttpException(
         {
@@ -622,7 +595,9 @@ export class UserService {
     const { studentID, mockTestID, totalQuestions, totalTime } =
       mockTestResultReq;
     let totalMarks = 0,
-      addMockTestResult,totalMarksPercentage,totalTimePercentage;
+      addMockTestResult,
+      totalMarksPercentage,
+      totalTimePercentage;
     var count = 0;
     try {
       let total = await this.mockTestQuestionsRepo.find({
@@ -633,7 +608,7 @@ export class UserService {
         },
         relations: ['mock_test'],
       });
-     
+
       totalQuestions.forEach(async (data) => {
         let foundQuestion = await this.mockTestQuestionsRepo.findOne({
           where: { id: data.id },
@@ -643,8 +618,8 @@ export class UserService {
         }
       });
 
-       totalMarksPercentage = (totalMarks / total.length) * 100;
-       totalTimePercentage = (totalTime / 35) * 100;
+      totalMarksPercentage = (totalMarks / total.length) * 100;
+      totalTimePercentage = (totalTime / 35) * 100;
       addMockTestResult = await this.mockTestResultRepo.save({
         studentID: studentID,
         mockTestID: mockTestID,
@@ -706,29 +681,32 @@ export class UserService {
       colKey = 'lesson';
       foundContent = await this.lessonRepo.findOne({
         where: { id: lessonId },
+        relations: ['chapter', 'chapter.subject'],
       });
     }
 
-    if (chapterId) {
-      colKey = 'chapter';
-      foundContent = await this.chapterRepo.findOne({
-        where: { id: chapterId },
-      });
-    }
+    // if (chapterId) {
+    //   colKey = 'chapter';
+    //   foundContent = await this.chapterRepo.findOne({
+    //     where: { id: chapterId },
+    //   });
+    // }
 
-    if (subjectId) {
-      colKey = 'subject';
-      foundContent = await this.subjectRepo.findOne({
-        where: { id: subjectId },
-      });
-    }
+    // if (subjectId) {
+    //   colKey = 'subject';
+    //   foundContent = await this.subjectRepo.findOne({
+    //     where: { id: subjectId },
+    //   });
+    // }
 
     try {
       newJourney = await this.lJRepo.save({
         student: foundUser.student,
         subject: await this.subjectRepo.findOne({
-          where: { id: subjectId },
-          [`${colKey}`]: foundContent,
+          where: {
+            id: subjectId,
+            [`${colKey}`]: foundContent,
+          },
         }),
       });
 

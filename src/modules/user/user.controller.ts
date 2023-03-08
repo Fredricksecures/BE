@@ -22,7 +22,7 @@ import {
   CreateStudentReq,
   BasicUpdateRes,
   mockTestResultReq,
-  CreateLearningJourneyReq
+  CreateLearningJourneyReq,
 } from 'src/modules/user/dto/user.dto';
 import { userErrors, userMessages, profileMessages } from 'src/utils/messages';
 import { Middleware, UseMiddleware } from 'src/utils/middleware';
@@ -98,7 +98,9 @@ export class UserController {
     @Res({ passthrough: true }) resp: Response,
     @Body() body: UpdateStudentReq,
   ) {
-    const { user, success } = await this.userService.updateStudentProfile(req.body);
+    const { user, success } = await this.userService.updateStudentProfile(
+      req.body,
+    );
 
     if (success) {
       resp.json({
@@ -161,6 +163,7 @@ export class UserController {
       query: { id },
       body: { user },
     } = req;
+
     const { success, students } = await this.userService.getStudents({
       studentId: `${id}`,
       user,
@@ -220,6 +223,7 @@ export class UserController {
       );
     }
   }
+
   @Post('get-mock-test-result')
   // @UseMiddleware('sessionGuard')
   async getMockTestResult(
@@ -247,6 +251,7 @@ export class UserController {
       );
     }
   }
+
   @Post('start-journey')
   @UseMiddleware('sessionGuard')
   async startLearningJourney(
