@@ -681,29 +681,32 @@ export class UserService {
       colKey = 'lesson';
       foundContent = await this.lessonRepo.findOne({
         where: { id: lessonId },
+        relations: ['chapter', 'chapter.subject'],
       });
     }
 
-    if (chapterId) {
-      colKey = 'chapter';
-      foundContent = await this.chapterRepo.findOne({
-        where: { id: chapterId },
-      });
-    }
+    // if (chapterId) {
+    //   colKey = 'chapter';
+    //   foundContent = await this.chapterRepo.findOne({
+    //     where: { id: chapterId },
+    //   });
+    // }
 
-    if (subjectId) {
-      colKey = 'subject';
-      foundContent = await this.subjectRepo.findOne({
-        where: { id: subjectId },
-      });
-    }
+    // if (subjectId) {
+    //   colKey = 'subject';
+    //   foundContent = await this.subjectRepo.findOne({
+    //     where: { id: subjectId },
+    //   });
+    // }
 
     try {
       newJourney = await this.lJRepo.save({
         student: foundUser.student,
         subject: await this.subjectRepo.findOne({
-          where: { id: subjectId },
-          [`${colKey}`]: foundContent,
+          where: {
+            id: subjectId,
+            [`${colKey}`]: foundContent,
+          },
         }),
       });
 

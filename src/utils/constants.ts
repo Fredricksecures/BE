@@ -8,7 +8,13 @@ import { Orders } from './../modules/store/entities/orders.entity';
 import { Cart } from './../modules/store/entities/cart.entity';
 import { Products } from '../modules/store/entities/products.entity';
 import { config } from 'dotenv';
-import { DeviceTypes, Genders, PackageTypes, UserTypes } from './enums';
+import {
+  DeviceTypes,
+  Genders,
+  MaterialTypes,
+  PackageTypes,
+  UserTypes,
+} from './enums';
 import { JwtModule } from '@nestjs/jwt';
 import { Device } from '../modules/auth/entity/device.entity';
 import { CountryList } from '../modules/utility/entity/countryList.entity';
@@ -87,6 +93,7 @@ export const ModuleConfigs = {
       Lesson,
       Chapter,
       Subject,
+      Material,
     ],
   },
   auth: {
@@ -276,10 +283,21 @@ export const learningPackages = {
             lessons: [
               {
                 title: 'Introduction',
-                video: {
-                  thumbNail: '',
-                  url: 'https://www.youtube.com/watch?v=drlIUqRYM-w&ab_channel=KiddosWorldTV',
-                },
+                reviews: [{}],
+                materials: [
+                  {
+                    title: 'intro_vid1.mp4',
+                    thumbNail: '',
+                    type: MaterialTypes.VIDEO,
+                    url: 'https://www.youtube.com/watch?v=drlIUqRYM-w&ab_channel=KiddosWorldTV',
+                  },
+                  {
+                    title: 'intro_vid1.mp4',
+                    cover: '',
+                    type: MaterialTypes.EBOOK,
+                    content: '',
+                  },
+                ],
               },
             ],
           },

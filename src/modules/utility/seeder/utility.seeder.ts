@@ -8,6 +8,7 @@ import { Subject } from 'src/modules/content/entity/subject.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
 import { Chapter } from 'src/modules/content/entity/chapter.entity';
 import { Lesson } from 'src/modules/content/entity/lesson.entity';
+import { Material } from 'src/modules/content/entity/material.entity';
 
 @Injectable()
 export class UtilitySeeder {
@@ -19,6 +20,7 @@ export class UtilitySeeder {
     @InjectRepository(CountryList) private countryRepo: Repository<CountryList>,
     @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
     @InjectRepository(Lesson) private lessonRepo: Repository<Lesson>,
+    @InjectRepository(Material) private materialRepo: Repository<Material>,
   ) {}
 
   async onApplicationBootstrap() {
@@ -104,6 +106,21 @@ export class UtilitySeeder {
                 const dbLESS = await this.lessonRepo.save({
                   title: lesson.title,
                   chapter: dbCHPT,
+                });
+
+                //? seed lessons for each chapter
+                lesson.materials?.map(async (material) => {
+                  const dbMAT = await this.materialRepo.save({
+                    type: material.type,
+                    title: material.title,
+                    url: material.url,
+                    content: material.content,
+                    cover: material.cover,
+                    thumbNail: material.thumbNail,
+                    lesson: dbLESS,
+                  });
+
+                  console.log('dbMAT', dbMAT);
                 });
 
                 console.log('dbLESS', dbLESS);
