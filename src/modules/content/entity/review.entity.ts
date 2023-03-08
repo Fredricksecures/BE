@@ -27,7 +27,7 @@ export class Review {
   id?: string;
 
   @Column({ type: 'varchar' })
-  lessonReview?: string;
+  review?: string;
 
   @ManyToOne(() => Lesson, (lesson) => lesson.reviews)
   lesson?: Lesson;

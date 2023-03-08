@@ -8,7 +8,13 @@ import { Orders } from './../modules/store/entities/orders.entity';
 import { Cart } from './../modules/store/entities/cart.entity';
 import { Products } from '../modules/store/entities/products.entity';
 import { config } from 'dotenv';
-import { DeviceTypes, Genders, PackageTypes, UserTypes } from './enums';
+import {
+  DeviceTypes,
+  Genders,
+  MaterialTypes,
+  PackageTypes,
+  UserTypes,
+} from './enums';
 import { JwtModule } from '@nestjs/jwt';
 import { Device } from '../modules/auth/entity/device.entity';
 import { CountryList } from '../modules/utility/entity/countryList.entity';
@@ -79,7 +85,16 @@ export const ModuleConfigs = {
     ],
   },
   utility: {
-    entities: [CountryList, Subject, LearningPackage, Device],
+    entities: [
+      CountryList,
+      Subject,
+      LearningPackage,
+      Device,
+      Lesson,
+      Chapter,
+      Subject,
+      Material,
+    ],
   },
   auth: {
     entities: [
@@ -237,6 +252,7 @@ export const ModuleConfigs = {
       Lesson,
       Chapter,
       Settings,
+
     ],
   },
 };
@@ -258,14 +274,46 @@ export const learningPackages = {
     name: 'RECEPTION',
     type: PackageTypes.PRE_SCHOOL,
     price: 1748,
-    subjects: {
-      English: {
+    subjects: [
+      {
+        title: 'English',
         icon: '',
+        chapters: [
+          {
+            title: 'Learning Your ABCs',
+            lessons: [
+              {
+                title: 'Introduction',
+                reviews: [{}],
+                materials: [
+                  {
+                    title: 'intro_vid1.mp4',
+                    thumbNail: '',
+                    type: MaterialTypes.VIDEO,
+                    url: 'https://www.youtube.com/watch?v=drlIUqRYM-w&ab_channel=KiddosWorldTV',
+                  },
+                  {
+                    title: 'intro_vid2.mp4',
+                    cover: '',
+                    type: MaterialTypes.EBOOK,
+                    content: '',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            title: 'Names Of Places',
+            lessons: [
+              {
+                title: 'title 2',
+              },
+            ],
+          },
+        ],
       },
-      Math: {
-        icon: '',
-      },
-    },
+      { title: 'Math', icon: '' },
+    ],
   },
 
   GRADE_1: { name: 'GRADE_1', type: PackageTypes.PRIMARY_SCHOOL, price: 2900 },

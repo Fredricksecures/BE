@@ -6,6 +6,9 @@ import { COUNTRY_SEED, learningPackages } from '../../../utils/constants';
 import { CountryList } from 'src/modules/utility/entity/countryList.entity';
 import { Subject } from 'src/modules/content/entity/subject.entity';
 import { LearningPackage } from 'src/modules/utility/entity/learningPackage.entity';
+import { Chapter } from 'src/modules/content/entity/chapter.entity';
+import { Lesson } from 'src/modules/content/entity/lesson.entity';
+import { Material } from 'src/modules/content/entity/material.entity';
 
 @Injectable()
 export class UtilitySeeder {
@@ -14,7 +17,10 @@ export class UtilitySeeder {
     private lPLRepo: Repository<LearningPackage>,
     @InjectRepository(Subject)
     private subjectRepo: Repository<Subject>,
-    @InjectRepository(CountryList) private countryRepo: Repository<CountryList>, // @InjectRepository(LearningPackage) // private learningPackageRepo: Repository<LearningPackage>,
+    @InjectRepository(CountryList) private countryRepo: Repository<CountryList>,
+    @InjectRepository(Chapter) private chapterRepo: Repository<Chapter>,
+    @InjectRepository(Lesson) private lessonRepo: Repository<Lesson>,
+    @InjectRepository(Material) private materialRepo: Repository<Material>,
   ) {}
 
   async onApplicationBootstrap() {
@@ -73,7 +79,7 @@ export class UtilitySeeder {
 
       return Promise.all(
         Object.keys(learningPackages).map(async (k) => {
-          const pkg = await this.lPLRepo.save({
+          const dbPKG = await this.lPLRepo.save({
             name: learningPackages[k].name,
             type: learningPackages[k].type,
             price: learningPackages[k].price,
@@ -81,25 +87,74 @@ export class UtilitySeeder {
             updatedAt: new Date(),
           });
 
-          const pkgSubjects = learningPackages[k].subjects;
-
-          if (pkgSubjects != null) {
-            let pkgSubjectList: Array<Subject> = [];
-
-            Object.keys(pkgSubjects).map(async (sub) => {
-              if (sub) {
-                pkgSubjectList.push(
-                  this.subjectRepo.create({
-                    name: sub,
-                    learningPackage: pkg,
-                  }),
-                );
-              }
+          //? seed subjects for each package
+          learningPackages[k]?.subjects?.map(async (subject) => {
+            const dbSBJ = await this.subjectRepo.save({
+              title: subject.title,
+              learningPackage: dbPKG,
             });
 
-            const savedPKGs = await this.subjectRepo.save(pkgSubjectList);
-            return savedPKGs;
-          }
+            //? seed chapters for each subject
+            subject?.chapters?.map(async (chapter) => {
+              const dbCHPT = await this.chapterRepo.save({
+                title: chapter.title,
+                subject: dbSBJ,
+              });
+
+              //? seed lessons for each chapter
+              chapter?.lessons?.map(async (lesson) => {
+                const dbLESS = await this.lessonRepo.save({
+                  title: lesson.title,
+                  chapter: dbCHPT,
+                });
+
+                //? seed lessons for each chapter
+                lesson.materials?.map(async (material) => {
+                  const dbMAT = await this.materialRepo.save({
+                    type: material.type,
+                    title: material.title,
+                    url: material.url,
+                    content: material.content,
+                    cover: material.cover,
+                    thumbNail: material.thumbNail,
+                    lesson: dbLESS,
+                  });
+
+                  console.log('dbMAT', dbMAT);
+                });
+
+                console.log('dbLESS', dbLESS);
+              });
+            });
+          });
+
+          // const pkgSubjects = learningPackages[k].subjects;
+
+          // if (pkgSubjects != null) {
+          //   let pkgSubjectDocs: Array<Subject> = [];
+
+          //   Object.keys(pkgSubjects).map(async (sub) => {
+          //     if (sub) {
+          // const savedSubjectDoc = await this.subjectRepo.save({
+          //   name: sub,
+          //   learningPackage: pkg,
+          // });
+
+          //       const subjectLessons = learningPackages[k].subjects[sub];
+
+          //       Object.keys;
+
+          //       // pkgSubjectDocs.push(
+          //       // this.subjectRepo.create({
+          //       //   name: sub,
+          //       //   learningPackage: pkg,
+          //       // }),
+          //       // );
+          //     }
+          //   });
+
+          //   // return savedPKGs;
+          // }
         }),
       ).then((res: Array<any>) => {
         console.log(

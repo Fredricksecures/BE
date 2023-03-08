@@ -975,7 +975,7 @@ export class AdminService {
     try {
       updatedLesson = await this.lessonRepo.save({
         ...foundLesson,
-        type: type ?? foundLesson.type,
+        // type: type ?? foundLesson.type,
       });
 
       return {
