@@ -26,7 +26,7 @@ jobs:
           CI: true   
 
 
-  depoly:
+  deploy:
     needs: [build]
     runs-on: ubuntu-latest
 
@@ -41,13 +41,13 @@ jobs:
           script: |
               curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
               . ~/.nvm/nvm.sh
-               nvm install --lts
-               npm install -g pm2
-               mkdir cicd && cd cicd
-               git pull origin staging
-               npm install
-               npm run build
-               npm run stop
-               npm run start
+              nvm install --lts
+              npm install -g pm2
+              mkdir cicd && cd cicd
+              git pull origin staging
+              npm install
+              npm run build
+              npm run stop
+              npm run start
                
               # pm2 restart api
