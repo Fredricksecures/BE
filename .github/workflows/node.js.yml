@@ -1,54 +1,53 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
+name: Teesas Api Autodeployment
 
 on:
   push:
-    branches: [ staging ]
-  pull_request:
-    branches: [ staging ]
+    branches:
+        - staging
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-#     - run: pm2 restart teesas
-    
-    
-    - name: Deploy application to EC2
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.EC2_INSTANCE_IP }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: ./
-        target: /home/ubuntu/app/
-        args: "-r"
+      - uses: actions/checkout@v2
+      - name: Use node js
+        uses: actions/setup-node@v1
+        with:
+         node-version: ${{ matrix.node-version }}
+      - name: npm install and build
+        run: |
+          npm install
+          npm run build
+        env: 
+          CI: true   
 
-    - name: Start application on EC2
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_INSTANCE_IP }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /home/ubuntu/app
-          pm2 start teesas
-          
-#once the first build run successfully this command should be updated to restart
-          
-    
+
+  depoly:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: SSH deploy
+       uses: appleboy/ssh-action@master
+       with:
+          host: ${{ secrets.HOST }}
+          username:  ${{ secrets.USER }}
+          key:  ${{ secrets.KEY }}
+          port:  ${{ secrets.PORT }}
+          script: |
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+              . ~/.nvm/nvm.sh
+               nvm install --lts
+               npm install -g pm2
+               mkdir cicd && cd cicd
+               git pull origin staging
+               npm install
+               npm run build
+               npm run stop
+               npm run start
+               
+              # pm2 restart api
